@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Dispatcher</title>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+    <style>
+
+        html {
+            height: 100%;
+            overflow: hidden;
+            --screen_color: #D9E9DF;
+            --screen_text: #1f1f1f;
+        }
+
+        * {
+            user-select: none;
+            font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+        }
+
+        /*SCREEN*/
+
+            #screen {
+                -webkit-app-region: no-drag;
+                position: absolute;
+                background-color: var(--screen_color);
+                color: var(--screen_text);
+                width: calc(90% - 6px);
+                height: calc(70% - 6px);
+                top: 5%;
+                left: 5%;
+                padding: 3px;
+                overflow: hidden;
+                border-radius: 5px;
+                box-shadow: #aaa 0 0 5px;
+                font-weight: bold;
+            }
+
+            #status_bar {
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                height: 15%;
+                min-height: 18px;
+                background-color: var(--screen_text);
+                color: var(--screen_color);
+                display: flex;
+                justify-content: flex-start;
+                align-items: center;
+            }
+
+            #status_bar span {
+                font-size: 100%;
+                margin-left: 3%;
+                cursor: pointer;
+            }
+
+            #status_btn {
+                position: absolute;
+                background-color: var(--screen_color);
+                border: var(--screen_text) 1px solid;
+                border-radius: 4px;
+                bottom: -4px;
+                right: -4px;
+                height: calc(30% - 4px);
+                aspect-ratio: 1/1;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                cursor: pointer;
+            }
+
+            #status_nmbr {
+                transform: translate(-2px, -2px);
+            }
+
+            /* SETTING DIVS */
+
+                .ch_div {
+                    background-color: var(--screen_color);
+                    position: absolute;
+                    height: calc(75% + 4px);
+                    width: calc(90% + 4px);
+                    border: var(--screen_text) 1px solid;
+                    border-radius: 4px;
+                    top: 10%;
+                    left: 10%;
+                }
+
+                #ch_status {
+                    display: flex;
+                    justify-content: flex-start;
+                    align-items: flex-start;
+                }
+
+                #ch_status div {
+                    position: absolute;
+                    top: 10px;
+                    left: 10px;
+                    height: 90%;
+                    width: 70%;
+                    display: grid;
+                    grid-template-columns: 20% 20% 20%;
+                    column-gap: 5%;
+                    align-content: space-evenly;
+                    justify-content: center;
+                    align-items: center;
+                }
+
+                #ch_status span {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    background-color: var(--screen_text);
+                    color: var(--screen_color);
+                    border-radius: 4px;
+                    aspect-ratio: 2/1;
+                    cursor: pointer;
+                }
+
+
+        #btn_off {
+            -webkit-app-region: no-drag;
+            position: absolute;
+            background-color: red;
+            aspect-ratio: 3/2;
+            height: 15%;
+            bottom: 5%;
+            left: 5%;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #FFF;
+            font-weight: bold;
+        }
+
+        #pager {
+            -webkit-app-region: drag;
+            position: absolute;
+            height: 100%;
+            width: 100%;
+            top: 0;
+            left: 0;
+            /*border-radius: 20px;*/
+            background-color: #444;
+        }
+
+        /*ANIMATIONS*/
+
+        .textBlink {
+            animation: textBlinkAnim 1.5s step-start infinite;
+        }
+
+        @keyframes textBlinkAnim {
+            50% {opacity: 0;}
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="pager">
+
+    </div>
+
+    <div id="screen">
+        <span id="job_info">
+
+        </span>
+
+
+
+        <!-- Settings Divs -->
+
+        <div class="ch_div" id="ch_status">
+            <div>
+                <span onclick="setStatus(1)">1</span>
+                <span onclick="setStatus(2)">2</span>
+                <span onclick="setStatus(3)">3</span>
+                <span onclick="setStatus(4)">4</span>
+                <span onclick="setStatus(5)">5</span>
+                <span onclick="setStatus(6)">6</span>
+                <span onclick="setStatus(7)">7</span>
+                <span onclick="setStatus(8)">8</span>
+                <span onclick="setStatus(9)">9</span>
+            </div>
+        </div>
+
+        <div class="ch_div" id="ch_connection">
+            connection
+        </div>
+
+        <div class="ch_div" id="ch_sound">
+            sound
+        </div>
+
+        <div class="ch_div" id="ch_display">
+            display
+        </div>
+
+        <div class="ch_div" id="ch_settings">
+            settings
+        </div>
+
+
+
+        <div id="status_bar">
+            <span id="connection" onclick="btnPress('connection')" class="material-symbols-outlined">signal_cellular_nodata</span>
+            <span id="sound" onclick="btnPress('sound')" class="material-symbols-outlined">notifications_active</span>
+            <span id="display" onclick="btnPress('display')" class="material-symbols-outlined">contrast</span>
+            <span id="settings" onclick="btnPress('settings')" class="material-symbols-outlined">settings</span>
+        </div>
+
+        <div id="status_btn" onclick="btnPress('status')">
+            <span id="status_nmbr">6</span>
+        </div>
+
+
+    </div>
+
+    <span id="btn_off" onclick="btnOff()" class="material-symbols-outlined">mode_off_on</span>
+
+    <script>
+        const jobInfo = document.querySelector("#job_info");
+        let openWindow;
+        let connected = false;
+
+        closeSettings();
+        
+
+
+        function closeSettings() {
+            let windows = document.querySelectorAll(".ch_div");
+
+            for(let i=0, iLength=windows.length; i<iLength; i++) {
+                windows[i].style.display = "none";
+            }
+            openWindow = null;
+        }
+
+        function openSettings(setting) {
+            document.querySelector(`#ch_${setting}`).style.display = "initial";
+            openWindow = setting;
+        }
+
+        function sendMsg() {
+            window.electronAPI.sendMsg("test");
+        }
+
+        function btnOff() {
+            //window.close();
+            ping()
+        }
+
+        function btnPress(btn) {
+            jobInfo.innerText += btn;
+
+            if(openWindow == btn) // öffnet fenster oder schließt Fenster wenn schon offen
+                closeSettings();
+            else {
+                closeSettings();
+                openSettings(btn);
+            }
+        }
+
+        /* --- Communication --- */
+
+        function connectionUpdate(new_connected) {
+            if(new_connected) {
+                document.querySelector("#connection").innerText = "signal_cellular_3_bar";
+                document.querySelector("#connection").classList.remove("textBlink");
+            }
+            else {
+                document.querySelector("#connection").innerText = "signal_cellular_nodata";
+                document.querySelector("#connection").classList.add("textBlink");
+            }
+        }
+        function statusUpdate(new_status) {
+            
+        }
+        function jobUpdate(new_job) {
+
+        }
+    </script>
+    <script src="../src/socket_handler.js"></script>
+</body>
+
+</html>

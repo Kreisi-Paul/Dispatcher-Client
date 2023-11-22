@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Dispatcher</title>
+    <style>
+
+        html {
+            height: 100%;
+        }
+
+        #screen {
+            position: absolute;
+            background-color:	#d5f6f6;
+            color: #000;
+            width: calc(90% - 6px);
+            height: calc(50% - 6px);
+            top: 5%;
+            left: 5%;
+            padding: 3px;
+            -webkit-app-region: drag;
+            overflow-x: hidden;
+            font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+            font-weight: bold;
+        }
+
+        /* Buttons */
+        #buttons {
+            position: absolute;
+            width: 20%;
+            aspect-ratio: 1/1;
+            background-color: aqua;
+            bottom: 5%;
+            right: 5%;
+            display: grid;
+        }
+
+        #buttons button {
+            background-color: blue;
+            position: absolute;
+            border: none;
+            width: 30%;
+            aspect-ratio: 1/1;
+            cursor: pointer;
+        }
+
+        #btn_up {
+            align-self: flex-start;
+            justify-self: center;
+        }
+        #btn_right {
+            align-self: center;
+            justify-self: flex-end;
+        }
+        #btn_down {
+            align-self: flex-end;
+            justify-self: center;
+        }
+        #btn_left {
+            align-self: center;
+            justify-self: flex-start;
+        }
+        #btn_ok {
+            align-self: center;
+            justify-self: center;
+        }
+
+    </style>
+</head>
+<body>
+    <div id="screen">
+
+    </div>
+
+    <div id="buttons">
+        <button onclick="btnTest('up')" id="btn_up">1</button>
+        <button onclick="btnTest('right')" id="btn_right">2</button>
+        <button onclick="btnTest('down')" id="btn_down">3</button>
+        <button onclick="btnTest('left')" id="btn_left">4</button>
+        <button onclick="btnTest('ok')" id="btn_ok">5</button>
+    </div>
+
+    <script>
+        const screenEl = document.querySelector("#screen");
+        
+        function sendMsg() {
+            window.electronAPI.sendMsg("test");
+        }
+
+        function btnTest(btn) {
+            screenEl.innerText += btn;
+
+        }
+    </script>
+</body>
+
+</html>
