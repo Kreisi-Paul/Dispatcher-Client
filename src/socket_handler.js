@@ -22,12 +22,14 @@ function openSocket() {
     });
 
     // Listen for messages
-    socket.addEventListener('message', (event) => {
+    socket.addEventListener('message', async (event) => {
         console.log(event)
-        if(event.data.toString() == "pong")
-            console.log("pong")
+        let message;
+        if(typeof event.data == "object")
+            message = await event.data.text();
         else
-            handleSocketMsg(event.data.toString());
+            message = event.data;
+        handleSocketMsg(message);
     });
 }
 
@@ -45,7 +47,44 @@ function reconnectSocket (i) {
         }
     }
 }
+/**
+ * @param {Object} message 
+ */
+function sendSocket(message) {
+    socket.send(JSON.stringify(message));
+}
+
+function handleSocketMsg(message) {
+    console.log(message);
+    let msgObj = JSON.parse(message);
+    let msgKeys = Object.keys(msgObj);
+
+    for(let i=0, iLength=msgKeys.length; i<iLength; i++) {
+        console.log(msgKeys[i])
+        processMessage([msgKeys[i],msgObj[msgKeys[i]]]);
+    }
+
+    function processMessage(msgObj) {
+        let action = msgObj[0];
+        let content = msgObj[1];
+        switch (action) {
+            case "status":
+                statusUpdate(content);
+                return;
+
+            case "job":
+                jobUpdate(content);
+                return;
+        }
+    }
+}
 
 function ping() {
     socket.send("ping");
+}
+
+/* --- Communication --- */
+
+function sendStatus(status) {
+    sendSocket({"status":status});
 }

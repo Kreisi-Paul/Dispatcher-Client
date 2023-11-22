@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Hauptmenü</title>
+    <style>
+
+        ::-webkit-scrollbar {
+            width: 0px;
+            background: transparent; /* make scrollbar transparent */
+        }
+
+        body {
+            --color-1: #222;
+            --color-2: #664;
+            --rdil: #644;
+            --pol: #446;
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100svw;
+            margin: 0;
+            overflow-x: hidden;
+            overflow-y: scroll;
+            background-color: var(--color-1);
+        }
+
+        * {
+            user-select: none;
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+            color: #fff;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        #ll_logo {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            width: 20%;
+        }
+
+        #menu_grid {
+            display: grid;
+            grid-template-columns: 40% 40%;
+            justify-content: center;
+            justify-items: center;
+            align-items: center;
+            gap: 40px;
+            padding-top: 40px;
+        }
+
+        .menuButton {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            width: 80%;
+            padding: 10px;
+            aspect-ratio: 2/1;
+            border-radius: 20px;
+            cursor: pointer;
+            background-color: var(--color-2);
+            box-shadow: #000 0 0 5px;
+            font-size: 25px;
+            font-weight: bold;
+            border: 1px solid #000;
+        }
+
+        .menuButton:hover {
+            box-shadow: 0 0 20px #000;
+            filter: saturate(160%);
+        }
+
+        .rdil {
+            background-color: var(--rdil);
+        }
+
+        .pol {
+            background-color: var(--pol);
+        }
+    </style>
+</head>
+<body>
+    <img id="ll_logo" src="https://limnos.life/assets/img/LogoWeiTransparent.png">
+    <h1>Hallo, Dr. Alex Mason</h1>
+
+    <div id="menu_grid">
+        <div onclick="requestWindow('pager_rdil')" class="menuButton rdil">Dispatcher RDIL</div>
+        <div onclick="requestWindow('lst_rdil')" class="menuButton rdil">Leitstelle RDIL</div>
+        <div onclick="requestWindow('pager_pol')" class="menuButton pol">Dispatcher POL</div>
+        <div onclick="requestWindow('lst_pol')" class="menuButton pol">Leitstelle POL</div>
+        <div onclick="requestWindow('settings')" class="menuButton">Einstellungen</div>
+        <div onclick="requestWindow('management')" class="menuButton">Berechtigungen</div>
+    </div>
+
+
+    <script>
+
+
+
+        function requestWindow(wType) {
+            switch (wType) {
+                case "pager_rdil":
+                    window.electronAPI.openWindow(wType);
+                    return;
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    </script>
+</body>
+</html>

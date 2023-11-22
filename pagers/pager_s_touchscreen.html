@@ -75,6 +75,29 @@
                 transform: translate(-2px, -2px);
             }
 
+            #job_info {
+                display: flex;
+                flex-direction: column;
+                gap: 4px;
+                padding: 6px;
+                height: calc(85% - 12px);
+                width: calc(100% - 12px);
+            }
+
+            #job_info > span {
+                width: 90%;
+                height: 16px;
+                font-size: 14px;
+            }
+
+            span[data-job=title] {
+                height: 26px !important;
+                font-size: 24px !important;
+                font-weight: bold;
+                text-align: center;
+                align-self: center;
+            }
+
             /* SETTING DIVS */
 
                 .ch_div {
@@ -137,6 +160,16 @@
             font-weight: bold;
         }
 
+        #ll_logo {
+            position: absolute;
+            bottom: 5%;
+            left: 50%;
+            transform: translateX(-50%);
+            height: 15%;
+            align-self: center;
+            filter: brightness(0%);
+        }
+
         #pager {
             -webkit-app-region: drag;
             position: absolute;
@@ -168,7 +201,10 @@
 
     <div id="screen">
         <span id="job_info">
-
+            <span data-job="title"></span>
+            <span data-job="location"></span>
+            <span data-job="caller"></span>
+            <span data-job="comment"></span>
         </span>
 
 
@@ -177,15 +213,15 @@
 
         <div class="ch_div" id="ch_status">
             <div>
-                <span onclick="setStatus(1)">1</span>
-                <span onclick="setStatus(2)">2</span>
-                <span onclick="setStatus(3)">3</span>
-                <span onclick="setStatus(4)">4</span>
-                <span onclick="setStatus(5)">5</span>
-                <span onclick="setStatus(6)">6</span>
-                <span onclick="setStatus(7)">7</span>
-                <span onclick="setStatus(8)">8</span>
-                <span onclick="setStatus(9)">9</span>
+                <span onclick="sendStatus(1)">1</span>
+                <span onclick="sendStatus(2)">2</span>
+                <span onclick="sendStatus(3)">3</span>
+                <span onclick="sendStatus(4)">4</span>
+                <span onclick="sendStatus(5)">5</span>
+                <span onclick="sendStatus(6)">6</span>
+                <span onclick="sendStatus(7)">7</span>
+                <span onclick="sendStatus(8)">8</span>
+                <span onclick="sendStatus(9)">9</span>
             </div>
         </div>
 
@@ -223,6 +259,8 @@
 
     <span id="btn_off" onclick="btnOff()" class="material-symbols-outlined">mode_off_on</span>
 
+    <img id="ll_logo" src="https://limnos.life/assets/img/LogoWeiTransparent.png">
+
     <script>
         const jobInfo = document.querySelector("#job_info");
         let openWindow;
@@ -251,13 +289,10 @@
         }
 
         function btnOff() {
-            //window.close();
-            ping()
+            window.close();
         }
 
         function btnPress(btn) {
-            jobInfo.innerText += btn;
-
             if(openWindow == btn) // öffnet fenster oder schließt Fenster wenn schon offen
                 closeSettings();
             else {
@@ -279,10 +314,32 @@
             }
         }
         function statusUpdate(new_status) {
-            
+            document.querySelector("#status_nmbr").innerText = new_status;
         }
         function jobUpdate(new_job) {
+            if(new_job == false) {
+                document.querySelector("span[data-job=title]").innerText = "";
+                document.querySelector("span[data-job=location]").innerText = "";
+                document.querySelector("span[data-job=caller]").innerText = "";
+                document.querySelector("span[data-job=comment]").innerText = "";
+            }
+            else {
 
+                if(new_job.title) {
+                    document.querySelector("span[data-job=title]").innerText = new_job.title;
+                }
+                if(new_job.location) {
+                    document.querySelector("span[data-job=location]").innerText = `Ort: ${new_job.location}`;
+
+                }
+                if(new_job.caller) {
+                    document.querySelector("span[data-job=caller]").innerText = `Anrufer: ${new_job.caller}`;
+
+                }
+                if(new_job.comment) {
+                    document.querySelector("span[data-job=comment]").innerText = new_job.comment;
+                }
+            }
         }
     </script>
     <script src="../src/socket_handler.js"></script>
