@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Hauptmenü</title>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
     <link rel="stylesheet" href="../src/variables.css">
     <style>
 
@@ -50,6 +51,41 @@
             padding-top: 40px;
         }
 
+        #unit_selection {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--color-1);
+        }
+
+        #unit_select_table {
+            height: 80%;
+            width: 80%;
+            border: 2px solid var(--color-2);
+            border-radius: 5px;
+        }
+
+        #unit_select_back {
+            position: absolute;
+            top: 5%;
+            transform: translateY(-50%);
+            left: 10%;
+            height: 5%;
+            aspect-ratio: 4/3;
+            background-color: var(--color-2);
+            color: #fff;
+            border-radius: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+
         .menuButton {
             display: flex;
             justify-content: center;
@@ -60,7 +96,7 @@
             aspect-ratio: 2/1;
             border-radius: 20px;
             cursor: pointer;
-            background-color: var(--color-2);
+            background-color: var(--misc);
             box-shadow: #000 0 0 5px;
             font-size: 25px;
             font-weight: bold;
@@ -93,6 +129,14 @@
         <div onclick="requestWindow('settings')" class="menuButton">Einstellungen</div>
         <div onclick="requestWindow('management')" class="menuButton">Berechtigungen</div>
     </div>
+
+    <div id="unit_selection">
+        <span id="unit_select_back" class="material-symbols-outlined">arrow_back</span>
+        <table id="unit_select_table">
+
+        </table>
+    </div>
+
 
 
     <script>

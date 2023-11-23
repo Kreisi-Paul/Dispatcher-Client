@@ -11,13 +11,14 @@ app.whenReady().then(() => {
         width: 700,
         minWidth: 680,
         height: 800,
+        minHeight: 600,
         autoHideMenuBar: true,
         webPreferences: {
             preload: path.resolve("menu/main_preload.js")
         }
     });
     mainWindow.loadFile("menu/main_menu.html");
-    
+
     mainWindow.webContents.openDevTools()
 
     app.on('activate', () => {
@@ -104,4 +105,3 @@ function openLST(faction) {
     lstWindow.maximize();
     lstWindow.webContents.openDevTools()
 }
-

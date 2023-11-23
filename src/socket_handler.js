@@ -1,17 +1,24 @@
 connectionUpdate(false);
 let socket;
+let userAuth = {
+    "faction":"rdil",
+    "unit":"NEF01-KAV",
+    "user_ident":"paul_kreismann",
+    "user_key":"eofbup4983bfnp984npo9btro5n06i8tbn"
+}
 openSocket();
 
 
 function openSocket() {
     console.log("foo")
-    socket = new WebSocket("wss://limnossocket.kreisi.net");
+    socket = new WebSocket("wss://limnos.kreisi.net");
 
     // Connection opened
     socket.addEventListener('open', () => {
-        connectionUpdate(true); //to pager
         console.log("socket opened");
-        //keepSocketAlive();
+        sendSocket({"login":"NEF01-KAV"});
+        connectionUpdate(true); //to pager
+        keepSocketAlive();
     });
 
     // Connection closed
@@ -51,6 +58,8 @@ function reconnectSocket (i) {
  * @param {Object} message 
  */
 function sendSocket(message) {
+    message.auth = userAuth;
+
     socket.send(JSON.stringify(message));
 }
 
@@ -83,8 +92,14 @@ function ping() {
     socket.send("ping");
 }
 
+function keepSocketAlive() {
+    setInterval(()=>{
+        ping();
+    }, 10000);
+}
+
 /* --- Communication --- */
 
 function sendStatus(status) {
-    sendSocket({"status":status});
+    sendSocket({"set_status":status});
 }
