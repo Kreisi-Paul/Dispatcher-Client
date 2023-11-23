@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Leitstelle</title>
+    <link rel="stylesheet" href="../src/variables.css">
+    <style>
+
+        html {
+            height: 100svh;
+            width: 100svw;
+        }
+
+        body {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            background-color: var(--color-1);
+            color: #fff;
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+            display: flex;
+            align-items: flex-end;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 40px;
+            width: 100%;
+        }
+
+        h2 {
+            margin: 0;
+            font-size: 25px;
+            width: 100%;
+        }
+
+        #status_bar {
+            position: absolute;
+            top: 0;
+            height: 100px;
+            width: calc(100% - 20px);
+            padding: 10px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #left_panel {
+            height: 80%;
+            width: calc(50% - 1px);
+            border-right: 1px solid var(--color-2);
+            border-top: 2px solid var(--color-2);
+        }
+
+        #right_panel {
+            height: 80%;
+            width: calc(50% - 1px);
+            border-left: 1px solid var(--color-2);
+            border-top: 2px solid var(--color-2);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="status_bar">
+        <h1>Leitstelle oder so</h1>
+        <h2 id="faction_text"></h2>
+    </div>
+
+
+    <div id="left_panel">
+
+    </div>
+    <div id="right_panel">
+
+    </div>
+
+    <script>
+        let faction;
+
+        window.electronAPI.mainProc((event, arg)=>{
+            //console.log(event, arg)
+            if(Object.keys(arg).includes("faction")) {
+                faction = arg.faction;
+                document.querySelector("#faction_text").innerText = arg.faction.toUpperCase();
+            }
+        })
+
+        onload = (event) => {
+            console.log(event)
+            window.electronAPI.sendMsg("getfaction");
+        }
+        
+    </script>
+</body>
+</html>

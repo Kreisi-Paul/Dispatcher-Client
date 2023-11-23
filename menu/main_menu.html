@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Hauptmenü</title>
+    <link rel="stylesheet" href="../src/variables.css">
     <style>
 
         ::-webkit-scrollbar {
@@ -11,10 +12,6 @@
         }
 
         body {
-            --color-1: #222;
-            --color-2: #664;
-            --rdil: #644;
-            --pol: #446;
             position: absolute;
             top: 0;
             left: 0;
@@ -100,35 +97,11 @@
 
     <script>
 
-
-
         function requestWindow(wType) {
-            switch (wType) {
-                case "pager_rdil":
-                    window.electronAPI.openWindow(wType);
-                    return;
-            }
+            let wTypes = ["pager_rdil","lst_rdil","pager_pol","lst_pol","settings","management"];
+            if(wTypes.includes(wType))
+                window.electronAPI.openWindow(wType);
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     </script>
 </body>

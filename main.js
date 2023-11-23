@@ -1,8 +1,9 @@
 
-// Modules to control application life and create native browser window
 const { app, BrowserWindow, ipcMain } = require('electron')
 const path = require('node:path')
 let pagerWindow;
+let lstWindow;
+let lstFaction;
 
 app.whenReady().then(() => {
 
@@ -30,9 +31,31 @@ ipcMain.on("main_window", (event, content) => {
 
     switch (content) {
         case "pager_rdil":
-            openPager("bar")
+            openPager("rdil")
             return;
 
+        case "lst_rdil":
+            openLST("rdil")
+            return;
+
+        case "pager_pol":
+            openPager("pol")
+            return;
+
+        case "lst_pol":
+            openLST("pol")
+            return;
+
+    }
+})
+
+ipcMain.on("lst_window", (event, content) => {
+    console.log(content);
+
+    switch (content) {
+        case "getfaction":
+            lstWindow.webContents.send('main_proc', {"faction":lstFaction});
+            return;
     }
 })
 
@@ -41,11 +64,6 @@ ipcMain.on("main_window", (event, content) => {
 
 
 
-
-ipcMain.on("message", (event, content) => {
-    //console.log(event);
-    console.log(content);
-})
 
 app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') app.quit()
@@ -74,5 +92,16 @@ function openPager(pagerName) {
     pagerWindow.webContents.openDevTools()
 }
 
-
+function openLST(faction) {
+    lstFaction = faction;
+    lstWindow = new BrowserWindow({
+        autoHideMenuBar: false,
+        webPreferences: {
+            preload: path.resolve("lst/lst_preload.js")
+        }
+    });
+    lstWindow.loadFile(`lst/leitstelle.html`);
+    lstWindow.maximize();
+    lstWindow.webContents.openDevTools()
+}
 
