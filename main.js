@@ -28,7 +28,7 @@ app.whenReady().then(() => {
         autoHideMenuBar: true,
         icon: "src/ll_logo.ico",
         webPreferences: {
-            preload: path.resolve("menu/main_preload.js")
+            preload: path.resolve("static/main_preload.js")
         }
     });
     mainWindow.loadFile("menu/main_menu.html");
@@ -125,7 +125,7 @@ function openPager(faction,pagerModel) {
         titleBarStyle: 'hidden',
         icon: "src/ll_logo.ico",
         webPreferences: {
-            preload: path.resolve("src/pager_preload.js")
+            preload: path.resolve("static/pager_preload.js")
         }
     });
     pagerWindow.setAlwaysOnTop(true, "screen-saver");
@@ -139,7 +139,7 @@ function openLST(faction) {
         autoHideMenuBar: false,
         icon: "src/ll_logo.ico",
         webPreferences: {
-            preload: path.resolve("lst/lst_preload.js")
+            preload: path.resolve("static/lst_preload.js")
         }
     });
     lstWindow.loadFile(`lst/leitstelle.html`);
