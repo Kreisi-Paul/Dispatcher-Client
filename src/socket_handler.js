@@ -1,12 +1,32 @@
 connectionUpdate(false);
 let socket;
-let userAuth = {
-    "faction":"rdil",
-    "unit":"NEF01-KAV",
-    "user_ident":"paul_kreismann",
-    "user_key":"eofbup4983bfnp984npo9btro5n06i8tbn"
+let userAuth = new Object();
+
+onload = ()=> {
+    window.electronAPI.sendMsg("getfaction");
+    window.electronAPI.sendMsg("getunit");
+    setTimeout(()=>{
+        window.electronAPI.getAuth();
+    },5000);
 }
-openSocket();
+
+//listen for main process
+window.electronAPI.mainProc((event, arg)=>{
+    console.log(event, arg)
+
+    if(Object.keys(arg).includes("auth")) {
+        userAuth.user_key = arg.auth.user_key;
+        userAuth.user_ident = arg.auth.user_ident;
+        openSocket();//opens socket after pager recieved auth
+    }
+    if(Object.keys(arg).includes("faction")) {
+        userAuth.faction = arg.faction;
+    }
+    if(Object.keys(arg).includes("unit")) {
+        userAuth.unit = arg.unit;
+    }
+})
+
 
 
 function openSocket() {
@@ -16,7 +36,7 @@ function openSocket() {
     // Connection opened
     socket.addEventListener('open', () => {
         console.log("socket opened");
-        sendSocket({"login":"NEF01-KAV"});
+        sendSocket({"login":userAuth.unit});
         connectionUpdate(true); //to pager
         keepSocketAlive();
     });

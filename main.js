@@ -4,6 +4,19 @@ const path = require('node:path')
 let pagerWindow;
 let lstWindow;
 let lstFaction;
+let pagerFaction;
+let pagerUnit;
+
+
+
+let auth = {
+    "user_ident":"paul_kreismann",
+    "user_key":"ffffff"
+};
+
+
+
+
 
 app.whenReady().then(() => {
 
@@ -13,11 +26,13 @@ app.whenReady().then(() => {
         height: 800,
         minHeight: 600,
         autoHideMenuBar: true,
+        icon: "src/ll_logo.ico",
         webPreferences: {
             preload: path.resolve("menu/main_preload.js")
         }
     });
     mainWindow.loadFile("menu/main_menu.html");
+    //mainWindow.setAlwaysOnTop(true) //DEBUG
 
     mainWindow.webContents.openDevTools()
 
@@ -28,25 +43,32 @@ app.whenReady().then(() => {
 
 ipcMain.on("main_window", (event, content) => {
     //console.log(event);
-    console.log(content);
+    //console.log(content);
 
-    switch (content) {
-        case "pager_rdil":
-            openPager("rdil")
-            return;
-
-        case "lst_rdil":
-            openLST("rdil")
-            return;
-
-        case "pager_pol":
-            openPager("pol")
-            return;
-
-        case "lst_pol":
-            openLST("pol")
-            return;
-
+    if(typeof content == "string") {
+        switch (content) {
+            case "pager_rdil":
+                openPager("rdil");
+                return;
+    
+            case "lst_rdil":
+                openLST("rdil");
+                return;
+    
+            case "pager_pol":
+                openPager("pol");
+                return;
+    
+            case "lst_pol":
+                openLST("pol");
+                return;
+        }
+    }
+    else {
+        if(Object.keys(content).includes("unit")) {
+            pagerUnit = content.unit;
+            console.log(pagerUnit)
+        }
     }
 })
 
@@ -60,7 +82,22 @@ ipcMain.on("lst_window", (event, content) => {
     }
 })
 
+ipcMain.on("pager_window", (event, content) => {
+    console.log(content);
 
+    switch (content) {
+        case "getfaction":
+            pagerWindow.webContents.send('main_proc', {"faction":pagerFaction});
+            return;
+        case "getunit":
+            pagerWindow.webContents.send('main_proc', {"unit":pagerUnit});
+            return;
+    }
+})
+
+ipcMain.on(("get_auth"), (event) => {
+    event.sender.send('main_proc', {"auth":auth});
+})
 
 
 
@@ -72,9 +109,11 @@ app.on('window-all-closed', () => {
 
 
 
-function openPager(pagerName) {
+function openPager(faction,pagerModel) {
     //TODO: implement modular system
-    console.log("foo")
+    console.log(pagerWindow)
+
+    pagerFaction = faction;
     pagerWindow = new BrowserWindow({
         width: 350,
         height: 250,
@@ -84,8 +123,9 @@ function openPager(pagerName) {
         frame: false,
         autoHideMenuBar: true,
         titleBarStyle: 'hidden',
+        icon: "src/ll_logo.ico",
         webPreferences: {
-            preload: path.join(__dirname, 'preload.js')
+            preload: path.resolve("src/pager_preload.js")
         }
     });
     pagerWindow.setAlwaysOnTop(true, "screen-saver");
@@ -97,6 +137,7 @@ function openLST(faction) {
     lstFaction = faction;
     lstWindow = new BrowserWindow({
         autoHideMenuBar: false,
+        icon: "src/ll_logo.ico",
         webPreferences: {
             preload: path.resolve("lst/lst_preload.js")
         }

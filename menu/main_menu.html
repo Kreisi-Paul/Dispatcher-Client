@@ -16,7 +16,7 @@
             position: absolute;
             top: 0;
             left: 0;
-            height: 100%;
+            height: 100svh;
             width: 100svw;
             margin: 0;
             overflow-x: hidden;
@@ -63,11 +63,12 @@
             background-color: var(--color-1);
         }
 
-        #unit_select_table {
+        #unit_select_panel {
             height: 80%;
             width: 80%;
             border: 2px solid var(--color-2);
             border-radius: 5px;
+            box-shadow: #000 0 0 5px;
         }
 
         #unit_select_back {
@@ -84,7 +85,79 @@
             justify-content: center;
             align-items: center;
             cursor: pointer;
+            box-shadow: #000 0 0 5px;
         }
+        #unit_select_back:hover {
+            filter: brightness(80%);
+        }
+
+        #unit_select_table {
+            border-bottom: 1px solid var(--color-2);
+            height: calc(70% - 1px);
+            width: 100%;
+            overflow-y: scroll;
+        }
+
+        #pager_select_table {
+            border-top: 1px solid var(--color-2);
+            height: calc(30% - 1px);
+            width: 100%;
+            overflow-y: scroll;
+        }
+
+        .unitListArea {
+            width: calc(100% - 10px);
+            height: 30px;
+            display: flex;
+            align-items: center;
+            padding: 5px;
+            background-color: var(--color-2);
+        }
+
+        .unitListUnit {
+            width: calc(100% - 30px);
+            padding: 5px 15px;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--color-2);
+        }
+
+        .unitInfo {
+            display: flex;
+            flex-direction: column;
+        }
+        .unitInfo * {
+            display: flex;
+            align-items: center;
+            font-size: 16px;
+        }
+
+        .unitName {
+            font-weight: bold;
+        }
+
+        .unitJoin {
+            background-color: var(--color-2);
+            height: 100%;
+            aspect-ratio: 1/1;
+            padding: 4px;
+            border-radius: 2px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            align-self: center;
+            cursor: pointer;
+            box-shadow: #000 0 0 4px;
+        }
+        .unitJoin:hover {
+            filter: brightness(80%);
+        }
+
+
+
+
+
 
         .menuButton {
             display: flex;
@@ -122,31 +195,118 @@
     <h1>Hallo, Dr. Alex Mason</h1>
 
     <div id="menu_grid">
-        <div onclick="requestWindow('pager_rdil')" class="menuButton rdil">Dispatcher RDIL</div>
+        <div onclick="openUnitSelection('rdil')" class="menuButton rdil">Dispatcher RDIL</div>
         <div onclick="requestWindow('lst_rdil')" class="menuButton rdil">Leitstelle RDIL</div>
-        <div onclick="requestWindow('pager_pol')" class="menuButton pol">Dispatcher POL</div>
+        <div onclick="openUnitSelection('pol')" class="menuButton pol">Dispatcher POL</div>
         <div onclick="requestWindow('lst_pol')" class="menuButton pol">Leitstelle POL</div>
         <div onclick="requestWindow('settings')" class="menuButton">Einstellungen</div>
         <div onclick="requestWindow('management')" class="menuButton">Berechtigungen</div>
     </div>
 
     <div id="unit_selection">
-        <span id="unit_select_back" class="material-symbols-outlined">arrow_back</span>
-        <table id="unit_select_table">
+        <span id="unit_select_back" class="material-symbols-outlined" onclick="closeUnitSelection()">arrow_back</span>
+        <div id="unit_select_panel">
+            <div id="unit_select_table">
 
-        </table>
+            </div>
+            <div id="pager_select_table">
+
+            </div>
+        </div>
     </div>
 
 
 
     <script>
+        let auth = new Object();
+        window.electronAPI.getAuth();
+
+        window.electronAPI.mainProc((event, arg)=>{
+            console.log(event, arg)
+
+            if(Object.keys(arg).includes("auth")) {
+                auth.user_key = arg.auth.user_key;
+                auth.user_ident = arg.auth.user_ident;
+                console.log(auth)
+            }
+        })
+
+
+        function openPager(faction, unit) {
+            if(faction == "rdil") {
+                window.electronAPI.sendMsg({"unit":unit});
+                requestWindow("pager_rdil");
+            }
+            else {
+                window.electronAPI.sendMsg({"unit":unit});
+                requestWindow("pager_pol");
+            }
+        }
 
         function requestWindow(wType) {
             let wTypes = ["pager_rdil","lst_rdil","pager_pol","lst_pol","settings","management"];
             if(wTypes.includes(wType))
-                window.electronAPI.openWindow(wType);
+                window.electronAPI.sendMsg(wType);
         }
 
+        async function updateUnitList(faction) {
+            let table = document.querySelector("#unit_select_table");
+
+
+            //clear table
+            table.innerHTML = "";
+
+
+            //get data
+            let response = await fetch(`https://limnos.kreisi.net/getvehicles/${encodeURIComponent(faction)}?user_ident=${encodeURIComponent(auth.user_ident)}&user_key=${encodeURIComponent(auth.user_key)}`);
+            let unitList = await response.json();
+            console.log(unitList)
+
+
+            //fill table
+            let sortedUnitList = sortUnitList(unitList);
+
+            for(let i=0,iLength=Object.keys(sortedUnitList).length; i<iLength; i++) {
+                console.log(sortedUnitList[Object.keys(sortedUnitList)[i]])
+                table.innerHTML +=
+                `<span class="unitListArea">
+                    ${makeSafe(Object.keys(sortedUnitList)[i])}
+                </span>`
+
+                //let areaSpan = document.querySelector(`span[data-area=${Object.keys(sortedUnitList)[i]}]`);
+                let areaUnits = sortedUnitList[Object.keys(sortedUnitList)[i]];
+                console.log(Object.keys(areaUnits).length)
+
+
+                for(let j=0,jLength=Object.keys(areaUnits).length; j<jLength; j++) {
+                    console.log(Object.keys(areaUnits)[j])
+                    table.innerHTML +=
+                    `<span class="unitListUnit">
+                        <span class="unitInfo">
+                            <span class="unitName">${makeSafe(Object.keys(areaUnits)[j])}</span>
+                            <span><span class="material-symbols-outlined" title="eingeloggte Mitarbeiter">group</span> : ${areaUnits[Object.keys(areaUnits)[j]].users.length}</span>
+                            <span><span class="material-symbols-outlined" title="Status">cell_tower</span> : ${areaUnits[Object.keys(areaUnits)[j]].status}</span>
+                        </span>
+                        <span class="material-symbols-outlined unitJoin" onclick="openPager('${faction}','${makeSafe(Object.keys(areaUnits)[j])}')">open_in_new</span>
+                    </span>`
+                }
+            }
+        }
+
+
+        function openUnitSelection(faction) {
+            console.log(faction)
+            document.querySelector("#unit_selection").style.display = "flex";
+            updateUnitList(faction);
+        }
+
+        function closeUnitSelection() {
+            document.querySelector("#unit_selection").style.display = "none";
+        }
+
+
     </script>
+    <script src="../src/x_xxs.js"></script>
+    <script src="../src/sort_unit_list.js"></script>
 </body>
 </html>
