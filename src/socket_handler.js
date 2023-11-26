@@ -38,6 +38,7 @@ function openSocket() {
         console.log("socket opened");
         sendSocket({"login":userAuth.unit});
         connectionUpdate(true); //to pager
+        syncPager();
         keepSocketAlive();
     });
 
@@ -122,4 +123,9 @@ function keepSocketAlive() {
 
 function sendStatus(status) {
     sendSocket({"set_status":status});
+}
+
+function syncPager() {
+    sendSocket({"update":"status"});
+    sendSocket({"update":"job"});
 }

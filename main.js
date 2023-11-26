@@ -1,6 +1,7 @@
 
-const { app, BrowserWindow, ipcMain } = require('electron')
-const path = require('node:path')
+const { app, BrowserWindow, ipcMain } = require('electron');
+const fs = require('fs');
+const path = require('node:path');
 let pagerWindow;
 let lstWindow;
 let lstFaction;
@@ -8,11 +9,9 @@ let pagerFaction;
 let pagerUnit;
 
 
+let localDB = JSON.parse(fs.readFileSync(path.resolve("db/storage.json")));
 
-let auth = {
-    "user_ident":"paul_kreismann",
-    "user_key":"ffffff"
-};
+let auth = localDB.auth;
 
 
 
@@ -83,7 +82,7 @@ ipcMain.on("lst_window", (event, content) => {
 })
 
 ipcMain.on("pager_window", (event, content) => {
-    console.log(content);
+    //console.log(content);
 
     switch (content) {
         case "getfaction":
@@ -111,7 +110,7 @@ app.on('window-all-closed', () => {
 
 function openPager(faction,pagerModel) {
     //TODO: implement modular system
-    console.log(pagerWindow)
+    //console.log(pagerWindow)
 
     pagerFaction = faction;
     pagerWindow = new BrowserWindow({
@@ -136,8 +135,10 @@ function openPager(faction,pagerModel) {
 function openLST(faction) {
     lstFaction = faction;
     lstWindow = new BrowserWindow({
+        minHeight: 510,
         autoHideMenuBar: false,
         icon: "src/ll_logo.ico",
+        autoHideMenuBar: true,
         webPreferences: {
             preload: path.resolve("preload/lst_preload.js")
         }

@@ -248,6 +248,7 @@
             <span id="sound" onclick="btnPress('sound')" class="material-symbols-outlined">notifications_active</span>
             <span id="display" onclick="btnPress('display')" class="material-symbols-outlined">contrast</span>
             <span id="settings" onclick="btnPress('settings')" class="material-symbols-outlined">settings</span>
+            <span id="sync" onclick="requestSync()" class="material-symbols-outlined">sync</span>
         </div>
 
         <div id="status_btn" onclick="btnPress('status')">
@@ -265,6 +266,7 @@
         const jobInfo = document.querySelector("#job_info");
         let openWindow;
         let connected = false;
+        let syncCooldown = false;
 
         closeSettings();
         
@@ -301,6 +303,19 @@
             }
         }
 
+        function requestSync() {
+            if(!syncCooldown) {
+                syncCooldown = true;
+                document.querySelector("#sync").classList.add("textBlink");
+                syncPager();
+
+                setTimeout(()=>{
+                    document.querySelector("#sync").classList.remove("textBlink");
+                    syncCooldown = false;
+                }, 10000);
+            }
+        }
+
         /* --- Communication --- */
 
         function connectionUpdate(new_connected) {
@@ -330,11 +345,9 @@
                 }
                 if(new_job.location) {
                     document.querySelector("span[data-job=location]").innerText = `Ort: ${new_job.location}`;
-
                 }
                 if(new_job.caller) {
                     document.querySelector("span[data-job=caller]").innerText = `Anrufer: ${new_job.caller}`;
-
                 }
                 if(new_job.comment) {
                     document.querySelector("span[data-job=comment]").innerText = new_job.comment;

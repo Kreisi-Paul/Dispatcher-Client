@@ -7,8 +7,8 @@
     <style>
 
         html {
-            height: 100svh;
-            width: 100svw;
+            height: 100vh;
+            width: 100vw;
         }
 
         body {
@@ -23,6 +23,11 @@
             font-family: Verdana, Geneva, Tahoma, sans-serif;
             display: flex;
             align-items: flex-end;
+            flex-wrap: wrap;
+        }
+
+        ::-webkit-scrollbar {
+            width: 0;
         }
 
         h1 {
@@ -38,13 +43,12 @@
         }
 
         #status_bar {
-            position: absolute;
-            top: 0;
-            height: 100px;
+            height: calc(20% - 2px - 20px);
             width: calc(100% - 20px);
             padding: 10px;
             overflow: hidden;
             display: flex;
+            justify-content: center;
             flex-direction: column;
         }
 
@@ -80,6 +84,7 @@
 
     <script>
         let faction;
+        let auth;
 
         window.electronAPI.mainProc((event, arg)=>{
             //console.log(event, arg)
@@ -87,13 +92,35 @@
                 faction = arg.faction;
                 document.querySelector("#faction_text").innerText = arg.faction.toUpperCase();
             }
+            else if(Object.keys(arg).includes("auth")) {
+                auth = arg.auth;
+            }
         })
 
         onload = (event) => {
             console.log(event)
             window.electronAPI.sendMsg("getfaction");
+            window.electronAPI.getAuth();
+            setTimeout(()=>{
+                drawUnitList();
+            },5000);
+        }
+
+        
+        async function drawUnitList() {
+            //get data
+            let response = await fetch(`https://limnos.kreisi.net/getvehicles/${encodeURIComponent(faction)}?user_ident=${encodeURIComponent(auth.user_ident)}&user_key=${encodeURIComponent(auth.user_key)}`);
+            let unitList = await response.json();
+            console.log(unitList)
+
+
+            //fill table
+            let sortedUnitList = sortUnitList(unitList);
+            console.log(sortedUnitList)
         }
         
     </script>
+    <script src="../src/x_xxs.js"></script>
+    <script src="../src/sort_unit_list.js"></script>
 </body>
 </html>

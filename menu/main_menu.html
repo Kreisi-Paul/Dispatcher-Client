@@ -188,11 +188,21 @@
         .pol {
             background-color: var(--pol);
         }
+
+        #loading {
+            background-color: var(--color-1);
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
+            display: flex;
+        }
     </style>
 </head>
 <body>
     <img id="ll_logo" src="https://limnos.life/assets/img/LogoWeiTransparent.png">
-    <h1>Hallo, Dr. Alex Mason</h1>
+    <h1 id="welcome"></h1>
 
     <div id="menu_grid">
         <div onclick="openUnitSelection('rdil')" class="menuButton rdil">Dispatcher RDIL</div>
@@ -216,6 +226,7 @@
     </div>
 
 
+    <div id="loading"></div>
 
     <script>
         let auth = new Object();
@@ -227,6 +238,7 @@
             if(Object.keys(arg).includes("auth")) {
                 auth.user_key = arg.auth.user_key;
                 auth.user_ident = arg.auth.user_ident;
+                welcome();
                 console.log(auth)
             }
         })
@@ -304,6 +316,13 @@
             document.querySelector("#unit_selection").style.display = "none";
         }
 
+
+        async function welcome() {
+            let response = await fetch(`https://limnos.kreisi.net/getusername?user_ident=${encodeURIComponent(auth.user_ident)}`);
+            let username = await response.text();
+            document.querySelector("#welcome").innerText = `Hallo, ${username}`;
+            document.querySelector("#loading").style.display = "none";
+        }
 
     </script>
     <script src="../src/x_xxs.js"></script>
