@@ -75,6 +75,10 @@
                 transform: translate(-2px, -2px);
             }
 
+            #unit_display {
+                cursor: default !important;
+            }
+
             #job_info {
                 display: flex;
                 flex-direction: column;
@@ -249,6 +253,7 @@
             <span id="display" onclick="btnPress('display')" class="material-symbols-outlined">contrast</span>
             <span id="settings" onclick="btnPress('settings')" class="material-symbols-outlined">settings</span>
             <span id="sync" onclick="requestSync()" class="material-symbols-outlined">sync</span>
+            <span id="unit_display"></span>
         </div>
 
         <div id="status_btn" onclick="btnPress('status')">
@@ -320,6 +325,7 @@
 
         function connectionUpdate(new_connected) {
             if(new_connected) {
+                document.querySelector("#unit_display").innerText = userAuth.unit;
                 document.querySelector("#connection").innerText = "signal_cellular_3_bar";
                 document.querySelector("#connection").classList.remove("textBlink");
             }
