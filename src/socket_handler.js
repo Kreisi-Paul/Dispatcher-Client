@@ -1,6 +1,7 @@
 connectionUpdate(false);
 let socket;
 let userAuth = new Object();
+let reconnection = false;
 
 onload = ()=> {
     window.electronAPI.sendMsg("getfaction");
@@ -30,7 +31,7 @@ window.electronAPI.mainProc((event, arg)=>{
 
 
 function openSocket() {
-    console.log("foo")
+    console.log("opening socket")
     socket = new WebSocket("wss://limnos.kreisi.net");
 
     // Connection opened
@@ -46,7 +47,7 @@ function openSocket() {
     socket.addEventListener('close', (event) => {
         connectionUpdate(false); //to pager
         console.warn("Socket closed:", event);
-        reconnectSocket(3);
+        reconnectSocket();
     });
 
     // Listen for messages
@@ -61,20 +62,20 @@ function openSocket() {
     });
 }
 
-function reconnectSocket (i) {
-
-    if(i <= 0) {
-        console.warn("reconnect unsuccessful");
-    }
-    else {
-        if(socket.readyState != 1) {
-            openSocket();
-            setTimeout(() => {
-                reconnectSocket(i-1);
-            },7500);
-        }
+function reconnectSocket () {
+    if(!reconnection) {
+        reconnection = true;
+        setInterval(()=>{
+            if(socket.readyState == 1) {
+                reconnection = false;
+                delete this;
+            }
+            else
+                openSocket();
+        }, 10000);
     }
 }
+
 /**
  * @param {Object} message 
  */
@@ -115,7 +116,10 @@ function ping() {
 
 function keepSocketAlive() {
     setInterval(()=>{
-        ping();
+        if(socket.readyState == 1)
+            ping();
+        else
+            delete this;
     }, 10000);
 }
 

@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Leitstelle</title>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
     <link rel="stylesheet" href="../src/variables.css">
     <style>
 
@@ -24,6 +25,10 @@
             display: flex;
             align-items: flex-end;
             flex-wrap: wrap;
+        }
+
+        * {
+            user-select: none;
         }
 
         ::-webkit-scrollbar {
@@ -57,7 +62,71 @@
             width: calc(50% - 1px);
             border-right: 1px solid var(--color-2);
             border-top: 2px solid var(--color-2);
+            overflow-y: scroll;
         }
+
+        /* LEFT PANEL */
+
+        .areaHeader {
+            position: relative;
+            top: 0;
+            left: 0;
+            background-color: var(--color-2);
+            height: 40px;
+            width: calc(100% - 40px);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            font-weight: bold;
+        }
+
+        .areaCollapse {
+            height: 70%;
+            aspect-ratio: 4/3;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 5px;
+        }
+        .areaCollapse:hover {
+            filter: brightness(90%);
+            backdrop-filter: brightness(90%);
+            box-shadow: 0 0 5px #000;
+        }
+
+        .unitGrid {
+            display: grid;
+            justify-content: center;
+            grid-template-columns: repeat(auto-fill, 200px);
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .unitTile {
+            width: calc(100% - 20px);
+            padding: 10px;
+            aspect-ratio: 2/1;
+            background-color: var(--color-2);
+            border: 1px solid #000;
+            box-shadow: 0 0 5px #000;
+            display: flex;
+            justify-content: space-evenly;
+            flex-direction: column;
+        }
+        .unitTile span {
+            display: flex;
+            align-items: center;
+            font-size: 18px;
+        }
+        .unitName {
+            align-self: center;
+            font-weight: bold;
+        }
+
+
+
 
         #right_panel {
             height: 80%;
@@ -65,6 +134,42 @@
             border-left: 1px solid var(--color-2);
             border-top: 2px solid var(--color-2);
         }
+
+
+        /* STATUS COLORS */
+
+        .status1 {
+            background-color: #181;
+        }
+        .status2 {
+            background-color: #181;
+        }
+        .status3 {
+            background-color: rgb(212, 212, 0);
+        }
+        .status4 {
+            background-color: #811;
+        }
+        .status5 {
+            background-color: #118;
+        }
+        .status6 {
+            background-color: #811;
+        }
+        .status7 {
+            background-color: #ffa600;
+        }
+        .status8 {
+            background-color: #ffa500;
+        }
+        .status9 {
+            background-color: #811;
+            animation: distress 2s step-start infinite;
+        }
+        @keyframes distress {
+            50% {background-color: #ffa600;}
+        }
+
     </style>
 </head>
 <body>
@@ -76,7 +181,9 @@
 
 
     <div id="left_panel">
+        <div id="unit_grid">
 
+        </div>
     </div>
     <div id="right_panel">
 
@@ -103,7 +210,7 @@
             window.electronAPI.getAuth();
             setTimeout(()=>{
                 drawUnitList();
-            },5000);
+            },2000);
         }
 
         
@@ -117,8 +224,49 @@
             //fill table
             let sortedUnitList = sortUnitList(unitList);
             console.log(sortedUnitList)
+            let unitGrid = document.querySelector("#unit_grid");
+
+            
+            for(let i=0,iLength=Object.keys(sortedUnitList).length; i<iLength; i++) {//draw areas
+                unitGrid.innerHTML += `
+                <div class="areaDiv areaOpen" data-area="${makeSafe(Object.keys(sortedUnitList)[i])}">
+                    <span class="areaHeader">
+                        ${makeSafe(Object.keys(sortedUnitList)[i])}
+                        <span class="areaCollapse" onclick="collapseArea('${makeSafe(Object.keys(sortedUnitList)[i])}')"><span class="material-symbols-outlined">expand_less</span></span>
+                    </span>
+                    <div class="unitGrid">
+                    </div>
+                </div>
+                `;
+
+                let areaUnits = sortedUnitList[Object.keys(sortedUnitList)[i]];
+                for(let j=0,jLength=Object.keys(areaUnits).length; j<jLength; j++) {
+                    console.log(areaUnits[Object.keys(areaUnits)[j]])
+                    document.querySelector(`div[data-area="${makeSafe(Object.keys(sortedUnitList)[i])}"] > .unitGrid`).innerHTML += `
+                    <span class="unitTile status${areaUnits[Object.keys(areaUnits)[j]].status}" data-unit="${makeSafe(Object.keys(areaUnits)[j])}">
+                        <span class="unitName">${makeSafe(Object.keys(areaUnits)[j])}</span>
+                        <span class="unitStatus"><span class="material-symbols-outlined">cell_tower</span> : ${areaUnits[Object.keys(areaUnits)[j]].status}</span>
+                        <span class="unitUsers"><span class="material-symbols-outlined">group</span> : ${areaUnits[Object.keys(areaUnits)[j]].users.length}</span>
+                    </span>
+                    `;
+                }
+            }
+
         }
-        
+
+        function collapseArea(area) {
+            let areaDiv = document.querySelector(`div[data-area="${area}"]`);
+
+            if(areaDiv.classList.contains("areaOpen")) {
+                areaDiv.classList.remove("areaOpen");
+                document.querySelector(`div[data-area="${area}"] > span > .areaCollapse > span`).innerText = "expand_more";
+            }
+            else {
+                areaDiv.classList.add("areaOpen");
+                document.querySelector(`div[data-area="${area}"] > span > .areaCollapse > span`).innerText = "expand_less";
+            }
+        }
+
     </script>
     <script src="../src/x_xxs.js"></script>
     <script src="../src/sort_unit_list.js"></script>

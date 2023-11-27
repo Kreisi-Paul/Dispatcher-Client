@@ -20,10 +20,5 @@ function sortUnitList(units) {
         }
     }
 
-    sortedUnits.sort();
-    for(let i=0,iLength=Object.keys(sortedUnits).length; i < iLength; i++) {
-        sortedUnits[Object.keys(sortedUnits)[i]].sort();
-    }
-
     return sortedUnits;
 }
