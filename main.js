@@ -27,7 +27,7 @@ app.whenReady().then(() => {
         autoHideMenuBar: true,
         icon: "src/ll_logo.ico",
         webPreferences: {
-            preload: path.resolve("preload/main_preload.js")
+            preload: path.join(__dirname, "preload/main_preload.js")
         }
     });
     mainWindow.loadFile("menu/main_menu.html");
@@ -110,7 +110,10 @@ app.on('window-all-closed', () => {
 
 function openPager(faction,pagerModel) {
     //TODO: implement modular system
-    //console.log(pagerWindow)
+    
+    if(typeof pagerWindow != "undefined")//prevent multiple windows
+        if(!pagerWindow.isDestroyed())
+            return;
 
     pagerFaction = faction;
     pagerWindow = new BrowserWindow({
@@ -124,7 +127,7 @@ function openPager(faction,pagerModel) {
         titleBarStyle: 'hidden',
         icon: "src/ll_logo.ico",
         webPreferences: {
-            preload: path.resolve("preload/pager_preload.js")
+            preload: path.join(__dirname, "preload/pager_preload.js")
         }
     });
     pagerWindow.setAlwaysOnTop(true, "screen-saver");
@@ -133,6 +136,11 @@ function openPager(faction,pagerModel) {
 }
 
 function openLST(faction) {
+
+    if(typeof lstWindow != "undefined")//prevent multiple windows
+        if(!lstWindow.isDestroyed())
+            return;
+
     lstFaction = faction;
     lstWindow = new BrowserWindow({
         minHeight: 510,
@@ -140,7 +148,7 @@ function openLST(faction) {
         icon: "src/ll_logo.ico",
         autoHideMenuBar: true,
         webPreferences: {
-            preload: path.resolve("preload/lst_preload.js")
+            preload: path.join(__dirname, "preload/lst_preload.js")
         }
     });
     lstWindow.loadFile(`lst/leitstelle.html`);

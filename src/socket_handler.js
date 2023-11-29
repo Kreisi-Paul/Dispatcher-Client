@@ -2,6 +2,7 @@ connectionUpdate(false);
 let socket;
 let userAuth = new Object();
 let reconnection = false;
+let pinging = false;
 
 onload = ()=> {
     window.electronAPI.sendMsg("getfaction");
@@ -115,12 +116,12 @@ function ping() {
 }
 
 function keepSocketAlive() {
-    setInterval(()=>{
-        if(socket.readyState == 1)
+    if(!pinging) {
+        pinging = true;
+        setInterval(()=>{
             ping();
-        else
-            delete this;
-    }, 10000);
+        }, 20000);
+    }
 }
 
 /* --- Communication --- */

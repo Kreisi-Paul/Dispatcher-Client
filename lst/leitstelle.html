@@ -139,35 +139,39 @@
         /* STATUS COLORS */
 
         .status1 {
-            background-color: #181;
+            background-color: #009933;
         }
         .status2 {
-            background-color: #181;
+            background-color: #009933;
         }
         .status3 {
-            background-color: rgb(212, 212, 0);
+            background-color: #bdbd0f;
         }
         .status4 {
-            background-color: #811;
+            background-color: #c20a0a;
         }
         .status5 {
-            background-color: #118;
+            background-color: #2424a8;
         }
         .status6 {
-            background-color: #811;
+            background-color: #c20a0a;
         }
         .status7 {
-            background-color: #ffa600;
+            background-color: #e68a00;
         }
         .status8 {
-            background-color: #ffa500;
+            background-color: #e68a00;
         }
         .status9 {
-            background-color: #811;
+            background-color: #c20a0a;
+            box-shadow: #e68a00 0 0 0 6px inset;
             animation: distress 2s step-start infinite;
         }
         @keyframes distress {
-            50% {background-color: #ffa600;}
+            50% {
+                background-color: #e68a00;
+                box-shadow: #c20a0a 0 0 0 6px inset;
+            }
         }
 
     </style>
@@ -190,33 +194,34 @@
     </div>
 
     <script>
-        let faction;
-        let auth;
+        let auth = new Object();
 
         window.electronAPI.mainProc((event, arg)=>{
             //console.log(event, arg)
             if(Object.keys(arg).includes("faction")) {
-                faction = arg.faction;
+                auth.faction = arg.faction;
                 document.querySelector("#faction_text").innerText = arg.faction.toUpperCase();
             }
             else if(Object.keys(arg).includes("auth")) {
-                auth = arg.auth;
+                auth.user_ident = arg.auth.user_ident;
+                auth.user_key = arg.auth.user_key;
             }
         })
 
         onload = (event) => {
             console.log(event)
-            window.electronAPI.sendMsg("getfaction");
             window.electronAPI.getAuth();
+            window.electronAPI.sendMsg("getfaction");
             setTimeout(()=>{
                 drawUnitList();
+                openSocket();
             },2000);
         }
 
         
         async function drawUnitList() {
             //get data
-            let response = await fetch(`https://limnos.kreisi.net/getvehicles/${encodeURIComponent(faction)}?user_ident=${encodeURIComponent(auth.user_ident)}&user_key=${encodeURIComponent(auth.user_key)}`);
+            let response = await fetch(`https://limnos.kreisi.net/getvehicles/${encodeURIComponent(auth.faction)}?user_ident=${encodeURIComponent(auth.user_ident)}&user_key=${encodeURIComponent(auth.user_key)}`);
             let unitList = await response.json();
             console.log(unitList)
 
@@ -226,7 +231,7 @@
             console.log(sortedUnitList)
             let unitGrid = document.querySelector("#unit_grid");
 
-            
+
             for(let i=0,iLength=Object.keys(sortedUnitList).length; i<iLength; i++) {//draw areas
                 unitGrid.innerHTML += `
                 <div class="areaDiv areaOpen" data-area="${makeSafe(Object.keys(sortedUnitList)[i])}">
@@ -240,13 +245,13 @@
                 `;
 
                 let areaUnits = sortedUnitList[Object.keys(sortedUnitList)[i]];
-                for(let j=0,jLength=Object.keys(areaUnits).length; j<jLength; j++) {
+                for(let j=0,jLength=Object.keys(areaUnits).length; j<jLength; j++) {//draw units
                     console.log(areaUnits[Object.keys(areaUnits)[j]])
                     document.querySelector(`div[data-area="${makeSafe(Object.keys(sortedUnitList)[i])}"] > .unitGrid`).innerHTML += `
                     <span class="unitTile status${areaUnits[Object.keys(areaUnits)[j]].status}" data-unit="${makeSafe(Object.keys(areaUnits)[j])}">
                         <span class="unitName">${makeSafe(Object.keys(areaUnits)[j])}</span>
-                        <span class="unitStatus"><span class="material-symbols-outlined">cell_tower</span> : ${areaUnits[Object.keys(areaUnits)[j]].status}</span>
-                        <span class="unitUsers"><span class="material-symbols-outlined">group</span> : ${areaUnits[Object.keys(areaUnits)[j]].users.length}</span>
+                        <span class="unitStatus"><span class="material-symbols-outlined">cell_tower</span> : <span class="fieldData">${areaUnits[Object.keys(areaUnits)[j]].status}</span></span>
+                        <span class="unitUsers"><span class="material-symbols-outlined">group</span> : <span class="fieldData">${areaUnits[Object.keys(areaUnits)[j]].users.length}</span></span>
                     </span>
                     `;
                 }
@@ -267,7 +272,45 @@
             }
         }
 
+
+
+
+
+
+        /* Communication */
+
+        function connectionUpdate(connection) {
+            console.log("connection:",connection)
+        }
+
+        function unitsUpdate(message) {
+            console.log(message)
+
+            for(let i=0,iLength=Object.keys(message).length; i<iLength; i++) {
+                console.log(message[Object.keys(message)[i]])
+                console.log(Object.keys(message)[i])
+
+                if(Object.keys(message[Object.keys(message)[i]]).includes("status")) {
+                    document.querySelector(`.unitTile[data-unit="${Object.keys(message)[i]}"] .unitStatus .fieldData`).innerText = message[Object.keys(message)[i]].status;
+
+                    //remove old status class
+                    for(let j=0; j<=9; j++) {
+                        document.querySelector(`.unitTile[data-unit="${Object.keys(message)[i]}"]`).classList.remove(`status${j}`);
+                    }
+
+                    //set new status class
+                    document.querySelector(`.unitTile[data-unit="${Object.keys(message)[i]}"]`).classList.add(`status${message[Object.keys(message)[i]].status}`);
+                }
+
+
+                if(Object.keys(message[Object.keys(message)[i]]).includes("users"))
+                    document.querySelector(`.unitTile[data-unit="${Object.keys(message)[i]}"] .unitUsers .fieldData`).innerText = message[Object.keys(message)[i]].users.length;
+
+            }
+        }
+
     </script>
+    <script src="lst_socket_handler.js"></script>
     <script src="../src/x_xxs.js"></script>
     <script src="../src/sort_unit_list.js"></script>
 </body>
