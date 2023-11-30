@@ -9,7 +9,7 @@
 
         ::-webkit-scrollbar {
             width: 0px;
-            background: transparent; /* make scrollbar transparent */
+            background: transparent;
         }
 
         body {
@@ -197,6 +197,75 @@
             height: 100%;
             width: 100%;
             display: flex;
+            justify-content: center;
+            flex-direction: column;
+            align-items: center;
+            gap: 5%;
+        }
+        #loading img {
+            width: 40%;
+        }
+        #loading_status {
+            display: flex;
+            align-items: flex-end;
+            height: 80px;
+            font-size: 38px;
+            text-align: center;
+        }
+        #loading_version {
+            position: absolute;
+            bottom: 5%;
+            font-size: 14px;
+            text-align: center;
+            z-index: 100;
+        }
+        #loading_version, #loading_version * {
+            color: var(--color-2);
+        }
+
+        #login {
+            background-color: var(--color-1);
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
+            display: none;
+            justify-content: center;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+        #login > span {
+            display: flex;
+            flex-direction: column;
+            width: 40%;
+        }
+        #login input {
+            all: unset;
+            width: 100%;
+            padding: 10px;
+            border: 2px solid var(--color-2);
+            border-radius: 5px;
+            align-self: center;
+            margin: 4px;
+        }
+        #login input:focus {
+            box-shadow: #000 0 0 5px;
+        }
+        #login_btn {
+            background-color: var(--color-2) !important;
+            border-radius: 50ch !important;
+            text-align: center !important;
+            cursor: pointer !important;
+            font-weight: bold !important;
+        }
+        #login_btn:hover {
+            box-shadow: #000 0 0 10px;
+            filter: brightness(90%);
+        }
+        #login_btn:disabled {
+            filter: brightness(90%);
         }
     </style>
 </head>
@@ -226,10 +295,29 @@
     </div>
 
 
-    <div id="loading"></div>
+    <div id="loading">
+        <img src="https://limnos.life/assets/img/LogoWeiTransparent.png">
+        <span id="loading_status">authorisiert...</span>
+        <span id="loading_version"></span>
+    </div>
+    <div id="login">
+        <h2>Authorisierung</h2>
+        <span>
+            <label for="login_username">Username</label>
+            <input type="text" id="login_username">
+        </span>
+        <span>
+            <label for="login_password">Passwort</label>
+            <input type="password" id="login_password">
+        </span>
+        <span>
+            <input type="button" id="login_btn" value="Login" onclick="login()">
+        </span>
+    </div>
 
     <script>
         let auth = new Object();
+        window.electronAPI.getVersion();
         window.electronAPI.getAuth();
 
         window.electronAPI.mainProc((event, arg)=>{
@@ -238,8 +326,11 @@
             if(Object.keys(arg).includes("auth")) {
                 auth.user_key = arg.auth.user_key;
                 auth.user_ident = arg.auth.user_ident;
-                welcome();
                 console.log(auth)
+                setTimeout(confirmAuth, 1000);
+            }
+            if(Object.keys(arg).includes("version")) {
+                document.querySelector("#loading_version").innerHTML = `${arg.version}<br><b>made with ♥ by Kreisi</b>`;
             }
         })
 
@@ -316,12 +407,54 @@
             document.querySelector("#unit_selection").style.display = "none";
         }
 
+        async function confirmAuth() {
+            let response = await fetch(`https://limnos.kreisi.net/checkauth?user_ident=${encodeURIComponent(auth.user_ident)}&user_key=${encodeURIComponent(auth.user_key)}`);
 
-        async function welcome() {
-            let response = await fetch(`https://limnos.kreisi.net/getusername?user_ident=${encodeURIComponent(auth.user_ident)}`);
-            let username = await response.text();
-            document.querySelector("#welcome").innerText = `Hallo, ${username}`;
-            document.querySelector("#loading").style.display = "none";
+            if(response.status == 200) {//lädt Username, schließt Ladebildschirm
+                document.querySelector("#loading_status").innerText = "Authorisierung erfolgreich";
+                setTimeout(async ()=> {
+                    document.querySelector("#loading").style.display = "none";
+                    let userResponse = await fetch(`https://limnos.kreisi.net/getusername?user_ident=${encodeURIComponent(auth.user_ident)}`);
+                    let username = await userResponse.text();
+                    document.querySelector("#welcome").innerText = `Hallo, ${username}`;
+                    document.querySelector("#loading_version").style.display = "none";
+                    document.querySelector("#loading").style.display = "none";
+                }, 3000);
+            }
+            else {
+                document.querySelector("#loading_status").innerHTML = `Authorisierung fehlgeschlagen (${response.status})`;
+                setTimeout(async ()=> {
+                    document.querySelector("#login").style.display = "flex";
+                }, 3000);
+            }
+        }
+
+        async function login() {
+            document.querySelector("#login_btn").disabled = true;
+            let username = document.querySelector("#login_username").value;
+            let password = document.querySelector("#login_password").value;
+            let response = await fetch(`https://limnos.kreisi.net/login?username=${username}&password=${password}`);
+
+            if(response.status == 200) {
+                window.electronAPI.setAuth({"user_ident":username,"user_key":await response.text()});
+                window.electronAPI.getAuth();
+
+                setTimeout(()=>{
+                    closeLogin();
+                    confirmAuth();
+                },2000);
+            }
+            else {
+                closeLogin();
+                confirmAuth();
+            }
+
+            function closeLogin() {
+                document.querySelector("#login_username").value = "";
+                document.querySelector("#login_password").value = "";
+                document.querySelector("#login_btn").disabled = false;
+                document.querySelector("#login").style.display = "none";
+            }
         }
 
     </script>

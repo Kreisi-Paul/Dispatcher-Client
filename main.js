@@ -11,9 +11,8 @@ let pagerUnit;
 
 let localDB = JSON.parse(fs.readFileSync(path.resolve("db/storage.json")));
 
-let auth = localDB.auth;
 
-
+let clientVersion = fs.readFileSync(path.join(__dirname, "version.txt")).toString();
 
 
 
@@ -95,9 +94,16 @@ ipcMain.on("pager_window", (event, content) => {
 })
 
 ipcMain.on(("get_auth"), (event) => {
-    event.sender.send('main_proc', {"auth":auth});
+    event.sender.send('main_proc', {"auth":localDB.auth});
 })
-
+ipcMain.on(("set_auth"), (event,data) => {
+    console.log("setauth:",data)
+    localDB.auth = data;//overwrite auth
+    fs.writeFileSync(path.resolve("db/storage.json"),JSON.stringify(localDB, null, "\t"));//save db
+})
+ipcMain.on(("get_version"), (event) => {
+    event.sender.send('main_proc', {"version":clientVersion});
+})
 
 
 
@@ -143,6 +149,7 @@ function openLST(faction) {
 
     lstFaction = faction;
     lstWindow = new BrowserWindow({
+        minWidth: 950,
         minHeight: 510,
         autoHideMenuBar: false,
         icon: "src/ll_logo.ico",
