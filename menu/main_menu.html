@@ -103,6 +103,9 @@
             height: calc(30% - 1px);
             width: 100%;
             overflow-y: scroll;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         .unitListArea {
@@ -289,7 +292,7 @@
 
             </div>
             <div id="pager_select_table">
-
+                <span>WIP</span>
             </div>
         </div>
     </div>
@@ -413,7 +416,6 @@
             if(response.status == 200) {//lädt Username, schließt Ladebildschirm
                 document.querySelector("#loading_status").innerText = "Authorisierung erfolgreich";
                 setTimeout(async ()=> {
-                    document.querySelector("#loading").style.display = "none";
                     let userResponse = await fetch(`https://limnos.kreisi.net/getusername?user_ident=${encodeURIComponent(auth.user_ident)}`);
                     let username = await userResponse.text();
                     document.querySelector("#welcome").innerText = `Hallo, ${username}`;
