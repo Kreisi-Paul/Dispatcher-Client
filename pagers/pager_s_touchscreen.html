@@ -88,36 +88,48 @@
                 width: calc(100% - 12px);
             }
 
-            #job_info > span {
+            #job_info > .jobInfo {
                 width: 90%;
                 height: 16px;
                 font-size: 14px;
+                overflow: hidden;
+                text-overflow: clip;
+                display: flex;
+                align-items: center;
             }
 
-            #job_download {
+            span[data-job=title] {
+                height: 26px !important;
+                font-size: 16px !important;
+                text-decoration: underline;
+                text-align: center;
+                align-self: center;
+            }
+
+            #job_info > .jobInfo > .material-symbols-outlined {
+                height: 16px;
+                font-size: 16px;
+            }
+
+            .jobTransInfo {
                 position: relative;
                 top: 50%;
                 left: 50%;
-                width: 50%;
-                height: 50%;
+                width: 90%;
+                height: 90%;
                 font-size: 14px;
                 transform: translate(-50%, -50%);
                 display: none;
                 flex-direction: column;
                 align-items: center;
                 justify-content: center;
-            }
-
-            #job_download > .material-symbols-outlined {
-                font-size: 40px !important;
-            }
-
-            span[data-job=title] {
-                height: 26px !important;
-                font-size: 24px !important;
-                font-weight: bold;
                 text-align: center;
-                align-self: center;
+                overflow: visible;
+            }
+
+            .jobTransInfo > .material-symbols-outlined {
+                font-size: 40px;
+                height: 40px;
             }
 
             /* SETTING DIVS */
@@ -223,14 +235,18 @@
 
     <div id="screen">
         <span id="job_info">
-            <span id="job_download">
-                <span class="material-symbols-outlined">cloud_download</span>
+            <span class="jobTransInfo" id="job_download">
+                <span class="material-symbols-outlined">sync</span>
                 <span>Empfange Einsatzdaten...</span>
             </span>
-            <span data-job="title"></span>
-            <span data-job="location"></span>
-            <span data-job="caller"></span>
-            <span data-job="comment"></span>
+            <span class="jobTransInfo" id="job_download_fail">
+                <span class="material-symbols-outlined">sync_problem</span>
+                <span>Einsatzdaten konnten nicht empfangen werden!</span>
+            </span>
+            <span class="jobInfo" data-job="title"></span>
+            <span class="jobInfo" data-job="location"></span>
+            <span class="jobInfo" data-job="caller"></span>
+            <span class="jobInfo" data-job="comment"></span>
         </span>
 
 
@@ -360,34 +376,52 @@
             document.querySelector("#status_nmbr").innerText = new_status;
         }
         async function jobUpdate(new_job_id) {
+
+            //clear previous job
+            document.querySelector("span[data-job=title]").innerText = "";
+            document.querySelector("span[data-job=location]").innerText = "";
+            document.querySelector("span[data-job=caller]").innerText = "";
+            document.querySelector("span[data-job=comment]").innerText = "";
+
+            //cancel job update if unit has no assigned job
+            if(new_job_id == false)
+                return;
+
+            //display wait message, remove error message if needed
+            document.querySelector("#job_download_fail").style.display = "none";
             document.querySelector("#job_download").style.display = "flex";
 
-            await fetch()
 
-            if(new_job == false) {
-                document.querySelector("span[data-job=title]").innerText = "";
-                document.querySelector("span[data-job=location]").innerText = "";
-                document.querySelector("span[data-job=caller]").innerText = "";
-                document.querySelector("span[data-job=comment]").innerText = "";
+            let response = await fetch(`https://limnos.kreisi.net/getjobinfo?id=${new_job_id}&faction=${userAuth.faction}&user_ident=${encodeURIComponent(userAuth.user_ident)}&user_key=${encodeURIComponent(userAuth.user_key)}`);
+            console.log(response)
+            if(response.status == 200) {
+                document.querySelector("#job_download").style.display = "none";
             }
-            else {
+            else {//display error message when job info cannot be obtained
+                document.querySelector("#job_download").style.display = "none";
+                document.querySelector("#job_download_fail").style.display = "flex";
+                return;
+            }
+            let new_job = await response.json();
+            console.log(new_job)
 
-                if(new_job.title) {
-                    document.querySelector("span[data-job=title]").innerText = new_job.title;
-                }
-                if(new_job.location) {
-                    document.querySelector("span[data-job=location]").innerText = `Ort: ${new_job.location}`;
-                }
-                if(new_job.caller) {
-                    document.querySelector("span[data-job=caller]").innerText = `Anrufer: ${new_job.caller}`;
-                }
-                if(new_job.comment) {
-                    document.querySelector("span[data-job=comment]").innerText = new_job.comment;
-                }
+            //set new job info if available
+            if(new_job.title) {
+                document.querySelector("span[data-job=title]").innerText = new_job.title;
+            }
+            if(new_job.location) {
+                document.querySelector("span[data-job=location]").innerHTML = `<span class="material-symbols-outlined">location_on</span> ${makeSafe(new_job.location)}`;
+            }
+            if(new_job.caller) {
+                document.querySelector("span[data-job=caller]").innerHTML = `<span class="material-symbols-outlined">call</span> ${makeSafe(new_job.caller)}`;
+            }
+            if(new_job.msg) {
+                document.querySelector("span[data-job=comment]").innerHTML = `<span class="material-symbols-outlined">notes</span> ${makeSafe(new_job.msg)}`;
             }
         }
     </script>
     <script src="../src/socket_handler.js"></script>
+    <script src="../src/x_xxs.js"></script>
 </body>
 
 </html>

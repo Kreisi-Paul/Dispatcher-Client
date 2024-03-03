@@ -79,7 +79,7 @@ function handleSocketMsg(message) {
                 return;
 
             case "lst_jobs":
-                jobUpdate(content);
+                jobsUpdate(content);
                 return;
         }
     }

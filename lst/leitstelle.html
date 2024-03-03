@@ -35,6 +35,15 @@
             width: 0;
         }
 
+        #client_version {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 12px;
+            color: var(--color-2);
+        }
+
+
         h1 {
             margin: 0;
             font-size: 40px;
@@ -141,18 +150,72 @@
             flex-direction: column;
         }
 
-        #new_jobs {
+        #new_jobs, #active_jobs {
             height: 50%;
             display: flex;
             flex-direction: column;
         }
 
-        #create_job {
-
+        .jobList {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            padding: 20px;
         }
 
-        #active_jobs {
-            height: 50%;
+        .jobListing {
+            height: 60px;
+            width: 90%;
+            padding: 0 20px;
+            box-shadow: #000 0 0 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .jobTitle {
+            font-size: 20px;
+            margin-right: auto;
+        }
+
+        .jobInfo {
+            width: 35%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .jobInfo > span {
+            display: flex;
+            gap: 5px;
+        }
+
+        .jobInfo > span > span {
+            display: flex;
+            align-items: center;
+        }
+
+        .rdilJob {
+            background-color: var(--rdil);
+        }
+
+        .polJob {
+            background-color: var(--pol);
+        }
+
+        .editJobBtn, .deleteJobBtn {
+            cursor: pointer;
+            border-radius: 4px;
+            padding: 5px;
+        }
+
+        .editJobBtn:hover, .deleteJobBtn:hover {
+            filter: brightness(90%);
+            backdrop-filter: brightness(90%);
+            box-shadow: 0 0 5px #000;
         }
 
         .jobTitlebar {
@@ -209,6 +272,7 @@
     </style>
 </head>
 <body>
+    <span id="client_version"></span>
 
     <div id="status_bar">
         <h1>Leitstelle oder so</h1>
@@ -227,12 +291,13 @@
                 <span>Neue Notrufe</span>
                 <span class="material-symbols-outlined hoverButton" id="create_job" onclick="openJobCreation()">add</span>
             </span>
+            <span class="jobList"></span>
         </div>
         <div id="active_jobs">
             <span class="jobTitlebar">
                 <span>Disponierte Einsätze</span>
-
             </span>
+            <span class="jobList"></span>
         </div>
     </div>
 
@@ -249,10 +314,14 @@
                 auth.user_ident = arg.auth.user_ident;
                 auth.user_key = arg.auth.user_key;
             }
+            else if(Object.keys(arg).includes("version")) {
+                document.querySelector("#client_version").innerHTML = `${arg.version}<br><b>made with ♥ by Kreisi</b>`;
+            }
         })
 
         onload = (event) => {
             console.log(event)
+            window.electronAPI.getVersion();
             window.electronAPI.getAuth();
             window.electronAPI.sendMsg(["getfaction"]);
             setTimeout(()=>{
@@ -333,8 +402,8 @@
             console.log(message)
 
             for(let i=0,iLength=Object.keys(message).length; i<iLength; i++) {
-                console.log(message[Object.keys(message)[i]])
-                console.log(Object.keys(message)[i])
+                //console.log(message[Object.keys(message)[i]])
+                //console.log(Object.keys(message)[i])
 
                 if(Object.keys(message[Object.keys(message)[i]]).includes("status")) {
                     document.querySelector(`.unitTile[data-unit="${Object.keys(message)[i]}"] .unitStatus .fieldData`).innerText = message[Object.keys(message)[i]].status;
@@ -353,6 +422,66 @@
                     document.querySelector(`.unitTile[data-unit="${Object.keys(message)[i]}"] .unitUsers .fieldData`).innerText = message[Object.keys(message)[i]].users.length;
 
             }
+        }
+
+        function jobsUpdate(jobs) {
+            console.log(jobs)
+            let activeJobList = document.querySelector("#active_jobs > .jobList");
+            let newJobList = document.querySelector("#new_jobs > .jobList");
+            let factionClasses = {
+                "rdil" : "rdilJob",
+                "pol" : "polJob"
+            };
+
+            activeJobList.innerHTML = "";
+            newJobList.innerHTML = "";
+
+            for(let i=0,iLength=Object.keys(jobs).length; i<iLength; i++) {
+                let tmpJob = jobs[Object.keys(jobs)[i]];
+                console.log(tmpJob)
+
+                let correctTable;
+                let jobInfo;
+                if(tmpJob.active) {
+                    correctTable = activeJobList;
+                    jobInfo = `
+                    <span class="jobInfo">
+                        <span>
+                            <span class="material-symbols-outlined">minor_crash</span>
+                            <span>TODO: not implemented</span>
+                        </span>
+                        <span>
+                            <span class="material-symbols-outlined">location_on</span>
+                            <span>TODO: not implemented</span>
+                        </span>
+                    </span>
+                    `;
+                }
+                else {
+                    correctTable = newJobList;
+                    jobInfo = `
+                    <span class="jobInfo">
+                        <span>
+                            <span class="material-symbols-outlined">call</span>
+                            <span>${tmpJob.caller}</span>
+                        </span>
+                        <span>
+                            <span class="material-symbols-outlined">location_on</span>
+                            <span>${tmpJob.location}</span>
+                        </span>
+                    </span>
+                    `;
+                }
+
+                correctTable.innerHTML += `
+                <span class="jobListing ${factionClasses[tmpJob.creator]}">
+                    <span class="jobTitle">${tmpJob.title}</span>
+                    ${jobInfo}
+                    <span class="editJobBtn material-symbols-outlined" onclick="editjob(this)">edit</span>
+                    <span class="deleteJobBtn material-symbols-outlined" onclick="deletejob(this)">delete</span>
+                </span>`;
+            }
+
         }
 
     </script>
