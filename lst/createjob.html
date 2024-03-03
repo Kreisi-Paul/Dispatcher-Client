@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Einsatz erstellen</title>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+    <link rel="stylesheet" href="../src/variables.css">
+    <style>
+        body {
+            background-color: var(--color-1);
+        }
+
+        * {
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+<!--JOB:
+
+    X title
+    X caller
+      faction
+    X msg
+    X pos || coords
+    X active
+-->
+
+    <input type="text" id="job_title">
+    <input type="text" id="job_caller">
+    <input type="text" id="job_msg">
+    <input type="text" id="job_pos">
+    <input type="checkbox" id="job_active">
+
+
+
+<script>
+    let auth = new Object();
+
+    window.electronAPI.mainProc((event, arg)=>{
+        console.log(event, arg)
+        if(Object.keys(arg).includes("faction")) {
+            auth.faction = arg.faction;
+            document.querySelector("#faction_text").innerText = arg.faction.toUpperCase();
+        }
+        else if(Object.keys(arg).includes("auth")) {
+            auth.user_ident = arg.auth.user_ident;
+            auth.user_key = arg.auth.user_key;
+        }
+        else if (Object.keys(arg).includes("jobdata")) {
+            //autofill data from LST window
+        }
+    })
+
+    onload = (event) => {
+        console.log(event)
+        window.electronAPI.getAuth();
+    }
+
+
+
+
+
+</script>
+</body>
+</html>

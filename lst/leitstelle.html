@@ -57,6 +57,22 @@
             flex-direction: column;
         }
 
+        .hoverButton {
+            height: 70%;
+            aspect-ratio: 4/3;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 5px;
+        }
+
+        .hoverButton:hover {
+            filter: brightness(90%);
+            backdrop-filter: brightness(90%);
+            box-shadow: 0 0 5px #000;
+        }
+
         /* LEFT PANEL */
         #left_panel {
             height: 80%;
@@ -64,6 +80,10 @@
             border-right: 1px solid var(--color-2);
             border-top: 2px solid var(--color-2);
             overflow-y: scroll;
+        }
+
+        .areaOpen .unitGrid {
+            display: grid;
         }
 
         .areaHeader {
@@ -80,23 +100,8 @@
             font-weight: bold;
         }
 
-        .areaCollapse {
-            height: 70%;
-            aspect-ratio: 4/3;
-            cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border-radius: 5px;
-        }
-        .areaCollapse:hover {
-            filter: brightness(90%);
-            backdrop-filter: brightness(90%);
-            box-shadow: 0 0 5px #000;
-        }
-
         .unitGrid {
-            display: grid;
+            display: none;
             justify-content: center;
             grid-template-columns: repeat(auto-fill, 200px);
             gap: 20px;
@@ -138,6 +143,12 @@
 
         #new_jobs {
             height: 50%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #create_job {
+
         }
 
         #active_jobs {
@@ -147,11 +158,14 @@
         .jobTitlebar {
             background-color: var(--color-2);
             height: 40px;
+            width: auto;
             padding: 0 20px;
             font-weight: bold;
             display: flex;
             align-items: center;
+            justify-content: space-between;
         }
+
 
 
         /* STATUS COLORS */
@@ -211,6 +225,7 @@
         <div id="new_jobs">
             <span class="jobTitlebar">
                 <span>Neue Notrufe</span>
+                <span class="material-symbols-outlined hoverButton" id="create_job" onclick="openJobCreation()">add</span>
             </span>
         </div>
         <div id="active_jobs">
@@ -239,14 +254,14 @@
         onload = (event) => {
             console.log(event)
             window.electronAPI.getAuth();
-            window.electronAPI.sendMsg("getfaction");
+            window.electronAPI.sendMsg(["getfaction"]);
             setTimeout(()=>{
                 drawUnitList();
                 setTimeout(openSocket, 2000);
             },2000);
         }
 
-        
+
         async function drawUnitList() {
             //get data
             let response = await fetch(`https://limnos.kreisi.net/getvehicles/${encodeURIComponent(auth.faction)}?user_ident=${encodeURIComponent(auth.user_ident)}&user_key=${encodeURIComponent(auth.user_key)}`);
@@ -265,7 +280,7 @@
                 <div class="areaDiv areaOpen" data-area="${makeSafe(Object.keys(sortedUnitList)[i])}">
                     <span class="areaHeader">
                         ${makeSafe(Object.keys(sortedUnitList)[i])}
-                        <span class="areaCollapse" onclick="collapseArea('${makeSafe(Object.keys(sortedUnitList)[i])}')"><span class="material-symbols-outlined">expand_less</span></span>
+                        <span class="areaCollapse hoverButton" onclick="collapseArea('${makeSafe(Object.keys(sortedUnitList)[i])}')"><span class="material-symbols-outlined">expand_less</span></span>
                     </span>
                     <div class="unitGrid">
                     </div>
@@ -300,6 +315,9 @@
             }
         }
 
+        function openJobCreation() {
+            window.electronAPI.sendMsg(["createjob",null]);
+        }
 
 
 

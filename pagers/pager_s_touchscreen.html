@@ -94,6 +94,24 @@
                 font-size: 14px;
             }
 
+            #job_download {
+                position: relative;
+                top: 50%;
+                left: 50%;
+                width: 50%;
+                height: 50%;
+                font-size: 14px;
+                transform: translate(-50%, -50%);
+                display: none;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+            }
+
+            #job_download > .material-symbols-outlined {
+                font-size: 40px !important;
+            }
+
             span[data-job=title] {
                 height: 26px !important;
                 font-size: 24px !important;
@@ -205,6 +223,10 @@
 
     <div id="screen">
         <span id="job_info">
+            <span id="job_download">
+                <span class="material-symbols-outlined">cloud_download</span>
+                <span>Empfange Einsatzdaten...</span>
+            </span>
             <span data-job="title"></span>
             <span data-job="location"></span>
             <span data-job="caller"></span>
@@ -265,7 +287,7 @@
 
     <span id="btn_off" onclick="btnOff()" class="material-symbols-outlined">mode_off_on</span>
 
-    <img id="ll_logo" src="https://limnos.life/assets/img/LogoWeiTransparent.png">
+    <img id="ll_logo" src="../src/ll_logo.ico">
 
     <script>
         const jobInfo = document.querySelector("#job_info");
@@ -337,7 +359,11 @@
         function statusUpdate(new_status) {
             document.querySelector("#status_nmbr").innerText = new_status;
         }
-        function jobUpdate(new_job) {
+        async function jobUpdate(new_job_id) {
+            document.querySelector("#job_download").style.display = "flex";
+
+            await fetch()
+
             if(new_job == false) {
                 document.querySelector("span[data-job=title]").innerText = "";
                 document.querySelector("span[data-job=location]").innerText = "";

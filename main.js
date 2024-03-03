@@ -32,9 +32,13 @@ app.whenReady().then(() => {
     mainWindow.loadFile("menu/main_menu.html");
     //mainWindow.setAlwaysOnTop(true) //DEBUG
 
+    mainWindow.on("closed", ()=>{
+        app.quit(); //close app when main window is closed
+    })
+
     mainWindow.webContents.openDevTools()
 
-    app.on('activate', () => {
+    app.on('activate', ()=>{
         console.log("activated");
     })
 })
@@ -73,9 +77,12 @@ ipcMain.on("main_window", (event, content) => {
 ipcMain.on("lst_window", (event, content) => {
     console.log(content);
 
-    switch (content) {
+    switch (content[0]) {
         case "getfaction":
             lstWindow.webContents.send('main_proc', {"faction":lstFaction});
+            return;
+        case "createjob":
+            openJobCreation(lstFaction, content[1]);
             return;
     }
 })
@@ -151,9 +158,8 @@ function openLST(faction) {
     lstWindow = new BrowserWindow({
         minWidth: 950,
         minHeight: 510,
-        autoHideMenuBar: false,
-        icon: "src/ll_logo.ico",
         autoHideMenuBar: true,
+        icon: "src/ll_logo.ico",
         webPreferences: {
             preload: path.join(__dirname, "preload/lst_preload.js")
         }
@@ -161,4 +167,22 @@ function openLST(faction) {
     lstWindow.loadFile(`lst/leitstelle.html`);
     lstWindow.maximize();
     lstWindow.webContents.openDevTools()
+}
+
+function openJobCreation(faction, jobData) {
+    let jobWindow = new BrowserWindow({
+        width: 800,
+        height: 450,
+        minWidth: 800,
+        minHeight: 450,
+        autoHideMenuBar: true,
+        icon: "src/ll_logo.ico",
+        webPreferences: {
+            preload: path.join(__dirname, "preload/job_preload.js")
+        }
+    });
+    jobWindow.loadFile(`lst/createjob.html`);
+    jobWindow.webContents.openDevTools()
+
+    jobWindow.webContents.send('main_proc', {faction:faction,jobdata:jobData});
 }
