@@ -2,5 +2,11 @@
 	"auth": {
 		"user_ident": "paul_kreismann",
 		"user_key": "ce1a6e845cc97480"
+	},
+	"pagerSettings": {
+		"pager_s_touchscreen": {
+			"opacity": "6",
+			"contrast": "3"
+		}
 	}
 }

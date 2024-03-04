@@ -5,6 +5,7 @@ let reconnection = false;
 let pinging = false;
 
 onload = ()=> {
+    initPager();//initialize pager settings
     window.electronAPI.sendMsg("getfaction");
     window.electronAPI.sendMsg("getunit");
     setTimeout(()=>{
@@ -26,6 +27,9 @@ window.electronAPI.mainProc((event, arg)=>{
     }
     if(Object.keys(arg).includes("unit")) {
         userAuth.unit = arg.unit;
+    }
+    if(Object.keys(arg).includes("pagersettings")) {
+        loadSettings(arg.pagersettings);
     }
 })
 

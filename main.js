@@ -92,10 +92,10 @@ ipcMain.on("pager_window", (event, content) => {
 
     switch (content) {
         case "getfaction":
-            pagerWindow.webContents.send('main_proc', {"faction":pagerFaction});
+            pagerWindow.webContents.send("main_proc", {"faction":pagerFaction});
             return;
         case "getunit":
-            pagerWindow.webContents.send('main_proc', {"unit":pagerUnit});
+            pagerWindow.webContents.send("main_proc", {"unit":pagerUnit});
             return;
     }
 })
@@ -109,14 +109,34 @@ ipcMain.on(("set_auth"), (event,data) => {
     fs.writeFileSync(path.resolve("db/storage.json"),JSON.stringify(localDB, null, "\t"));//save db
 })
 ipcMain.on(("get_version"), (event) => {
-    event.sender.send('main_proc', {"version":clientVersion});
+    event.sender.send("main_proc", {"version":clientVersion});
+})
+ipcMain.on(("pager_settings"), (event,data) => {
+    console.log("pagersettings:",data)
+    console.log(data[0])
+
+    if(data[0] == "get") {
+        let pagerSettings = JSON.parse(fs.readFileSync(path.resolve("db/storage.json"))).pagerSettings[data[1]];
+        event.sender.send("main_proc",{"pagersettings":pagerSettings});
+    }
+    else if(data[0] == "set") {
+        console.log(data[1])
+    }
+    else if(data[0] == "opacity") {
+        pagerWindow.setOpacity(data[1]);
+    }
+
+
+    /*
+    localDB.pagerSettings = data;//overwrite auth
+    fs.writeFileSync(path.resolve("db/storage.json"),JSON.stringify(localDB, null, "\t"));//save db
+    */
 })
 
 
 
-
 app.on('window-all-closed', () => {
-    if (process.platform !== 'darwin') app.quit()
+    app.quit()
 })
 
 
@@ -130,8 +150,8 @@ function openPager(faction,pagerModel) {
 
     pagerFaction = faction;
     pagerWindow = new BrowserWindow({
-        width: 350,
-        height: 250,
+        width: 295,
+        height: 180,
         minWidth: 295,
         minHeight: 180,
         transparent: true,

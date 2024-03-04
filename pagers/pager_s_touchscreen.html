@@ -9,8 +9,8 @@
         html {
             height: 100%;
             overflow: hidden;
-            --screen_color: #D9E9DF;
-            --screen_text: #1f1f1f;
+            --screen-color: #D9E9DF;
+            --screen-text: #1F1F1F;
         }
 
         * {
@@ -23,8 +23,8 @@
             #screen {
                 -webkit-app-region: no-drag;
                 position: absolute;
-                background-color: var(--screen_color);
-                color: var(--screen_text);
+                background-color: var(--screen-color);
+                color: var(--screen-text);
                 width: calc(90% - 6px);
                 height: calc(70% - 6px);
                 top: 5%;
@@ -43,8 +43,8 @@
                 width: 100%;
                 height: 15%;
                 min-height: 18px;
-                background-color: var(--screen_text);
-                color: var(--screen_color);
+                background-color: var(--screen-text);
+                color: var(--screen-color);
                 display: flex;
                 justify-content: flex-start;
                 align-items: center;
@@ -58,8 +58,8 @@
 
             #status_btn {
                 position: absolute;
-                background-color: var(--screen_color);
-                border: var(--screen_text) 1px solid;
+                background-color: var(--screen-color);
+                border: var(--screen-text) 1px solid;
                 border-radius: 4px;
                 bottom: -4px;
                 right: -4px;
@@ -135,15 +135,101 @@
             /* SETTING DIVS */
 
                 .ch_div {
-                    background-color: var(--screen_color);
+                    background-color: var(--screen-color);
                     position: absolute;
                     height: calc(75% + 4px);
                     width: calc(90% + 4px);
-                    border: var(--screen_text) 1px solid;
+                    border: var(--screen-text) 1px solid;
                     border-radius: 4px;
                     top: 10%;
                     left: 10%;
                 }
+
+                .ch_div > div {
+                    width: calc(100% - 6px);
+                    height: calc(100% - 6px);
+                    display: flex;
+                    flex-direction: column;
+                    gap: 2px;
+                }
+
+                .ch_header {
+                    align-self: center;
+                }
+
+                .ch_selection {
+                    background: linear-gradient(var(--screen-color) 46%, var(--screen-text) 46%, var(--screen-text) 54%, var(--screen-color) 54%);
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                }
+
+                .ch_selection_active {
+                    border-radius: 4px;
+                    box-shadow: inset var(--screen-text) 0 0 0 7px;
+                }
+
+                .ch_selection_small {
+                    background: linear-gradient(90deg, rgba(0,0,0,0) 6px, var(--screen-text) 7px, var(--screen-text) 8px, rgba(0,0,0,0) 9px);
+                    width: 14px;
+                    height: 60%;
+                    cursor: pointer;
+                }
+                .ch_selection_medium {
+                    background: linear-gradient(90deg, rgba(0,0,0,0) 6px, var(--screen-text) 7px, var(--screen-text) 8px, rgba(0,0,0,0) 9px);
+                    width: 14px;
+                    height: 90%;
+                    cursor: pointer;
+                }
+                .ch_selection_start {
+                    background: linear-gradient(90deg, var(--screen-text) 4px, rgba(0,0,0,0) 4px);
+                    width: 14px;
+                    height: 100%;
+                    cursor: pointer;
+                }
+                .ch_selection_end {
+                    background: linear-gradient(270deg, var(--screen-text) 4px, rgba(0,0,0,0) 4px);
+                    width: 14px;
+                    height: 100%;
+                    cursor: pointer;
+                }
+
+
+
+                #ch_connection {
+
+                }
+
+
+
+                #ch_sound {
+
+                }
+
+
+
+                #ch_display {
+
+                }
+
+                .display_option {
+                    padding: 0 4px;
+                    display: flex;
+                }
+
+                #opacity_selector, #contrast_selector {
+                    margin: 0 8px;
+                    flex: 1;
+                    height: 100%;
+                }
+
+
+
+                #ch_settings {
+
+                }
+
+
 
                 #ch_status {
                     display: flex;
@@ -169,8 +255,8 @@
                     display: flex;
                     justify-content: center;
                     align-items: center;
-                    background-color: var(--screen_text);
-                    color: var(--screen_color);
+                    background-color: var(--screen-text);
+                    color: var(--screen-color);
                     border-radius: 4px;
                     aspect-ratio: 2/1;
                     cursor: pointer;
@@ -276,7 +362,31 @@
         </div>
 
         <div class="ch_div" id="ch_display">
-            display
+            <div>
+                <span class="ch_header">display</span>
+                <div class="display_option">
+                    <span class="material-symbols-outlined">texture</span>
+                    <span class="ch_selection" id="opacity_selector" onclick="setOpacityInput(event)">
+                        <span data-opacity="0" class="ch_selection_start"></span>
+                        <span data-opacity="1" class="ch_selection_small"></span>
+                        <span data-opacity="2" class="ch_selection_medium"></span>
+                        <span data-opacity="3" class="ch_selection_small"></span>
+                        <span data-opacity="4" class="ch_selection_medium"></span>
+                        <span data-opacity="5" class="ch_selection_small"></span>
+                        <span data-opacity="6" class="ch_selection_end ch_selection_active"></span>
+                    </span>
+                </div>
+                <div class="display_option">
+                    <span class="material-symbols-outlined">contrast</span>
+                    <span class="ch_selection" id="contrast_selector" onclick="setContrastInput(event)">
+                        <span data-contrast="0" class="ch_selection_start"></span>
+                        <span data-contrast="1" class="ch_selection_small"></span>
+                        <span data-contrast="2" class="ch_selection_medium"></span>
+                        <span data-contrast="3" class="ch_selection_small ch_selection_active"></span>
+                        <span data-contrast="4" class="ch_selection_end"></span>
+                    </span>
+                </div>
+            </div>
         </div>
 
         <div class="ch_div" id="ch_settings">
@@ -310,10 +420,119 @@
         let openWindow;
         let connected = false;
         let syncCooldown = false;
+        let settings = new Object();
 
-        closeSettings();
-        
+        /* --- Pager Init --- */
 
+        function initPager() {
+            closeSettings();
+            window.electronAPI.pagerSettings(["get","pager_s_touchscreen"]);
+        }
+        function loadSettings(newSettings) {
+            console.log(newSettings)
+
+            if(newSettings) {//apply saved options
+                setOpacity(newSettings.opacity);
+            }
+            else {//apply standard options
+
+            }
+
+        }
+
+        /* --- Settings --- */
+
+        function setOpacityInput(event) {
+            let opacityTarget = event.target.dataset.opacity;
+
+            //return if no valid option is clicked
+            if(!opacityTarget)
+                return;
+
+            //set opacity
+            setOpacity(opacityTarget);
+        }
+        function setOpacity(newOpacity) {
+            let opacitySettings = [
+                0.2,
+                0.3,
+                0.4,
+                0.5,
+                0.6,
+                0.8,
+                1
+            ];
+            console.log("new opacity",newOpacity)
+
+            //return if old value is selected
+            if(settings.opacity == newOpacity)
+                return;
+
+            //remove all selection indicators
+            document.querySelectorAll("#opacity_selector .ch_selection_active").forEach((el)=>{el.classList.remove("ch_selection_active")});
+
+            //add selection indicator
+            document.querySelector(`#opacity_selector span[data-opacity="${newOpacity}"]`).classList.add("ch_selection_active");
+
+            //change opacity via main process
+            window.electronAPI.pagerSettings(["opacity",opacitySettings[newOpacity]]);
+
+            //only save settings if settings were already initialized
+            if(settings.opacity) {
+                settings.opacity = newOpacity;
+                window.electronAPI.pagerSettings(["set",{"pager_s_touchscreen":settings}]);
+            }
+            else
+                settings.opacity = newOpacity;
+        }
+
+        function setContrastInput(event) {
+            let contrastTarget = event.target.dataset.contrast;
+
+            //return if no valid option is clicked
+            if(!contrastTarget)
+                return;
+
+            //set contrast
+            setContrast(contrastTarget);
+        }
+        function setContrast(newContrast) {
+            let contrastSettings = [
+                ["#98b3a5","#404040"],
+                ["#b3ccbf","#333333"],
+                ["#c0d8cc","#262626"],
+                ["#D9E9DF","#1F1F1F"],
+                ["#dfece4","#0d0d0d"]
+            ];
+            console.log("new contrast",newContrast)
+
+            //return if old value is selected
+            if(settings.contrast == newContrast)
+                return;
+
+
+            //remove all selection indicators
+            document.querySelectorAll("#contrast_selector .ch_selection_active").forEach((el)=>{el.classList.remove("ch_selection_active")});
+
+            //add selection indicator
+            document.querySelector(`#contrast_selector span[data-contrast="${newContrast}"]`).classList.add("ch_selection_active");
+
+            //change contrast via css variables
+            document.documentElement.style.cssText = `
+            --screen-color: ${contrastSettings[newContrast][0]};
+            --screen-text: ${contrastSettings[newContrast][1]};
+            `;
+
+            //only save settings if settings were already initialized
+            if(settings.contrast) {
+                settings.contrast = newContrast;
+                window.electronAPI.pagerSettings(["set",{"pager_s_touchscreen":settings}]);
+            }
+            else
+                settings.contrast = newContrast;
+        }
+
+        /* --- Misc & UI --- */
 
         function closeSettings() {
             let windows = document.querySelectorAll(".ch_div");
@@ -325,7 +544,7 @@
         }
 
         function openSettings(setting) {
-            document.querySelector(`#ch_${setting}`).style.display = "initial";
+            document.querySelector(`#ch_${setting}`).style.display = "flex";
             openWindow = setting;
         }
 
@@ -372,9 +591,11 @@
                 document.querySelector("#connection").classList.add("textBlink");
             }
         }
+
         function statusUpdate(new_status) {
             document.querySelector("#status_nmbr").innerText = new_status;
         }
+
         async function jobUpdate(new_job_id) {
 
             //clear previous job
