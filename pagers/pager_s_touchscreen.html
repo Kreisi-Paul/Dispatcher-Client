@@ -71,6 +71,31 @@
                 cursor: pointer;
             }
 
+            #lst_call {
+                z-index: 100;
+                position: absolute;
+                top: 42.5%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                height: 65%;
+                width: 55%;
+                background-color: var(--screen-color);
+                border-radius: 5px;
+                border: var(--screen-text) 1px solid;
+                display: none;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+            }
+
+            #lst_call_img {
+                font-size: 36px;
+            }
+
+            #lst_call_msg {
+                text-align: center;
+            }
+
             #status_nmbr {
                 transform: translate(-2px, -2px);
             }
@@ -104,6 +129,7 @@
                 text-decoration: underline;
                 text-align: center;
                 align-self: center;
+                justify-content: center;
             }
 
             #job_info > .jobInfo > .material-symbols-outlined {
@@ -194,42 +220,16 @@
                     cursor: pointer;
                 }
 
-
-
-                #ch_connection {
-
-                }
-
-
-
-                #ch_sound {
-
-                }
-
-
-
-                #ch_display {
-
-                }
-
-                .display_option {
+                .displayOption, .soundOption {
                     padding: 0 4px;
                     display: flex;
                 }
 
-                #opacity_selector, #contrast_selector {
+                #opacity_selector, #contrast_selector, #volume_selector {
                     margin: 0 8px;
                     flex: 1;
                     height: 100%;
                 }
-
-
-
-                #ch_settings {
-
-                }
-
-
 
                 #ch_status {
                     display: flex;
@@ -266,12 +266,13 @@
         #btn_off {
             -webkit-app-region: no-drag;
             position: absolute;
-            background-color: red;
+            background-color: #d52424;
+            box-shadow: #000 0 0 5px;
             aspect-ratio: 3/2;
             height: 15%;
             bottom: 5%;
             left: 5%;
-            border-radius: 5px;
+            border-radius: 8px;
             cursor: pointer;
             display: flex;
             justify-content: center;
@@ -303,6 +304,17 @@
 
         /*ANIMATIONS*/
 
+        .urgentLstCall {
+            animation: urgentLstCallAnim 1.5s step-start infinite;    
+        }
+
+        @keyframes urgentLstCallAnim {
+            50% {
+                background-color: var(--screen-text);
+                color: var(--screen-color);
+            }
+        }
+
         .textBlink {
             animation: textBlinkAnim 1.5s step-start infinite;
         }
@@ -320,6 +332,13 @@
     </div>
 
     <div id="screen">
+
+        <span id="lst_call">
+            <span id="lst_call_img"class="material-symbols-outlined">e911_avatar</span>
+            <span id="lst_call_msg">LST-RUF WICHTIG!</span>
+        </span>
+
+
         <span id="job_info">
             <span class="jobTransInfo" id="job_download">
                 <span class="material-symbols-outlined">sync</span>
@@ -358,13 +377,27 @@
         </div>
 
         <div class="ch_div" id="ch_sound">
-            sound
+            <div>
+                <span class="ch_header">Sound</span>
+                <div class="soundOption">
+                    <span class="material-symbols-outlined">volume_up</span>
+                    <span class="ch_selection" id="volume_selector" onclick="setVolumeInput(event)">
+                        <span data-volume="0" class="ch_selection_start"></span>
+                        <span data-volume="1" class="ch_selection_small"></span>
+                        <span data-volume="2" class="ch_selection_medium"></span>
+                        <span data-volume="3" class="ch_selection_small"></span>
+                        <span data-volume="4" class="ch_selection_medium"></span>
+                        <span data-volume="5" class="ch_selection_small"></span>
+                        <span data-volume="6" class="ch_selection_end"></span>
+                    </span>
+                </div>
+            </div>
         </div>
 
         <div class="ch_div" id="ch_display">
             <div>
-                <span class="ch_header">display</span>
-                <div class="display_option">
+                <span class="ch_header">Display</span>
+                <div class="displayOption">
                     <span class="material-symbols-outlined">texture</span>
                     <span class="ch_selection" id="opacity_selector" onclick="setOpacityInput(event)">
                         <span data-opacity="0" class="ch_selection_start"></span>
@@ -373,16 +406,16 @@
                         <span data-opacity="3" class="ch_selection_small"></span>
                         <span data-opacity="4" class="ch_selection_medium"></span>
                         <span data-opacity="5" class="ch_selection_small"></span>
-                        <span data-opacity="6" class="ch_selection_end ch_selection_active"></span>
+                        <span data-opacity="6" class="ch_selection_end"></span>
                     </span>
                 </div>
-                <div class="display_option">
+                <div class="displayOption">
                     <span class="material-symbols-outlined">contrast</span>
                     <span class="ch_selection" id="contrast_selector" onclick="setContrastInput(event)">
                         <span data-contrast="0" class="ch_selection_start"></span>
                         <span data-contrast="1" class="ch_selection_small"></span>
                         <span data-contrast="2" class="ch_selection_medium"></span>
-                        <span data-contrast="3" class="ch_selection_small ch_selection_active"></span>
+                        <span data-contrast="3" class="ch_selection_small"></span>
                         <span data-contrast="4" class="ch_selection_end"></span>
                     </span>
                 </div>
@@ -397,7 +430,7 @@
 
         <div id="status_bar">
             <span id="connection" onclick="btnPress('connection')" class="material-symbols-outlined">signal_cellular_nodata</span>
-            <span id="sound" onclick="btnPress('sound')" class="material-symbols-outlined">notifications_active</span>
+            <span id="sound" onclick="btnPress('sound')" class="material-symbols-outlined">volume_off</span>
             <span id="display" onclick="btnPress('display')" class="material-symbols-outlined">contrast</span>
             <span id="settings" onclick="btnPress('settings')" class="material-symbols-outlined">settings</span>
             <span id="sync" onclick="requestSync()" class="material-symbols-outlined">sync</span>
@@ -433,9 +466,13 @@
 
             if(newSettings) {//apply saved options
                 setOpacity(newSettings.opacity);
+                setContrast(newSettings.contrast);
+                setVolume(newSettings.volume);
             }
             else {//apply standard options
-
+                setOpacity(6);
+                setContrast(3);
+                setVolume(1);
             }
 
         }
@@ -480,7 +517,7 @@
             //only save settings if settings were already initialized
             if(settings.opacity) {
                 settings.opacity = newOpacity;
-                window.electronAPI.pagerSettings(["set",{"pager_s_touchscreen":settings}]);
+                window.electronAPI.pagerSettings(["set",["pager_s_touchscreen",settings]]);
             }
             else
                 settings.opacity = newOpacity;
@@ -526,10 +563,58 @@
             //only save settings if settings were already initialized
             if(settings.contrast) {
                 settings.contrast = newContrast;
-                window.electronAPI.pagerSettings(["set",{"pager_s_touchscreen":settings}]);
+                window.electronAPI.pagerSettings(["set",["pager_s_touchscreen",settings]]);
             }
             else
                 settings.contrast = newContrast;
+        }
+
+        function setVolumeInput(event) {
+            let volumeTarget = event.target.dataset.volume;
+
+            //return if no valid option is clicked
+            if(!volumeTarget)
+                return;
+
+            //set volume
+            setVolume(volumeTarget);
+        }
+        function setVolume(newVolume) {
+            let volumeSettings = [
+                [0,"notifications_off"],
+                [0.05,"notifications"],
+                [0.1,"notifications"],
+                [0.15,"notifications"],
+                [0.2,"notifications_active"],
+                [0.4,"notifications_active"],
+                [0.6,"notifications_active"]
+            ];
+            console.log("new volume",newVolume)
+
+            //return if old value is selected
+            if(settings.volume == newVolume)
+                return;
+
+
+            //remove all selection indicators
+            document.querySelectorAll("#volume_selector .ch_selection_active").forEach((el)=>{el.classList.remove("ch_selection_active")});
+
+            //add selection indicator
+            document.querySelector(`#volume_selector span[data-volume="${newVolume}"]`).classList.add("ch_selection_active");
+
+            //change volume, volume indicators
+            document.querySelector("#audio").volume = volumeSettings[newVolume][0];
+            document.querySelector("#sound").innerText = volumeSettings[newVolume][1];
+            
+
+            //only save settings if settings were already initialized
+            if(settings.volume) {
+                settings.volume = newVolume;
+                window.electronAPI.pagerSettings(["set",["pager_s_touchscreen",settings]]);
+                playSound("beep");//preview sound
+            }
+            else
+                settings.volume = newVolume;
         }
 
         /* --- Misc & UI --- */
@@ -640,9 +725,53 @@
                 document.querySelector("span[data-job=comment]").innerHTML = `<span class="material-symbols-outlined">notes</span> ${makeSafe(new_job.msg)}`;
             }
         }
+
+        function lstCall(urgent) {
+            console.log(urgent)
+            let warningLength;
+
+            //show warning popup
+            if(urgent) {
+                document.querySelector("#lst_call").classList.add("urgentLstCall");
+                document.querySelector("#lst_call_img").innerText = "e911_avatar";
+                document.querySelector("#lst_call_msg").innerText = "LST-RUF WICHTIG!";
+                warningLength = 11000;
+                playSound("lst_call_urgent");
+            }
+            else {
+                document.querySelector("#lst_call_img").classList.add("textBlink");
+                document.querySelector("#lst_call_img").innerText = "call";
+                document.querySelector("#lst_call_msg").innerText = "LST-RUF";
+                warningLength = 5000;
+                playSound("lst_call");
+            }
+            document.querySelector("#lst_call").style.display = "flex";
+
+            //remove warning after set time
+            setTimeout(()=>{
+                document.querySelector("#lst_call").style.display = "none";
+                document.querySelector("#lst_call").classList.remove("urgentLstCall");
+                document.querySelector("#lst_call_img").classList.remove("textBlink");
+            }, warningLength);
+        }
+
+        /* --- Sound --- */
+
+        function playSound(soundName) {
+            let soundLocations = {
+                "lst_call" : "../src/lst_call.mp3",
+                "lst_call_urgent" : "../src/lst_call_urgent.mp3",
+                "beep" : "../src/beep.mp3"
+            }
+            let audioEl = document.querySelector("#audio");
+
+            audioEl.src = soundLocations[soundName];
+            audioEl.play();
+        }
     </script>
     <script src="../src/socket_handler.js"></script>
     <script src="../src/x_xxs.js"></script>
+    <audio id="audio"></audio>
 </body>
 
 </html>

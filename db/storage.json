@@ -6,7 +6,8 @@
 	"pagerSettings": {
 		"pager_s_touchscreen": {
 			"opacity": "6",
-			"contrast": "3"
+			"contrast": "3",
+			"volume": "3"
 		}
 	}
 }

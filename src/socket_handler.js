@@ -111,6 +111,10 @@ function handleSocketMsg(message) {
             case "job":
                 jobUpdate(content);
                 return;
+            
+            case "lst_call":
+                lstCall(content);
+                return;
         }
     }
 }

@@ -10,6 +10,11 @@
         html {
             height: 100vh;
             width: 100vw;
+            --status-green: #009933;
+            --status-yellow: #d3c900;
+            --status-orange: #e68a00;
+            --status-red: #d22d2d;
+            --status-blue: #4c8ae6;
         }
 
         body {
@@ -27,7 +32,7 @@
             flex-wrap: wrap;
         }
 
-        * {
+        * { 
             user-select: none;
         }
 
@@ -75,11 +80,11 @@
             justify-content: center;
             align-items: center;
             border-radius: 5px;
+            background-color: var(--color-2);
         }
 
         .hoverButton:hover {
             filter: brightness(90%);
-            backdrop-filter: brightness(90%);
             box-shadow: 0 0 5px #000;
         }
 
@@ -128,6 +133,7 @@
             display: flex;
             justify-content: space-evenly;
             flex-direction: column;
+            cursor: pointer;
         }
         .unitTile span {
             display: flex;
@@ -137,6 +143,53 @@
         .unitName {
             align-self: center;
             font-weight: bold;
+        }
+
+
+        #unit_card {
+            z-index: 100;
+            backdrop-filter: brightness(50%) blur(5px);
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #unit_card_content {
+            height: 50%;
+            width: 40%;
+            background-color: var(--color-1);
+            border-radius: 10px;
+            box-shadow: #000 0 0 10px;
+            overflow: hidden;
+        }
+
+        #unit_card_title {
+            background-color: #009933;
+            height: 8%;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        #unit_card_title h2 {
+            margin-right: auto;
+        }
+
+        #unit_card_title span {
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 5px;
+        }
+
+        #unit_card_title span:hover {
+            filter: brightness(90%);
+            backdrop-filter: brightness(90%);
         }
 
 
@@ -164,6 +217,7 @@
             align-items: center;
             gap: 10px;
             padding: 20px;
+            overflow: scroll;
         }
 
         .jobListing {
@@ -216,7 +270,6 @@
         .editJobBtn:hover, .deleteJobBtn:hover {
             filter: brightness(90%);
             backdrop-filter: brightness(90%);
-            box-shadow: 0 0 5px #000;
         }
 
         .jobTitlebar {
@@ -235,38 +288,40 @@
         /* STATUS COLORS */
 
         .status1 {
-            background-color: #009933;
+            background-color: var(--status-green);
         }
         .status2 {
-            background-color: #009933;
+            background-color: var(--status-green);
         }
         .status3 {
-            background-color: #d3c900;
+            background-color: var(--status-yellow);
         }
         .status4 {
-            background-color: #d22d2d;
+            background-color: var(--status-red);
         }
         .status5 {
-            background-color: #4c8ae6;
+            background-color: var(--status-blue);
         }
         .status6 {
-            background-color: #d22d2d;
+            background-color: var(--status-red);
         }
         .status7 {
-            background-color: #e68a00;
+            background-color: var(--status-orange);
         }
         .status8 {
-            background-color: #e68a00;
+            background-color: var(--status-orange);
         }
         .status9 {
-            background-color: #d22d2d;
-            box-shadow: #e68a00 0 0 0 6px inset;
+            background-color: var(--status-red);
+                box-shadow: var(--status-orange) 0 0 10px;
+                border-color: var(--status-orange);
             animation: distress 1.6s step-start infinite;
         }
         @keyframes distress {
             50% {
-                background-color: #e68a00;
-                box-shadow: #d22d2d 0 0 0 6px inset;
+                background-color: var(--status-orange);
+                box-shadow: var(--status-red) 0 0 10px;
+                border-color: var(--status-red);
             }
         }
 
@@ -274,6 +329,20 @@
 </head>
 <body>
     <span id="client_version"></span>
+
+    <div id="unit_card" onclick="event.target.id == 'unit_card' ? closeUnitCard() : null">
+        <div id="unit_card_content">
+            <div id="unit_card_title">
+                <h2>NEF02-KAV</h2>
+                <span id="call_unit" onclick="callUnit(unitCard,false)" class="material-symbols-outlined">notifications</span>
+                <span id="call_unit_urgent" onclick="callUnit(unitCard,true)" class="material-symbols-outlined">notification_important</span>
+            </div>
+            <span id="unit_card_users"></span>
+            
+
+
+        </div>
+    </div>
 
     <div id="status_bar">
         <h1>Leitstelle</h1>
@@ -304,6 +373,9 @@
 
     <script>
         let auth = new Object();
+        let unitCard;//saves the opened unit card target
+        let localUnits;
+        let localJobs;
 
         window.electronAPI.mainProc((event, arg)=>{
             //console.log(event, arg)
@@ -336,12 +408,13 @@
             //get data
             let response = await fetch(`https://limnos.kreisi.net/getvehicles/${encodeURIComponent(auth.faction)}?user_ident=${encodeURIComponent(auth.user_ident)}&user_key=${encodeURIComponent(auth.user_key)}`);
             let unitList = await response.json();
-            console.log(unitList)
+            //console.log(unitList)
+            localUnits = unitList;
 
 
             //fill table
             let sortedUnitList = sortUnitList(unitList);
-            console.log(sortedUnitList)
+            //console.log(sortedUnitList)
             let unitGrid = document.querySelector("#unit_grid");
 
 
@@ -359,9 +432,9 @@
 
                 let areaUnits = sortedUnitList[Object.keys(sortedUnitList)[i]];
                 for(let j=0,jLength=Object.keys(areaUnits).length; j<jLength; j++) {//draw units
-                    console.log(areaUnits[Object.keys(areaUnits)[j]])
+                    //console.log(areaUnits[Object.keys(areaUnits)[j]])
                     document.querySelector(`div[data-area="${makeSafe(Object.keys(sortedUnitList)[i])}"] > .unitGrid`).innerHTML += `
-                    <span class="unitTile status${areaUnits[Object.keys(areaUnits)[j]].status}" data-unit="${makeSafe(Object.keys(areaUnits)[j])}">
+                    <span class="unitTile status${areaUnits[Object.keys(areaUnits)[j]].status}" data-unit="${makeSafe(Object.keys(areaUnits)[j])}" onclick="openUnitCard(this)">
                         <span class="unitName">${makeSafe(Object.keys(areaUnits)[j])}</span>
                         <span class="unitStatus"><span class="material-symbols-outlined">cell_tower</span> : <span class="fieldData">${areaUnits[Object.keys(areaUnits)[j]].status}</span></span>
                         <span class="unitUsers"><span class="material-symbols-outlined">group</span> : <span class="fieldData">${areaUnits[Object.keys(areaUnits)[j]].users.length}</span></span>
@@ -385,8 +458,32 @@
             }
         }
 
+        function openUnitCard(el) {
+            let unitCardTarget = el.dataset.unit;
+            unitCard = unitCardTarget;
+
+            //set unit card info
+            document.querySelector("#unit_card_title h2").innerText = unitCardTarget;
+
+            //set card to visible
+            document.querySelector("#unit_card").style.display = "flex";
+        }
+
+        function closeUnitCard() {
+            unitCard = null;
+            document.querySelector("#unit_card").style.display = "none";
+        }
+
         function openJobCreation() {
-            window.electronAPI.sendMsg(["createjob",null]);
+            window.electronAPI.sendMsg(["createjob",[auth.faction,null]]);
+        }
+
+        function openJobEdit(jobId) {
+            window.electronAPI.sendMsg(["createjob",[auth.faction,localJobs[jobId]]]);
+        }
+
+        function callUnit(unit, urgent) {
+            sendSocket({"lst_call":[unit,urgent]});
         }
 
 
@@ -408,6 +505,9 @@
 
                 if(Object.keys(message[Object.keys(message)[i]]).includes("status")) {
                     document.querySelector(`.unitTile[data-unit="${Object.keys(message)[i]}"] .unitStatus .fieldData`).innerText = message[Object.keys(message)[i]].status;
+                    
+                    //update local storage
+                    localUnits[Object.keys(message)[i]].status = message[Object.keys(message)[i]].status;
 
                     //remove old status class
                     for(let j=0; j<=9; j++) {
@@ -416,17 +516,25 @@
 
                     //set new status class
                     document.querySelector(`.unitTile[data-unit="${Object.keys(message)[i]}"]`).classList.add(`status${message[Object.keys(message)[i]].status}`);
+
+                    let newStatus = message[Object.keys(message)[i]].status;
+                    if(newStatus == 5 || newStatus == 9)
+                        statusMsg(Object.keys(message)[i],newStatus);
                 }
 
-
-                if(Object.keys(message[Object.keys(message)[i]]).includes("users"))
+                if(Object.keys(message[Object.keys(message)[i]]).includes("users")) {
                     document.querySelector(`.unitTile[data-unit="${Object.keys(message)[i]}"] .unitUsers .fieldData`).innerText = message[Object.keys(message)[i]].users.length;
+
+                    //update local storage
+                    localUnits[Object.keys(message)[i]].users = message[Object.keys(message)[i]].users;
+                }
 
             }
         }
 
         function jobsUpdate(jobs) {
-            console.log(jobs)
+            //console.log(jobs)
+            localJobs = jobs;
             let activeJobList = document.querySelector("#active_jobs > .jobList");
             let newJobList = document.querySelector("#new_jobs > .jobList");
             let factionClasses = {
@@ -475,19 +583,43 @@
                 }
 
                 correctTable.innerHTML += `
-                <span class="jobListing ${factionClasses[tmpJob.creator]}">
+                <span class="jobListing ${factionClasses[tmpJob.creator]}" data-id="${Object.keys(jobs)[i]}">
                     <span class="jobTitle">${tmpJob.title}</span>
                     ${jobInfo}
-                    <span class="editJobBtn material-symbols-outlined" onclick="editjob(this)">edit</span>
-                    <span class="deleteJobBtn material-symbols-outlined" onclick="deletejob(this)">delete</span>
+                    <span class="editJobBtn material-symbols-outlined" onclick="openJobEdit(this.parentNode.dataset.id)">edit</span>
+                    <span class="deleteJobBtn material-symbols-outlined" onclick="deleteJob(this)">delete</span>
                 </span>`;
             }
+        }
 
+        function statusMsg(unit, status) {
+            let audioEl = document.querySelector("#audio");
+            console.log(unit,status)
+
+            //debug TODO: implement LST settings
+            audioEl.volume = 0.2
+
+            //TODO: show popup
+
+            playSound(`status${status}`);
+        }
+
+        function playSound(soundName) {
+            let soundLocations = {
+                "status5":"../src/status5.mp3",
+                "status9":"../src/status9.mp3",
+                "beep": "../src/beep.mp3"
+            }
+            let audioEl = document.querySelector("#audio");
+
+            audioEl.src = soundLocations[soundName];
+            audioEl.play();
         }
 
     </script>
     <script src="lst_socket_handler.js"></script>
     <script src="../src/x_xxs.js"></script>
     <script src="../src/sort_unit_list.js"></script>
+    <audio id="audio"></audio>
 </body>
 </html>

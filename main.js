@@ -7,6 +7,7 @@ let lstWindow;
 let lstFaction;
 let pagerFaction;
 let pagerUnit;
+let jobInfo;
 
 
 let localDB = JSON.parse(fs.readFileSync(path.resolve("db/storage.json")));
@@ -36,7 +37,7 @@ app.whenReady().then(() => {
         app.quit(); //close app when main window is closed
     })
 
-    mainWindow.webContents.openDevTools()
+    //mainWindow.webContents.openDevTools()
 
     app.on('activate', ()=>{
         console.log("activated");
@@ -75,14 +76,15 @@ ipcMain.on("main_window", (event, content) => {
 })
 
 ipcMain.on("lst_window", (event, content) => {
-    console.log(content);
+    //console.log(content);
 
     switch (content[0]) {
         case "getfaction":
             lstWindow.webContents.send('main_proc', {"faction":lstFaction});
             return;
         case "createjob":
-            openJobCreation(lstFaction, content[1]);
+            openJobCreation();
+            jobInfo = content[1];
             return;
     }
 })
@@ -100,6 +102,12 @@ ipcMain.on("pager_window", (event, content) => {
     }
 })
 
+ipcMain.on("job_window", (event, content) => {
+    if(content == "getjobinfo") {
+        event.sender.send("main_proc", {"jobdata":jobInfo});
+    }
+})
+
 ipcMain.on(("get_auth"), (event) => {
     event.sender.send('main_proc', {"auth":localDB.auth});
 })
@@ -113,24 +121,18 @@ ipcMain.on(("get_version"), (event) => {
 })
 ipcMain.on(("pager_settings"), (event,data) => {
     console.log("pagersettings:",data)
-    console.log(data[0])
 
     if(data[0] == "get") {
         let pagerSettings = JSON.parse(fs.readFileSync(path.resolve("db/storage.json"))).pagerSettings[data[1]];
         event.sender.send("main_proc",{"pagersettings":pagerSettings});
     }
     else if(data[0] == "set") {
-        console.log(data[1])
+        localDB.pagerSettings[data[1][0]] = data[1][1];//overwrite localDB
+        fs.writeFileSync(path.resolve("db/storage.json"),JSON.stringify(localDB, null, "\t"));//save db
     }
     else if(data[0] == "opacity") {
         pagerWindow.setOpacity(data[1]);
     }
-
-
-    /*
-    localDB.pagerSettings = data;//overwrite auth
-    fs.writeFileSync(path.resolve("db/storage.json"),JSON.stringify(localDB, null, "\t"));//save db
-    */
 })
 
 
@@ -141,7 +143,7 @@ app.on('window-all-closed', () => {
 
 
 
-function openPager(faction,pagerModel) {
+function openPager(faction, pagerModel) {
     //TODO: implement modular system
     
     if(typeof pagerWindow != "undefined")//prevent multiple windows
@@ -152,8 +154,7 @@ function openPager(faction,pagerModel) {
     pagerWindow = new BrowserWindow({
         width: 295,
         height: 180,
-        minWidth: 295,
-        minHeight: 180,
+        resizable: false,
         transparent: true,
         frame: false,
         autoHideMenuBar: true,
@@ -189,7 +190,7 @@ function openLST(faction) {
     lstWindow.webContents.openDevTools()
 }
 
-function openJobCreation(faction, jobData) {
+function openJobCreation() {
     let jobWindow = new BrowserWindow({
         width: 800,
         height: 450,
@@ -204,5 +205,5 @@ function openJobCreation(faction, jobData) {
     jobWindow.loadFile(`lst/createjob.html`);
     jobWindow.webContents.openDevTools()
 
-    jobWindow.webContents.send('main_proc', {faction:faction,jobdata:jobData});
+    //jobWindow.webContents.send('main_proc', {faction:faction,jobdata:jobData});
 }
