@@ -727,7 +727,11 @@
         }
 
         function lstCall(urgent) {
-            console.log(urgent)
+
+            //cancel call if another is already active
+            if(document.querySelector("#lst_call").style.display == "flex")
+                return;
+
             let warningLength;
 
             //show warning popup

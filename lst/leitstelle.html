@@ -49,6 +49,51 @@
             text-align: right;
         }
 
+        #popups {
+            z-index: 200;
+            position: absolute;
+            padding: 20px;
+            height: calc((62px + 20px) * 5 + 10px); /* space for 5 popups */
+            width: 520px;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column-reverse;
+            align-items: center;
+            gap: 20px;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .popup {
+            height: 60px;
+            min-height: 60px;
+            width: 80%;
+            padding: 4px 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-evenly;
+            align-items: center;
+            border-radius: 10px;
+            box-shadow: #000 0 0 5px;
+            border: #000 1px solid;
+            pointer-events: all;
+        }
+
+        .popup:hover {
+            opacity: 0.4;
+        }
+
+        .popupContent {
+            font-size: 18px;
+        }
+
+        .popupTimestamp {
+            font-size: 12px;
+            margin-left: auto;
+        }
+
 
         h1 {
             margin: 0;
@@ -169,12 +214,13 @@
         }
 
         #unit_card_title {
-            background-color: #009933;
             height: 8%;
             padding: 20px;
             display: flex;
             align-items: center;
             gap: 20px;
+            border: none !important;
+            box-shadow: none !important;
         }
 
         #unit_card_title h2 {
@@ -190,6 +236,18 @@
         #unit_card_title span:hover {
             filter: brightness(90%);
             backdrop-filter: brightness(90%);
+        }
+
+        #unit_card_jobinfo {
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #unit_card_jobinfo span {
+            font-size: 26px;
         }
 
 
@@ -329,6 +387,7 @@
 </head>
 <body>
     <span id="client_version"></span>
+    <div id="popups"></div>
 
     <div id="unit_card" onclick="event.target.id == 'unit_card' ? closeUnitCard() : null">
         <div id="unit_card_content">
@@ -337,7 +396,12 @@
                 <span id="call_unit" onclick="callUnit(unitCard,false)" class="material-symbols-outlined">notifications</span>
                 <span id="call_unit_urgent" onclick="callUnit(unitCard,true)" class="material-symbols-outlined">notification_important</span>
             </div>
-            <span id="unit_card_users"></span>
+            <div id="unit_card_jobinfo">
+                <span id="unit_card_job"></span>
+                <span id="unit_card_joblink" class="material-symbols-outlined">edit</span>
+            </div>
+            <span id="unit_card_userlist"></span>
+            
             
 
 
@@ -434,7 +498,7 @@
                 for(let j=0,jLength=Object.keys(areaUnits).length; j<jLength; j++) {//draw units
                     //console.log(areaUnits[Object.keys(areaUnits)[j]])
                     document.querySelector(`div[data-area="${makeSafe(Object.keys(sortedUnitList)[i])}"] > .unitGrid`).innerHTML += `
-                    <span class="unitTile status${areaUnits[Object.keys(areaUnits)[j]].status}" data-unit="${makeSafe(Object.keys(areaUnits)[j])}" onclick="openUnitCard(this)">
+                    <span class="unitTile status${areaUnits[Object.keys(areaUnits)[j]].status}" data-unit="${makeSafe(Object.keys(areaUnits)[j])}" onclick="openUnitCard(this.dataset.unit)">
                         <span class="unitName">${makeSafe(Object.keys(areaUnits)[j])}</span>
                         <span class="unitStatus"><span class="material-symbols-outlined">cell_tower</span> : <span class="fieldData">${areaUnits[Object.keys(areaUnits)[j]].status}</span></span>
                         <span class="unitUsers"><span class="material-symbols-outlined">group</span> : <span class="fieldData">${areaUnits[Object.keys(areaUnits)[j]].users.length}</span></span>
@@ -458,12 +522,23 @@
             }
         }
 
-        function openUnitCard(el) {
-            let unitCardTarget = el.dataset.unit;
+        function openUnitCard(unitCardTarget) {
             unitCard = unitCardTarget;
 
             //set unit card info
             document.querySelector("#unit_card_title h2").innerText = unitCardTarget;
+            document.querySelector("#unit_card_title").classList = [`status${localUnits[unitCardTarget].status}`];
+            document.querySelector("#unit_card_userlist").innerText = localUnits[unitCardTarget].users.join("\n");
+
+            if(localUnits[unitCardTarget].job) {
+                document.querySelector("#unit_card_job").innerText = localJobs[localUnits[unitCardTarget].job].title;
+                document.querySelector("#unit_card_joblink").style.display = "flex";
+                document.querySelector("#unit_card_joblink").setAttribute("onclick",`openJobEdit(${localUnits[unitCardTarget].job})`);
+            }
+            else {
+                document.querySelector("#unit_card_job").innerText = "Kein Einsatz zugewiesen";
+                document.querySelector("#unit_card_joblink").style.display = "none";
+            }
 
             //set card to visible
             document.querySelector("#unit_card").style.display = "flex";
@@ -529,6 +604,10 @@
                     localUnits[Object.keys(message)[i]].users = message[Object.keys(message)[i]].users;
                 }
 
+                //update open unit card if needed
+                if(unitCard == Object.keys(message)[i]) {
+                    openUnitCard(Object.keys(message)[i]);
+                }
             }
         }
 
@@ -602,6 +681,7 @@
             //TODO: show popup
 
             playSound(`status${status}`);
+            openPopup(`status${status}`, unit);
         }
 
         function playSound(soundName) {
@@ -620,6 +700,7 @@
     <script src="lst_socket_handler.js"></script>
     <script src="../src/x_xxs.js"></script>
     <script src="../src/sort_unit_list.js"></script>
+    <script src="./lst_popups.js"></script>
     <audio id="audio"></audio>
 </body>
 </html>

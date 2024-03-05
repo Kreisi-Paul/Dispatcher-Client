@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Einsatz erstellen</title>
+    <title>Einsatzinformationen</title>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
     <link rel="stylesheet" href="../src/variables.css">
     <style>
@@ -84,6 +84,13 @@
             align-items: center;
         }
 
+        input[type=text] {
+            all: unset;
+            border-radius: 5px;
+            border: var(--color-2) 2px solid;
+            padding: 5px;
+        }
+
     </style>
 </head>
 <body>
@@ -109,7 +116,7 @@
     </div>
 
     <div id="actionbar">
-        <span class="material-symbols-outlined" title="Einsatz speichern" id="save_job">save</span>
+        <span class="material-symbols-outlined" title="Einsatz anlegen" id="save_job">folder_open</span>
         <span class="material-symbols-outlined" title="Einsatz alarmieren" id="activate_job">detector_alarm</span>
     </div>
 
@@ -118,7 +125,6 @@
         <input type="text" id="job_caller" placeholder="Anrufer / Patient">
         <input type="text" id="job_msg" placeholder="Kommentar">
         <input type="text" id="job_location" placeholder="Einsatzort">
-        <input type="checkbox" id="job_active">
     </div>
 <script>
     let auth = new Object();
