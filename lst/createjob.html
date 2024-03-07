@@ -23,9 +23,10 @@
             color: #fff;
             font-family: Verdana, Geneva, Tahoma, sans-serif;
             display: flex;
+            justify-content: center;
             flex-direction: row;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 20px;
         }
 
         * {
@@ -34,6 +35,7 @@
 
         ::-webkit-scrollbar {
             width: 0;
+            height: 0;
         }
 
         #preset_selection {
@@ -41,7 +43,7 @@
             border: var(--color-2) 2px solid;
             box-shadow: #000 0 0 5px;
             width: 70%;
-            height: calc(10% - 4px);
+            height: calc(44px - 4px);
         }
 
         #preset_selection > div {
@@ -50,9 +52,10 @@
 
         #actionbar {
             flex: 1;
-            height: 10%;
+            height: 44px;
             display: flex;
-            justify-content: space-evenly;
+            justify-content: flex-end;
+            gap: 20px;
         }
 
         #actionbar span {
@@ -76,21 +79,143 @@
             transform: rotate(180deg);
         }
 
+        .divider {
+            width: 90vw;
+            height: 2px;
+            background-color: var(--color-2);
+            margin: 20px 0;
+            box-shadow: #000 0 0 5px;
+        }
+
         #data_input {
             width: 100%;
-            height: calc(90% - 10px);
+            height: calc(100% - 44px - 10px - 42px - 30px);
             display: flex;
             flex-direction: column;
             align-items: center;
+            gap: 20px;
+        }
+
+        #data_input > div {
+            gap: 20px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #job_caller, #job_location, #job_msg {
+            flex: 1;
+        }
+
+        #job_title {
+            font-size: 20px;
+            text-align: center;
+            width: calc(50% - 4px - 16px);
+        }
+
+        .fieldLabel {
+            color: var(--color-2);
+            margin-right: -18px;
+            font-size: 30px;
+            text-shadow: #000 0 0 5px;
         }
 
         input[type=text] {
             all: unset;
             border-radius: 5px;
             border: var(--color-2) 2px solid;
-            padding: 5px;
+            box-shadow: #000 0 0 5px;
+            padding: 8px;
         }
 
+        #unit_list {
+            width: 50% !important;
+            flex: 1;
+            justify-content: flex-start !important;
+            flex-direction: column;
+            align-items: stretch !important;
+            overflow-y: scroll;
+            overflow-x: hidden;
+            gap: 0 !important;
+        }
+
+        .unitField {
+            border-bottom: var(--color-2) 1px solid;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #unit_list > :nth-last-child(1){
+            border-bottom: none !important;
+        }
+
+        .unitField div {
+            flex: 1;
+            padding: 0 6px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .unitTitle {
+            margin-right: auto;
+        }
+
+        .unitStatus {
+            height: 100%;
+            aspect-ratio: 1/1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            border-right: var(--color-2) 1px solid;
+        }
+
+        .addUnitBtn {
+            height: 100%;
+            padding: 6px 0;
+            aspect-ratio: 1/1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        /* STATUS COLORS */
+
+        .status1 {
+            background-color: var(--status-green);
+        }
+        .status2 {
+            background-color: var(--status-green);
+        }
+        .status3 {
+            background-color: var(--status-yellow);
+        }
+        .status4 {
+            background-color: var(--status-red);
+        }
+        .status5 {
+            background-color: var(--status-blue);
+        }
+        .status6 {
+            background-color: var(--status-red);
+        }
+        .status7 {
+            background-color: var(--status-orange);
+        }
+        .status8 {
+            background-color: var(--status-orange);
+        }
+        .status9 {
+            background-color: var(--status-red);
+            animation: distress 1.6s step-start infinite;
+        }
+        @keyframes distress {
+            50% {background-color: var(--status-orange);}
+        }
     </style>
 </head>
 <body>
@@ -120,11 +245,26 @@
         <span class="material-symbols-outlined" title="Einsatz alarmieren" id="activate_job">detector_alarm</span>
     </div>
 
+    <span class="divider"></span>
+
     <div id="data_input">
-        <input type="text" id="job_title" placeholder="Alarmstichwort">
-        <input type="text" id="job_caller" placeholder="Anrufer / Patient">
-        <input type="text" id="job_msg" placeholder="Kommentar">
-        <input type="text" id="job_location" placeholder="Einsatzort">
+        <input type="text" id="job_title" placeholder="Alarmstichwort" oninput="limitInput(this, 27)">
+        <div>
+            <span class="material-symbols-outlined fieldLabel">call</span>
+            <input type="text" id="job_caller" placeholder="Anrufer / Patient" oninput="limitInput(this, 29)">
+            <span class="material-symbols-outlined fieldLabel">location_on</span>
+            <input type="text" id="job_location" placeholder="Einsatzort" oninput="limitInput(this, 29)">
+        </div>
+        <div>
+            <span class="material-symbols-outlined fieldLabel">notes</span>
+            <input type="text" id="job_msg" placeholder="Kommentar" oninput="limitInput(this, 29)">
+        </div>
+
+        <span class="divider"></span>
+
+        <div id="unit_list">
+            
+        </div>
     </div>
 <script>
     let auth = new Object();
@@ -156,12 +296,47 @@
         console.log(event)
         window.electronAPI.getAuth();
         window.electronAPI.sendMsg("getjobinfo");
+
+        setTimeout(()=>{
+            drawUnitList();
+        }, 2000);
+    }
+
+
+    function limitInput(el, limit) {
+        if(el.value.length > limit) {
+            el.value = el.value.slice(0, limit);
+        }
+    }
+
+    async function drawUnitList() {
+        let response = await fetch(`https://limnos.kreisi.net/getvehicles/${encodeURIComponent(auth.faction)}?user_ident=${encodeURIComponent(auth.user_ident)}&user_key=${encodeURIComponent(auth.user_key)}`);
+        let units = await response.json()
+        let unitList = "";
+
+        for(let i=0,iLength=Object.keys(units).length; i<iLength; i++) {
+            console.log(Object.keys(units)[i])
+            console.log(units[Object.keys(units)[i]])
+
+            unitList += `
+            <span class="unitField" data-unit="${makeSafe(Object.keys(units)[i])}">
+                <span class="unitStatus status${units[Object.keys(units)[i]].status}">${units[Object.keys(units)[i]].status}</span>
+                <div>
+                    <span class="unitTitle">${makeSafe(Object.keys(units)[i])}</span>
+                    ${units[Object.keys(units)[i]].job != false ? `<span class="unitActiveJob material-symbols-outlined" title="Dieser Einheit wurde schon ein Einsatz zugewiesen">assignment_late</span>` : ""}
+                    ${units[Object.keys(units)[i]].users.length == 0 ? `<span class="unitNoUsers material-symbols-outlined" title="Diese Einheit ist nicht besetzt">person_alert</span>` : ""}
+                </div>
+                <span class="addUnitBtn material-symbols-outlined">add</span>
+            </span>
+            `;
+        }
+
+        document.querySelector("#unit_list").innerHTML = unitList;
     }
 
 
 
-
-
 </script>
+<script src="../src/x_xxs.js"></script>
 </body>
 </html>

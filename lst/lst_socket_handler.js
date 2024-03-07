@@ -37,7 +37,6 @@ function openSocket() {
 }
 
 function reconnectSocket () {
-    console.log("hahdag")
     if(!reconnection) {
         reconnection = true;
         setInterval(()=>{
@@ -102,6 +101,6 @@ function keepSocketAlive() {
 
 function syncLst() {
     console.warn("syncing")
-    sendSocket({"lst_update":"units"});
     sendSocket({"lst_update":"jobs"});
+    sendSocket({"lst_update":"units"});
 }

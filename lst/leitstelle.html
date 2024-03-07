@@ -10,11 +10,6 @@
         html {
             height: 100vh;
             width: 100vw;
-            --status-green: #009933;
-            --status-yellow: #d3c900;
-            --status-orange: #e68a00;
-            --status-red: #d22d2d;
-            --status-blue: #4c8ae6;
         }
 
         body {
@@ -184,6 +179,7 @@
             display: flex;
             align-items: center;
             font-size: 18px;
+            height: 22px;
         }
         .unitName {
             align-self: center;
@@ -211,9 +207,14 @@
             border-radius: 10px;
             box-shadow: #000 0 0 10px;
             overflow: hidden;
+            display: flex;
+            flex-wrap: wrap;
+            align-content: flex-start;
         }
 
         #unit_card_title {
+            flex: 1;
+            min-width: 60%;
             height: 8%;
             padding: 20px;
             display: flex;
@@ -239,7 +240,10 @@
         }
 
         #unit_card_jobinfo {
-            padding: 10px;
+            flex: 1;
+            min-width: 60%;
+            height: 30px;
+            margin: 10px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -248,6 +252,32 @@
 
         #unit_card_jobinfo span {
             font-size: 26px;
+        }
+
+        #unit_card_joblink {
+            cursor: pointer;
+        }
+
+        #unit_card_left, #unit_card_right {
+            width: calc(50% - 1px);
+            height: calc(100% - 8% - 40px - 50px - 30px);
+            margin: 10px 0 20px 0;
+        }
+        #unit_card_left {
+            border-right: var(--color-2) 1px solid;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        #unit_card_right {
+            border-left: var(--color-2) 1px solid;
+        }
+
+        #unit_card_left div {
+            width: 80%;
+            display: flex;
+            align-items: center;
         }
 
 
@@ -294,11 +324,18 @@
             margin-right: auto;
         }
 
+        .jobTimestamp {
+            width: 20%;
+            text-align: center;
+            font-size: 16px;
+        }
+
         .jobInfo {
             width: 35%;
             display: flex;
             flex-direction: column;
             justify-content: center;
+            text-wrap: pretty;
         }
 
         .jobInfo > span {
@@ -396,15 +433,26 @@
                 <span id="call_unit" onclick="callUnit(unitCard,false)" class="material-symbols-outlined">notifications</span>
                 <span id="call_unit_urgent" onclick="callUnit(unitCard,true)" class="material-symbols-outlined">notification_important</span>
             </div>
+
             <div id="unit_card_jobinfo">
                 <span id="unit_card_job"></span>
                 <span id="unit_card_joblink" class="material-symbols-outlined">edit</span>
             </div>
-            <span id="unit_card_userlist"></span>
-            
-            
 
+            <div id="unit_card_left">
+                <div>
+                    <span class="material-symbols-outlined">group</span>
+                    <span> : </span>
+                    <span id="unit_card_usernumber"></span>
+                </div>
+                <div id="unit_card_userlist">
 
+                </div>
+            </div>
+
+            <div id="unit_card_right">
+
+            </div>
         </div>
     </div>
 
@@ -467,6 +515,34 @@
             },2000);
         }
 
+        //updates job timers 
+        setInterval(()=>{
+            try {
+                let jobs = document.querySelectorAll(".jobListing");
+                let currentDate = new Date(Date.now());
+
+                for(let i=0,iLength=jobs.length; i<iLength; i++) {
+                    let jobDate = new Date(parseInt(jobs[i].dataset.id));
+
+                    if(currentDate.getUTCDate() != jobDate.getUTCDate()) {
+                        jobs[i].children.namedItem("timestamp").innerText = `${currentDate.getUTCDate() - jobDate.getUTCDate()} Tag(e)`;
+                    }
+                    else if(currentDate.getUTCHours() != jobDate.getUTCHours()) {
+                        jobs[i].children.namedItem("timestamp").innerText = `${currentDate.getUTCHours() - jobDate.getUTCHours()} std`;
+                    }
+                    else if(currentDate.getUTCMinutes() != jobDate.getUTCMinutes()) {
+                        jobs[i].children.namedItem("timestamp").innerText = `${currentDate.getUTCMinutes() - jobDate.getUTCMinutes()} min`;
+                    }
+                    else {
+                        jobs[i].children.namedItem("timestamp").innerText("brandneu");
+                    }
+                }
+            }
+            catch(e) {
+                console.warn(e)
+            }
+        }, 20000);
+
 
         async function drawUnitList() {
             //get data
@@ -528,6 +604,7 @@
             //set unit card info
             document.querySelector("#unit_card_title h2").innerText = unitCardTarget;
             document.querySelector("#unit_card_title").classList = [`status${localUnits[unitCardTarget].status}`];
+            document.querySelector("#unit_card_usernumber").innerText = localUnits[unitCardTarget].users.length;
             document.querySelector("#unit_card_userlist").innerText = localUnits[unitCardTarget].users.join("\n");
 
             if(localUnits[unitCardTarget].job) {
@@ -555,6 +632,10 @@
 
         function openJobEdit(jobId) {
             window.electronAPI.sendMsg(["createjob",[auth.faction,localJobs[jobId]]]);
+        }
+
+        function deleteJob(jobId) {
+            fetch(`https://limnos.kreisi.net/deletejob?id=${jobId}&user_faction=${auth.faction}&user_ident=${encodeURIComponent(auth.user_ident)}&user_key=${encodeURIComponent(auth.user_key)}`);
         }
 
         function callUnit(unit, urgent) {
@@ -604,6 +685,11 @@
                     localUnits[Object.keys(message)[i]].users = message[Object.keys(message)[i]].users;
                 }
 
+                if(Object.keys(message[Object.keys(message)[i]]).includes("job")) {                    
+                    //update local storage
+                    localUnits[Object.keys(message)[i]].job = message[Object.keys(message)[i]].job;
+                }
+
                 //update open unit card if needed
                 if(unitCard == Object.keys(message)[i]) {
                     openUnitCard(Object.keys(message)[i]);
@@ -626,21 +712,44 @@
 
             for(let i=0,iLength=Object.keys(jobs).length; i<iLength; i++) {
                 let tmpJob = jobs[Object.keys(jobs)[i]];
-                console.log(tmpJob)
+                //console.log(tmpJob)
 
                 let correctTable;
                 let jobInfo;
                 if(tmpJob.active) {
                     correctTable = activeJobList;
+
+                    let assignedUnits = new Array();
+
+                    for(let j=0,jLength=Object.keys(localUnits).length; j<jLength; j++) {
+                        if(localUnits[Object.keys(localUnits)[j]].job == Object.keys(jobs)[i])
+                            assignedUnits.push(Object.keys(localUnits)[j]);
+                    }
+
+                    let unitsTitle = assignedUnits.join("\n");
+                    let unitsText;
+
+                    if(assignedUnits.length > 2) {
+                        unitsText = assignedUnits.slice(0, 2);
+                        unitsText.push("...");
+                        unitsText = unitsText.join(", ");
+                    }
+                    else if(assignedUnits.length == 0) {
+                        unitsText = "-- / --";
+                    }
+                    else {
+                        unitsText = assignedUnits.join(", ");
+                    }
+
                     jobInfo = `
                     <span class="jobInfo">
                         <span>
                             <span class="material-symbols-outlined">minor_crash</span>
-                            <span>TODO: not implemented</span>
+                            <span title="${unitsTitle}">${unitsText}</span>
                         </span>
                         <span>
                             <span class="material-symbols-outlined">location_on</span>
-                            <span>TODO: not implemented</span>
+                            <span>${tmpJob.location}</span>
                         </span>
                     </span>
                     `;
@@ -664,9 +773,10 @@
                 correctTable.innerHTML += `
                 <span class="jobListing ${factionClasses[tmpJob.creator]}" data-id="${Object.keys(jobs)[i]}">
                     <span class="jobTitle">${tmpJob.title}</span>
+                    <span class="jobTimestamp" name="timestamp">12min</span>
                     ${jobInfo}
                     <span class="editJobBtn material-symbols-outlined" onclick="openJobEdit(this.parentNode.dataset.id)">edit</span>
-                    <span class="deleteJobBtn material-symbols-outlined" onclick="deleteJob(this)">delete</span>
+                    <span class="deleteJobBtn material-symbols-outlined" onclick="deleteJob(this.parentNode.dataset.id)">delete</span>
                 </span>`;
             }
         }

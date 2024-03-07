@@ -193,9 +193,8 @@ function openLST(faction) {
 function openJobCreation() {
     let jobWindow = new BrowserWindow({
         width: 800,
-        height: 450,
-        minWidth: 800,
-        minHeight: 450,
+        height: 650,
+        resizable: true,
         autoHideMenuBar: true,
         icon: "src/ll_logo.ico",
         webPreferences: {

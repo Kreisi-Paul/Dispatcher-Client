@@ -4,4 +4,9 @@ html {
     --misc: #664;
     --rdil: #644;
     --pol: #446;
+    --status-green: #009933;
+    --status-yellow: #d3c900;
+    --status-orange: #e68a00;
+    --status-red: #d22d2d;
+    --status-blue: #4c8ae6;
 }

@@ -698,7 +698,7 @@
             document.querySelector("#job_download").style.display = "flex";
 
 
-            let response = await fetch(`https://limnos.kreisi.net/getjobinfo?id=${new_job_id}&faction=${userAuth.faction}&user_ident=${encodeURIComponent(userAuth.user_ident)}&user_key=${encodeURIComponent(userAuth.user_key)}`);
+            let response = await fetch(`https://limnos.kreisi.net/getjobinfo?id=${new_job_id}&user_faction=${userAuth.faction}&user_ident=${encodeURIComponent(userAuth.user_ident)}&user_key=${encodeURIComponent(userAuth.user_key)}`);
             console.log(response)
             if(response.status == 200) {
                 document.querySelector("#job_download").style.display = "none";
