@@ -194,7 +194,7 @@ function openJobCreation() {
     let jobWindow = new BrowserWindow({
         width: 800,
         height: 650,
-        resizable: true,
+        resizable: false,
         autoHideMenuBar: true,
         icon: "src/ll_logo.ico",
         webPreferences: {

@@ -38,20 +38,114 @@
             height: 0;
         }
 
-        #preset_selection {
+        #loading {
+            position: absolute;
+            height: 100%;
+            width: 100%;
+            top: 0;
+            left: 0;
+            z-index: 100;
+            backdrop-filter: brightness(80%) blur(5px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #loading span {
+            font-size: 80px;
+            position: absolute;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #loading_0 {
+            z-index: 120;
+            color: #fff;
+            animation: 1.8s cubic-bezier(0.5, 0.4, 0.45, 0.95) 0s infinite loading;
+        }
+        #loading_1 {
+            z-index: 110;
+            color: #aaa;
+            animation: 1.8s ease-in-out 0s infinite loading;
+        }
+
+        @keyframes loading {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        #urgency_selection {
+            font-size: 20px;
             border-radius: 5px;
             border: var(--color-2) 2px solid;
             box-shadow: #000 0 0 5px;
-            width: 70%;
+            padding: 0 8px;
+            width: calc(50% - 4px - 16px);
             height: calc(44px - 4px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 4px;
         }
 
-        #preset_selection > div {
+        #urgency_selection > div {
+            position: absolute;
+            top: 68px;
+            left: 320px;
+            width: 73px;
+            border-radius: 5px;
+            border: var(--color-2) 2px solid;
+            box-shadow: #000 0 0 5px;
             display: none;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        #urgency_selection > div > span {
+            background-color: var(--color-1);
+            padding: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        #urgency_selection > div > span:hover {
+            background-color: #333;
+        }
+
+        #current_urgency {
+            margin-right: auto;
+            font-weight: bold;
+        }
+
+        #collapse_urgency {
+            height: 80%;
+            aspect-ratio: 1/1;
+            border-radius: 1em;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #collapse_urgency:hover {
+            background-color: #333;
+        }
+
+        #job_info {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
         }
 
         #actionbar {
-            flex: 1;
             height: 44px;
             display: flex;
             justify-content: flex-end;
@@ -96,7 +190,7 @@
             gap: 20px;
         }
 
-        #data_input > div {
+        #data_input div {
             gap: 20px;
             width: 100%;
             display: flex;
@@ -130,25 +224,22 @@
         }
 
         #unit_list {
-            width: 50% !important;
+            width: 70% !important;
             flex: 1;
-            justify-content: flex-start !important;
-            flex-direction: column;
-            align-items: stretch !important;
-            overflow-y: scroll;
-            overflow-x: hidden;
+            border: var(--color-2) 2px solid;
+            box-shadow: #000 0 0 05px;
+            display: grid !important;
+            grid-template-columns: 1fr 1fr;
+            align-content: space-between;
             gap: 0 !important;
+            overflow-y: scroll;
         }
 
         .unitField {
-            border-bottom: var(--color-2) 1px solid;
+            border: var(--color-2) 1px solid;
             display: flex;
             justify-content: space-between;
-            align-items: center;
-        }
-
-        #unit_list > :nth-last-child(1){
-            border-bottom: none !important;
+            align-items: stretch;
         }
 
         .unitField div {
@@ -156,16 +247,19 @@
             padding: 0 6px;
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 5px !important;
         }
 
         .unitTitle {
             margin-right: auto;
         }
 
+        .unitWarning {
+            color: var(--color-2);
+        }
+
         .unitStatus {
-            height: 100%;
-            aspect-ratio: 1/1;
+            width: 35px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -219,30 +313,31 @@
     </style>
 </head>
 <body>
-<!--JOB:
 
-    X title
-    X caller
-      faction
-    X msg
-    X location
-    X active
--->
-    <div id="preset_selection">
-        <div>
-            <span>Reanimation</span>
-            <span>MANV</span>
-            <span>TH - VU</span>
-            <span>VU mit Personenschaden</span>
-            <span>Bereitstellung</span>
-        </div>
-        <span id="current_preset">Presets</span>
-        <span id="collapse_presets" class="material-symbols-outlined">expand_more</span>
+    <div id="loading">
+        <span id="loading_0" class="material-symbols-outlined">progress_activity</span>
+        <span id="loading_1" class="material-symbols-outlined">progress_activity</span>
     </div>
 
+    <div id="urgency_selection">
+        <div>
+            <span onclick="setUrgency('R1')">R1</span>
+            <span onclick="setUrgency('R2')">R2</span>
+            <span onclick="setUrgency('R3')">R3</span>
+        </div>
+        <span>Alarmstufe: </span>
+        <span id="current_urgency">R2</span>
+        <span id="collapse_urgency" class="material-symbols-outlined" onclick="collapseUrgencyBtn()">expand_more</span>
+    </div>
+
+    <span id="job_info">
+        <span id="job_id_0"></span>
+        <span id="job_id_1"></span>
+    </span>
+
     <div id="actionbar">
-        <span class="material-symbols-outlined" title="Einsatz anlegen" id="save_job">folder_open</span>
-        <span class="material-symbols-outlined" title="Einsatz alarmieren" id="activate_job">detector_alarm</span>
+        <span class="material-symbols-outlined" title="Einsatz anlegen" id="save_job" onclick="saveJob()">folder_open</span>
+        <span class="material-symbols-outlined" title="Einsatz alarmieren" id="activate_job" onclick="activateJob()">detector_alarm</span>
     </div>
 
     <span class="divider"></span>
@@ -268,6 +363,10 @@
     </div>
 <script>
     let auth = new Object();
+    let jobId = null;
+    let jobActive;
+    let assignedUnits = {"old":[],"new":[]};
+    let urgencyCollapsed = true;
 
     window.electronAPI.mainProc((event, arg)=>{
         console.log(event, arg)
@@ -284,10 +383,26 @@
 
             //apply info if applicable
             if(arg.jobdata[1]) {
+                jobId = arg.jobdata[1].id;
+                jobActive = arg.jobdata[1].active;
+
                 document.querySelector("#job_title").value = arg.jobdata[1].title;
                 document.querySelector("#job_caller").value = arg.jobdata[1].caller;
                 document.querySelector("#job_msg").value = arg.jobdata[1].msg;
                 document.querySelector("#job_location").value = arg.jobdata[1].location;
+
+                document.querySelector("#current_urgency").innerText = arg.jobdata[1].urgency;
+
+                document.querySelector("#job_id_0").innerText = arg.jobdata[1].id;
+                document.querySelector("#job_id_1").innerText = new Date(parseInt(arg.jobdata[1].id)).toLocaleString("de");
+
+                if(jobActive) {
+                    document.querySelector("#activate_job").innerText = "save";
+                    document.querySelector("#activate_job").setAttribute("title", "Änderungen speichern");
+                    document.querySelector("#activate_job").style.transform = "unset";
+
+                    document.querySelector("#save_job").style.display = "none";
+                }
             }
         }
     })
@@ -302,12 +417,143 @@
         }, 2000);
     }
 
+    function saveJob() {
+        if(jobActive)
+            editJob(0)
+        else {
+            createJob(0);
+        }
+    }
+
+    async function activateJob() {
+        if(jobActive)
+            editJob(1)
+        else {
+            createJob(1);
+        }
+    }
+
+    async function createJob(activate) {
+        document.querySelector("#loading").style.display = "flex";
+
+        let tmpJob = {
+            "title": document.querySelector("#job_title").value,
+            "caller": document.querySelector("#job_caller").value,
+            "location": document.querySelector("#job_location").value,
+            "msg": document.querySelector("#job_msg").value,
+            "urgency": document.querySelector("#current_urgency").innerText
+        };
+
+        //create job, get id
+        fetch(`https://limnos.kreisi.net/createjob?user_faction=${encodeURIComponent(auth.faction)}&user_ident=${encodeURIComponent(auth.user_ident)}&user_key=${encodeURIComponent(auth.user_key)}&job_title=${encodeURIComponent(tmpJob.title)}&job_caller=${encodeURIComponent(tmpJob.caller)}&job_location=${encodeURIComponent(tmpJob.location)}&job_msg=${encodeURIComponent(tmpJob.msg)}&job_urgency=${encodeURIComponent(tmpJob.urgency)}&job_active=${activate}`).then(async(response)=>{
+            if(response.status != 200)
+                return;
+
+            let id = await response.text();
+            console.log(id)
+
+            if(activate) {
+                //assign units
+                for(let i=0,iLength=assignedUnits.new.length; i<iLength; i++) {
+                    await fetch(`https://limnos.kreisi.net/assignunit?user_faction=${encodeURIComponent(auth.faction)}&user_ident=${encodeURIComponent(auth.user_ident)}&user_key=${encodeURIComponent(auth.user_key)}&id=${id}&unit=${encodeURIComponent(assignedUnits.new[i])}`);
+                }
+            }
+
+            window.close();
+        });
+
+        
+    }
+
+    async function editJob(active) {
+        document.querySelector("#loading").style.display = "flex";
+
+        let tmpJob = {
+            "title": document.querySelector("#job_title").value,
+            "caller": document.querySelector("#job_caller").value,
+            "location": document.querySelector("#job_location").value,
+            "msg": document.querySelector("#job_msg").value,
+            "urgency": document.querySelector("#current_urgency").innerText
+        };
+
+        let response = await fetch(`https://limnos.kreisi.net/editjob?user_faction=${encodeURIComponent(auth.faction)}&user_ident=${encodeURIComponent(auth.user_ident)}&user_key=${encodeURIComponent(auth.user_key)}&job_title=${encodeURIComponent(tmpJob.title)}&job_caller=${encodeURIComponent(tmpJob.caller)}&job_location=${encodeURIComponent(tmpJob.location)}&job_msg=${encodeURIComponent(tmpJob.msg)}&job_urgency=${encodeURIComponent(tmpJob.urgency)}&job_id=${jobId}&job_active=${active}`);
+        console.log(response)
+
+        if(response.status == 200) {
+            let removedUnits = new Array();
+            let addedUnits = new Array();
+
+            //get removed units
+            for(let i=0,iLength=assignedUnits.old.length; i<iLength; i++) {
+                if(!assignedUnits.new.includes(assignedUnits.old[i]))
+                    await removedUnits.push(assignedUnits.old[i]);
+            }
+
+            //get added units
+            for(let i=0,iLength=assignedUnits.new.length; i<iLength; i++) {
+                if(!assignedUnits.old.includes(assignedUnits.new[i]))
+                    await addedUnits.push(assignedUnits.new[i]);
+            }
+
+            console.log(removedUnits, addedUnits)
+
+            setTimeout(async()=>{
+                //remove assignments
+                for(let i=0,iLength=removedUnits.length; i<iLength; i++) {
+                    await fetch(`https://limnos.kreisi.net/assignunit?user_faction=${encodeURIComponent(auth.faction)}&user_ident=${encodeURIComponent(auth.user_ident)}&user_key=${encodeURIComponent(auth.user_key)}&id=false&unit=${encodeURIComponent(removedUnits[i])}`);
+                }
+
+                //add assignments
+                for(let i=0,iLength=addedUnits.length; i<iLength; i++) {
+                    await fetch(`https://limnos.kreisi.net/assignunit?user_faction=${encodeURIComponent(auth.faction)}&user_ident=${encodeURIComponent(auth.user_ident)}&user_key=${encodeURIComponent(auth.user_key)}&id=${jobId}&unit=${encodeURIComponent(addedUnits[i])}`);
+                }
+
+                window.close();
+            }, 2000);
+        }
+        else {
+            console.warn("fetch failed");
+        }
+    }
+
 
     function limitInput(el, limit) {
         if(el.value.length > limit) {
             el.value = el.value.slice(0, limit);
         }
     }
+
+    function addUnitBtn(el) {
+        let tmpUnit = el.parentNode.dataset.unit;
+
+        if(assignedUnits.new.includes(tmpUnit)) {
+            assignedUnits.new.splice(assignedUnits.new.indexOf(tmpUnit), 1);
+            el.innerText = "add";
+        }
+        else {
+            assignedUnits.new.push(tmpUnit);
+            el.innerText = "remove";
+        }
+    }
+
+    function collapseUrgencyBtn() {
+        if(urgencyCollapsed) {
+            urgencyCollapsed = false;
+            document.querySelector("#collapse_urgency").innerText = "expand_less";
+            document.querySelector("#urgency_selection div").style.display = "flex";
+        }
+        else {
+            urgencyCollapsed = true;
+            document.querySelector("#collapse_urgency").innerText = "expand_more";
+            document.querySelector("#urgency_selection div").style.display = "none";
+        }
+    }
+
+    function setUrgency(newUrgency) {
+        collapseUrgencyBtn();
+        document.querySelector("#current_urgency").innerText = newUrgency;
+    }
+
 
     async function drawUnitList() {
         let response = await fetch(`https://limnos.kreisi.net/getvehicles/${encodeURIComponent(auth.faction)}?user_ident=${encodeURIComponent(auth.user_ident)}&user_key=${encodeURIComponent(auth.user_key)}`);
@@ -318,23 +564,28 @@
             console.log(Object.keys(units)[i])
             console.log(units[Object.keys(units)[i]])
 
+            if(units[Object.keys(units)[i]].job == jobId) {
+                assignedUnits.old.push(Object.keys(units)[i]);
+                assignedUnits.new.push(Object.keys(units)[i]);
+            }
+
             unitList += `
             <span class="unitField" data-unit="${makeSafe(Object.keys(units)[i])}">
                 <span class="unitStatus status${units[Object.keys(units)[i]].status}">${units[Object.keys(units)[i]].status}</span>
                 <div>
                     <span class="unitTitle">${makeSafe(Object.keys(units)[i])}</span>
-                    ${units[Object.keys(units)[i]].job != false ? `<span class="unitActiveJob material-symbols-outlined" title="Dieser Einheit wurde schon ein Einsatz zugewiesen">assignment_late</span>` : ""}
-                    ${units[Object.keys(units)[i]].users.length == 0 ? `<span class="unitNoUsers material-symbols-outlined" title="Diese Einheit ist nicht besetzt">person_alert</span>` : ""}
+                    ${units[Object.keys(units)[i]].job != false && units[Object.keys(units)[i]].job != jobId ? `<span class="unitWarning material-symbols-outlined" title="Dieser Einheit wurde schon ein Einsatz zugewiesen">assignment_late</span>` : ""}
+                    ${units[Object.keys(units)[i]].users.length == 0 ? `<span class="unitWarning material-symbols-outlined" title="Diese Einheit ist nicht besetzt">person_alert</span>` : ""}
                 </div>
-                <span class="addUnitBtn material-symbols-outlined">add</span>
+                <span class="addUnitBtn material-symbols-outlined" onclick="addUnitBtn(this)">${units[Object.keys(units)[i]].job == jobId ? "remove" : "add"}</span>
             </span>
             `;
         }
 
         document.querySelector("#unit_list").innerHTML = unitList;
+
+        document.querySelector("#loading").style.display = "none";
     }
-
-
 
 </script>
 <script src="../src/x_xxs.js"></script>

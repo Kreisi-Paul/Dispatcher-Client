@@ -121,6 +121,7 @@
                 text-overflow: clip;
                 display: flex;
                 align-items: center;
+                text-wrap: nowrap;
             }
 
             span[data-job=title] {
@@ -454,6 +455,7 @@
         let connected = false;
         let syncCooldown = false;
         let settings = new Object();
+        let activeJobId = false;
 
         /* --- Pager Init --- */
 
@@ -681,7 +683,9 @@
             document.querySelector("#status_nmbr").innerText = new_status;
         }
 
-        async function jobUpdate(new_job_id) {
+        function jobUpdate(new_job_id) {
+            let jobUpdated; //for preventing new_call sound
+            console.warn(new_job_id)
 
             //clear previous job
             document.querySelector("span[data-job=title]").innerText = "";
@@ -689,41 +693,70 @@
             document.querySelector("span[data-job=caller]").innerText = "";
             document.querySelector("span[data-job=comment]").innerText = "";
 
-            //cancel job update if unit has no assigned job
+            //play sound
+            if(new_job_id == false) {
+                playSound("no_job");
+            }
+            else if(new_job_id == activeJobId) {
+                playSound("update_job");
+                jobUpdated = true;
+            }
+
+            //update active job id
+            activeJobId = new_job_id;
+
             if(new_job_id == false)
-                return;
+                return
 
             //display wait message, remove error message if needed
             document.querySelector("#job_download_fail").style.display = "none";
             document.querySelector("#job_download").style.display = "flex";
 
 
-            let response = await fetch(`https://limnos.kreisi.net/getjobinfo?id=${new_job_id}&user_faction=${userAuth.faction}&user_ident=${encodeURIComponent(userAuth.user_ident)}&user_key=${encodeURIComponent(userAuth.user_key)}`);
-            console.log(response)
-            if(response.status == 200) {
-                document.querySelector("#job_download").style.display = "none";
-            }
-            else {//display error message when job info cannot be obtained
-                document.querySelector("#job_download").style.display = "none";
-                document.querySelector("#job_download_fail").style.display = "flex";
-                return;
-            }
-            let new_job = await response.json();
-            console.log(new_job)
+            fetch(`https://limnos.kreisi.net/getjobinfo?id=${new_job_id}&user_faction=${userAuth.faction}&user_ident=${encodeURIComponent(userAuth.user_ident)}&user_key=${encodeURIComponent(userAuth.user_key)}`).then(async(response)=>{
+                console.log(response)
+                if(response.status == 200) {
+                    document.querySelector("#job_download").style.display = "none";
+                }
+                else {//display error message when job info cannot be obtained
+                    document.querySelector("#job_download").style.display = "none";
+                    document.querySelector("#job_download_fail").style.display = "flex";
+                    return;
+                }
+                let new_job = await response.json();
+                console.log(new_job)
 
-            //set new job info if available
-            if(new_job.title) {
-                document.querySelector("span[data-job=title]").innerText = new_job.title;
-            }
-            if(new_job.location) {
-                document.querySelector("span[data-job=location]").innerHTML = `<span class="material-symbols-outlined">location_on</span> ${makeSafe(new_job.location)}`;
-            }
-            if(new_job.caller) {
-                document.querySelector("span[data-job=caller]").innerHTML = `<span class="material-symbols-outlined">call</span> ${makeSafe(new_job.caller)}`;
-            }
-            if(new_job.msg) {
-                document.querySelector("span[data-job=comment]").innerHTML = `<span class="material-symbols-outlined">notes</span> ${makeSafe(new_job.msg)}`;
-            }
+                //play appropriate sound
+                if(!jobUpdated) {
+                    switch(new_job.urgency) {
+                    case "R1":
+                        playSound("new_job_1");
+                        break;
+                    case "R2":
+                        playSound("new_job_2");
+                        break;
+                    case "R3":
+                        playSound("new_job_3");
+                        break;
+                    default:
+                        playSound("new_job_2");
+                    }
+                }
+
+                //set new job info if available
+                if(new_job.title) {
+                    document.querySelector("span[data-job=title]").innerText = new_job.title;
+                }
+                if(new_job.location) {
+                    document.querySelector("span[data-job=location]").innerHTML = `<span class="material-symbols-outlined">location_on</span> ${makeSafe(new_job.location)}`;
+                }
+                if(new_job.caller) {
+                    document.querySelector("span[data-job=caller]").innerHTML = `<span class="material-symbols-outlined">call</span> ${makeSafe(new_job.caller)}`;
+                }
+                if(new_job.msg) {
+                    document.querySelector("span[data-job=comment]").innerHTML = `<span class="material-symbols-outlined">notes</span> ${makeSafe(new_job.msg)}`;
+                }
+            });
         }
 
         function lstCall(urgent) {
@@ -765,6 +798,11 @@
             let soundLocations = {
                 "lst_call" : "../src/lst_call.mp3",
                 "lst_call_urgent" : "../src/lst_call_urgent.mp3",
+                "new_job_1" : "../src/new_job_1.mp3",
+                "new_job_2" : "../src/new_job_2.mp3",
+                "new_job_3" : "../src/new_job_3.mp3",
+                "update_job" : "../src/update_job.mp3",
+                "no_job" : "../src/no_job.mp3",
                 "beep" : "../src/beep.mp3"
             }
             let audioEl = document.querySelector("#audio");

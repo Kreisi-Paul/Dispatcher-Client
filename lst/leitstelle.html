@@ -327,7 +327,6 @@
         .jobTimestamp {
             width: 20%;
             text-align: center;
-            font-size: 16px;
         }
 
         .jobInfo {
@@ -520,28 +519,38 @@
             try {
                 let jobs = document.querySelectorAll(".jobListing");
                 let currentDate = new Date(Date.now());
+                let currentDateNr = Date.now();
 
                 for(let i=0,iLength=jobs.length; i<iLength; i++) {
                     let jobDate = new Date(parseInt(jobs[i].dataset.id));
+                    let jobDateNr = jobs[i].dataset.id;
 
-                    if(currentDate.getUTCDate() != jobDate.getUTCDate()) {
-                        jobs[i].children.namedItem("timestamp").innerText = `${currentDate.getUTCDate() - jobDate.getUTCDate()} Tag(e)`;
+                    let diff = currentDateNr - jobDateNr;
+
+                    if(diff > 86400000) {//>day
+                        if(Math.round(diff/86400000) > 7)
+                        jobs[i].children.namedItem("timestamp").innerText = "> 7 d";
+                        else
+                            jobs[i].children.namedItem("timestamp").innerText = `${Math.round(diff/86400000)} d`;
                     }
-                    else if(currentDate.getUTCHours() != jobDate.getUTCHours()) {
-                        jobs[i].children.namedItem("timestamp").innerText = `${currentDate.getUTCHours() - jobDate.getUTCHours()} std`;
+                    else if(diff > 3600000) {//hour
+                        jobs[i].children.namedItem("timestamp").innerText = `${Math.round(diff/3600000)} h`;
                     }
-                    else if(currentDate.getUTCMinutes() != jobDate.getUTCMinutes()) {
-                        jobs[i].children.namedItem("timestamp").innerText = `${currentDate.getUTCMinutes() - jobDate.getUTCMinutes()} min`;
+                    else if(diff > 60000) {//>minute
+                        jobs[i].children.namedItem("timestamp").innerText = `${Math.round(diff/60000)} min`;
+                    }
+                    else if(diff > 1000) {//>second
+                        jobs[i].children.namedItem("timestamp").innerText = `${Math.round(diff/1000)} sec`;
                     }
                     else {
-                        jobs[i].children.namedItem("timestamp").innerText("brandneu");
+                        jobs[i].children.namedItem("timestamp").innerText = "< 1 sec";
                     }
                 }
             }
             catch(e) {
                 console.warn(e)
             }
-        }, 20000);
+        }, 10000);
 
 
         async function drawUnitList() {
@@ -626,12 +635,51 @@
             document.querySelector("#unit_card").style.display = "none";
         }
 
+        function updateJobUnits() {
+            let elements = document.querySelectorAll("#active_jobs .jobListing span[name=units]");
+
+            for(let i=0,iLength=elements.length; i<iLength; i++) {
+                let tmpId = elements[i].parentNode.parentNode.parentNode.dataset.id;
+                let tmpEl = elements[i];
+
+                console.log(tmpId, tmpEl)
+
+                let assignedUnits = new Array();
+
+                for(let j=0,jLength=Object.keys(localUnits).length; j<jLength; j++) {
+                    if(localUnits[Object.keys(localUnits)[j]].job == tmpId)
+                        assignedUnits.push(Object.keys(localUnits)[j]);
+                }
+
+                let unitsTitle = assignedUnits.join("\n");
+                let unitsText;
+
+                if(assignedUnits.length > 2) {
+                    unitsText = assignedUnits.slice(0, 2);
+                    unitsText.push("...");
+                    unitsText = unitsText.join(", ");
+                }
+                else if(assignedUnits.length == 0) {
+                    unitsText = "-- / --";
+                }
+                else {
+                    unitsText = assignedUnits.join(", ");
+                }
+
+                tmpEl.innerText = unitsText;
+                tmpEl.setAttribute("title", unitsTitle);
+            }
+        }
+
         function openJobCreation() {
             window.electronAPI.sendMsg(["createjob",[auth.faction,null]]);
         }
 
         function openJobEdit(jobId) {
-            window.electronAPI.sendMsg(["createjob",[auth.faction,localJobs[jobId]]]);
+            let tmpJob = localJobs[jobId];
+            tmpJob.id = jobId;
+
+            window.electronAPI.sendMsg(["createjob",[auth.faction,tmpJob]]);
         }
 
         function deleteJob(jobId) {
@@ -687,7 +735,9 @@
 
                 if(Object.keys(message[Object.keys(message)[i]]).includes("job")) {                    
                     //update local storage
-                    localUnits[Object.keys(message)[i]].job = message[Object.keys(message)[i]].job;
+                    localUnits[Object.keys(message)[i]].job = (message[Object.keys(message)[i]].job == "false" ? false : message[Object.keys(message)[i]].job);
+
+                    updateJobUnits();
                 }
 
                 //update open unit card if needed
@@ -719,33 +769,11 @@
                 if(tmpJob.active) {
                     correctTable = activeJobList;
 
-                    let assignedUnits = new Array();
-
-                    for(let j=0,jLength=Object.keys(localUnits).length; j<jLength; j++) {
-                        if(localUnits[Object.keys(localUnits)[j]].job == Object.keys(jobs)[i])
-                            assignedUnits.push(Object.keys(localUnits)[j]);
-                    }
-
-                    let unitsTitle = assignedUnits.join("\n");
-                    let unitsText;
-
-                    if(assignedUnits.length > 2) {
-                        unitsText = assignedUnits.slice(0, 2);
-                        unitsText.push("...");
-                        unitsText = unitsText.join(", ");
-                    }
-                    else if(assignedUnits.length == 0) {
-                        unitsText = "-- / --";
-                    }
-                    else {
-                        unitsText = assignedUnits.join(", ");
-                    }
-
                     jobInfo = `
                     <span class="jobInfo">
                         <span>
                             <span class="material-symbols-outlined">minor_crash</span>
-                            <span title="${unitsTitle}">${unitsText}</span>
+                            <span name="units"></span>
                         </span>
                         <span>
                             <span class="material-symbols-outlined">location_on</span>
@@ -773,12 +801,13 @@
                 correctTable.innerHTML += `
                 <span class="jobListing ${factionClasses[tmpJob.creator]}" data-id="${Object.keys(jobs)[i]}">
                     <span class="jobTitle">${tmpJob.title}</span>
-                    <span class="jobTimestamp" name="timestamp">12min</span>
+                    <span class="jobTimestamp" name="timestamp"></span>
                     ${jobInfo}
                     <span class="editJobBtn material-symbols-outlined" onclick="openJobEdit(this.parentNode.dataset.id)">edit</span>
                     <span class="deleteJobBtn material-symbols-outlined" onclick="deleteJob(this.parentNode.dataset.id)">delete</span>
                 </span>`;
             }
+            updateJobUnits();
         }
 
         function statusMsg(unit, status) {
