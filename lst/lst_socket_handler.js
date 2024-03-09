@@ -2,6 +2,7 @@ connectionUpdate(false);
 let socket;
 let reconnection = false;
 let pinging = false;
+let lastPing = null;
 
 
 function openSocket() {
@@ -60,13 +61,16 @@ function sendSocket(message) {
 }
 
 function handleSocketMsg(message) {
-    console.log(message);
+    //console.log(message);
     let msgObj = JSON.parse(message);
     let msgKeys = Object.keys(msgObj);
 
     for(let i=0, iLength=msgKeys.length; i<iLength; i++) {
-        console.log(msgKeys[i])
-        processMessage([msgKeys[i],msgObj[msgKeys[i]]]);
+        //console.log(msgKeys[i])
+        if(msgKeys[i] == "pong")
+            updatePing(msgObj.pong);
+        else
+            processMessage([msgKeys[i],msgObj[msgKeys[i]]]);
     }
 
     function processMessage(msgObj) {
@@ -86,14 +90,25 @@ function handleSocketMsg(message) {
 
 function ping() {
     socket.send("ping");
+    if(lastPing == null) {
+        lastPing = Date.now();
+    }
+}
+
+function updatePing(pingTime) {
+    let currentTime = Date.now();
+
+    document.querySelector("#ping_0").innerText = `${pingTime - lastPing}ms`;
+    document.querySelector("#ping_1").innerText = `${currentTime - pingTime}ms`;
+    document.querySelector("#ping_2").innerText = `${currentTime - lastPing}ms`;
+
+    lastPing = null;
 }
 
 function keepSocketAlive() {
     if(!pinging) {
         pinging = true;
-        setInterval(()=>{
-            ping();
-        }, 20000);
+        setInterval(ping, 20000);
     }
 }
 

@@ -36,12 +36,42 @@
         }
 
         #client_version {
+            z-index: -1;
             position: absolute;
             top: 10px;
             right: 10px;
             font-size: 12px;
             color: var(--color-2);
             text-align: right;
+        }
+
+        #client_ping {
+            z-index: -1;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 12px;
+            color: var(--color-2);
+            text-align: left;
+        }
+
+        #client_ping > span {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+
+        #client_ping * {
+            font-size: 12px;
+        }
+
+        #ping_0, #ping_1, #ping_2 {
+            margin-left: -10px;
+        }
+
+        #connection {
+            font-weight: bold;
         }
 
         #popups {
@@ -54,7 +84,8 @@
             left: 50%;
             transform: translateX(-50%);
             display: flex;
-            flex-direction: column-reverse;
+            flex-direction: column;
+            justify-content: flex-end;
             align-items: center;
             gap: 20px;
             overflow: hidden;
@@ -124,8 +155,7 @@
         }
 
         .hoverButton:hover {
-            filter: brightness(90%);
-            box-shadow: 0 0 5px #000;
+            filter: brightness(80%);
         }
 
         /* LEFT PANEL */
@@ -186,7 +216,7 @@
             font-weight: bold;
         }
 
-
+        /* UNIT CARD */
         #unit_card {
             z-index: 100;
             backdrop-filter: brightness(50%) blur(5px);
@@ -260,7 +290,7 @@
 
         #unit_card_left, #unit_card_right {
             width: calc(50% - 1px);
-            height: calc(100% - 8% - 40px - 50px - 30px);
+            height: calc(100% - 8% - 40px - 50px - 30px - 60px);
             margin: 10px 0 20px 0;
         }
         #unit_card_left {
@@ -272,6 +302,9 @@
         }
         #unit_card_right {
             border-left: var(--color-2) 1px solid;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         #unit_card_left div {
@@ -280,9 +313,45 @@
             align-items: center;
         }
 
+        #unit_card_right div {
+            width: 80%;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
 
+        #unit_card_right div span{
+            display: flex;
+            align-items: center;
+        }
 
-        /* RIGHT PANEL*/
+        #unit_card_usernumber, .cardContent {
+            margin-left: 6px;
+        }
+
+        #unit_card_sendmsg {
+            height: 60px;
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        #unit_card_sendmsg span {
+            
+        }
+
+        #unit_card_sendmsg input{
+            all: unset;
+            height: calc(70% - 4px);
+            border-radius: 5px;
+            border: var(--color-2) 2px solid;
+            width: 40%;
+            padding: 0 10px;
+        }
+
+        /* RIGHT PANEL */
         #right_panel {
             height: 80%;
             width: calc(50% - 1px);
@@ -422,13 +491,28 @@
     </style>
 </head>
 <body>
+    <span id="client_ping">
+        <span>
+            <!-- client > server -->
+            <span class="material-symbols-outlined">east</span>
+            <span id="ping_0"></span>
+            <!-- server > client-->
+            <span class="material-symbols-outlined">west</span>
+            <span id="ping_1"></span>
+            <!-- client > server > client -->
+            <span class="material-symbols-outlined">sync_alt</span>
+            <span id="ping_2"></span>
+        </span>
+        <span id="connection"></span>
+    </span>
     <span id="client_version"></span>
+
     <div id="popups"></div>
 
     <div id="unit_card" onclick="event.target.id == 'unit_card' ? closeUnitCard() : null">
         <div id="unit_card_content">
             <div id="unit_card_title">
-                <h2>NEF02-KAV</h2>
+                <h2></h2>
                 <span id="call_unit" onclick="callUnit(unitCard,false)" class="material-symbols-outlined">notifications</span>
                 <span id="call_unit_urgent" onclick="callUnit(unitCard,true)" class="material-symbols-outlined">notification_important</span>
             </div>
@@ -450,7 +534,29 @@
             </div>
 
             <div id="unit_card_right">
+                <div>
+                    <span>
+                        <span class="material-symbols-outlined">location_on</span>
+                        <span> : </span>
+                        <span name="location" class="cardContent"></span>
+                    </span>
+                    <span>
+                        <span class="material-symbols-outlined">call</span>
+                        <span> : </span>
+                        <span name="caller" class="cardContent"></span>
+                    </span>
+                    <span>
+                        <span class="material-symbols-outlined">notes</span>
+                        <span> : </span>
+                        <span name="msg" class="cardContent"></span>
+                    </span>
+                </div>
+            </div>
 
+            <div id="unit_card_sendmsg">
+                <input type="text" placeholder="Nachricht" oninput="msgInput(this)">
+                <span class="hoverButton material-symbols-outlined" title="Nachricht an Einheit senden" onclick="sendToUnit(false)">mail</span>
+                <span class="hoverButton material-symbols-outlined" title="Nachricht an Einsatz senden" onclick="sendToUnit(true)">stacked_email</span>
             </div>
         </div>
     </div>
@@ -582,6 +688,17 @@
                 let areaUnits = sortedUnitList[Object.keys(sortedUnitList)[i]];
                 for(let j=0,jLength=Object.keys(areaUnits).length; j<jLength; j++) {//draw units
                     //console.log(areaUnits[Object.keys(areaUnits)[j]])
+                    /* TODO: where can these be used?
+                    RTW = Airport Shuttle [airport_shuttle]
+                    NEF = Vital Signs/Stethoscope [vital_signs] / [stethoscope]
+                    RTH = Helicopter [helicopter]
+                    FR = Minor Crash [minor_crash]
+                    LSAR = Health And Safety/Shield With House/Emergency [health_and_safety] / [shield_with_house] / [emergency]
+                    LAC = Home Repair Service [home_repair_service]
+                    Einsatzleitung = Sensor Occupied [sensor_occupied]
+                    PSNV = Cognition [cognition]
+                    */
+
                     document.querySelector(`div[data-area="${makeSafe(Object.keys(sortedUnitList)[i])}"] > .unitGrid`).innerHTML += `
                     <span class="unitTile status${areaUnits[Object.keys(areaUnits)[j]].status}" data-unit="${makeSafe(Object.keys(areaUnits)[j])}" onclick="openUnitCard(this.dataset.unit)">
                         <span class="unitName">${makeSafe(Object.keys(areaUnits)[j])}</span>
@@ -616,14 +733,34 @@
             document.querySelector("#unit_card_usernumber").innerText = localUnits[unitCardTarget].users.length;
             document.querySelector("#unit_card_userlist").innerText = localUnits[unitCardTarget].users.join("\n");
 
+            document.querySelector("#unit_card_sendmsg input").value = "";
+
             if(localUnits[unitCardTarget].job) {
-                document.querySelector("#unit_card_job").innerText = localJobs[localUnits[unitCardTarget].job].title;
-                document.querySelector("#unit_card_joblink").style.display = "flex";
-                document.querySelector("#unit_card_joblink").setAttribute("onclick",`openJobEdit(${localUnits[unitCardTarget].job})`);
+                //show button to send multiple msgs
+                document.querySelector("#unit_card_sendmsg span:nth-child(3)").style.display = "";
+
+                try {
+                    document.querySelector("#unit_card_job").innerText = localJobs[localUnits[unitCardTarget].job].title;
+                    document.querySelector("#unit_card_joblink").style.display = "flex";
+                    document.querySelector("#unit_card_joblink").setAttribute("onclick",`openJobEdit(${localUnits[unitCardTarget].job})`);
+
+                    let rightCard = document.querySelector("#unit_card_right div");
+                    rightCard.children.item(0).children.namedItem("location").innerText = localJobs[localUnits[unitCardTarget].job].location || "-- / --";
+                    rightCard.children.item(1).children.namedItem("caller").innerText = localJobs[localUnits[unitCardTarget].job].caller || "-- / --";
+                    rightCard.children.item(2).children.namedItem("msg").innerText = localJobs[localUnits[unitCardTarget].job].msg || "-- / --";
+                    document.querySelector("#unit_card_right > div").style.display = "";
+                }
+                catch {
+                    document.querySelector("#unit_card_job").innerText = "Fehler beim Laden der Einsatzdaten";
+                }
             }
             else {
+                //hide button to send multiple msgs
+                document.querySelector("#unit_card_sendmsg span:nth-child(3)").style.display = "none";
+
                 document.querySelector("#unit_card_job").innerText = "Kein Einsatz zugewiesen";
                 document.querySelector("#unit_card_joblink").style.display = "none";
+                document.querySelector("#unit_card_right > div").style.display = "none";
             }
 
             //set card to visible
@@ -642,7 +779,7 @@
                 let tmpId = elements[i].parentNode.parentNode.parentNode.dataset.id;
                 let tmpEl = elements[i];
 
-                console.log(tmpId, tmpEl)
+                //console.log(tmpId, tmpEl)
 
                 let assignedUnits = new Array();
 
@@ -669,6 +806,29 @@
                 tmpEl.innerText = unitsText;
                 tmpEl.setAttribute("title", unitsTitle);
             }
+        }
+
+        function msgInput(el) {
+            if(el.value.length > 38)
+                el.value = el.value.slice(0, 38);
+        }
+
+        function sendToUnit(sendToJob) {
+            let msg = document.querySelector("#unit_card_sendmsg input").value;
+            document.querySelector("#unit_card_sendmsg input").value = "";
+
+            if(!msg)
+                return
+
+            if(sendToJob) {//iterate through every uni, send msg when it has the same job
+                let jobId = localUnits[unitCard].job;
+                for(let i=0,iLength=Object.keys(localUnits).length; i<iLength; i++) {
+                    if(localUnits[Object.keys(localUnits)[i]].job == jobId)
+                        sendSocket({"lst_msg":[Object.keys(localUnits)[i],msg]});
+                }
+            }
+            else
+                sendSocket({"lst_msg":[unitCard,msg]});
         }
 
         function openJobCreation() {
@@ -698,10 +858,15 @@
 
         function connectionUpdate(connection) {
             console.log("connection:",connection)
+
+            if(connection)
+                document.querySelector("#connection").innerText = "connected"
+            else
+                document.querySelector("#connection").innerText = "not connected"
         }
 
         function unitsUpdate(message) {
-            console.log(message)
+            //console.log(message)
 
             for(let i=0,iLength=Object.keys(message).length; i<iLength; i++) {
                 //console.log(message[Object.keys(message)[i]])
@@ -777,7 +942,7 @@
                         </span>
                         <span>
                             <span class="material-symbols-outlined">location_on</span>
-                            <span>${tmpJob.location}</span>
+                            <span>${tmpJob.location || "-- / --"}</span>
                         </span>
                     </span>
                     `;
@@ -788,11 +953,11 @@
                     <span class="jobInfo">
                         <span>
                             <span class="material-symbols-outlined">call</span>
-                            <span>${tmpJob.caller}</span>
+                            <span>${tmpJob.caller || "-- / --"}</span>
                         </span>
                         <span>
                             <span class="material-symbols-outlined">location_on</span>
-                            <span>${tmpJob.location}</span>
+                            <span>${tmpJob.location || "-- / --"}</span>
                         </span>
                     </span>
                     `;
@@ -812,7 +977,7 @@
 
         function statusMsg(unit, status) {
             let audioEl = document.querySelector("#audio");
-            console.log(unit,status)
+            //console.log(unit,status)
 
             //debug TODO: implement LST settings
             audioEl.volume = 0.2

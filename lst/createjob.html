@@ -62,7 +62,7 @@
         #loading_0 {
             z-index: 120;
             color: #fff;
-            animation: 1.8s cubic-bezier(0.5, 0.4, 0.45, 0.95) 0s infinite loading;
+            animation: 1.8s cubic-bezier(0.28, -0.01, 0.45, 0.95) 0s infinite loading;
         }
         #loading_1 {
             z-index: 110;
@@ -77,6 +77,29 @@
             100% {
                 transform: rotate(360deg);
             }
+        }
+
+        #popup {
+            z-index: 200;
+            background-color: var(--color-1);
+            border-radius: 10px;
+            border: var(--color-2) 1px solid;
+            box-shadow: #000 0 0 5px;
+            position: absolute;
+            top: 70%;
+            left: 50%;
+            height: 100px;
+            width: 300px;
+            transform: translateX(-50%);
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #popup span {
+            font-size: 20px;
+            text-align: center;
+            text-wrap: wrap;
         }
 
         #urgency_selection {
@@ -318,6 +341,9 @@
         <span id="loading_0" class="material-symbols-outlined">progress_activity</span>
         <span id="loading_1" class="material-symbols-outlined">progress_activity</span>
     </div>
+    <div id="popup">
+        <span></span>
+    </div>
 
     <div id="urgency_selection">
         <div>
@@ -367,6 +393,7 @@
     let jobActive;
     let assignedUnits = {"old":[],"new":[]};
     let urgencyCollapsed = true;
+    let popupShown = false;
 
     window.electronAPI.mainProc((event, arg)=>{
         console.log(event, arg)
@@ -446,8 +473,10 @@
 
         //create job, get id
         fetch(`https://limnos.kreisi.net/createjob?user_faction=${encodeURIComponent(auth.faction)}&user_ident=${encodeURIComponent(auth.user_ident)}&user_key=${encodeURIComponent(auth.user_key)}&job_title=${encodeURIComponent(tmpJob.title)}&job_caller=${encodeURIComponent(tmpJob.caller)}&job_location=${encodeURIComponent(tmpJob.location)}&job_msg=${encodeURIComponent(tmpJob.msg)}&job_urgency=${encodeURIComponent(tmpJob.urgency)}&job_active=${activate}`).then(async(response)=>{
-            if(response.status != 200)
+            if(response.status != 200) {
+                showPopup(`Anfrage fehlgeschlagen<br>(${response.status})`);
                 return;
+            }
 
             let id = await response.text();
             console.log(id)
@@ -513,6 +542,7 @@
         }
         else {
             console.warn("fetch failed");
+            showPopup(`Anfrage fehlgeschlagen<br>(${response.status})`);
         }
     }
 
@@ -554,7 +584,6 @@
         document.querySelector("#current_urgency").innerText = newUrgency;
     }
 
-
     async function drawUnitList() {
         let response = await fetch(`https://limnos.kreisi.net/getvehicles/${encodeURIComponent(auth.faction)}?user_ident=${encodeURIComponent(auth.user_ident)}&user_key=${encodeURIComponent(auth.user_key)}`);
         let units = await response.json()
@@ -585,6 +614,11 @@
         document.querySelector("#unit_list").innerHTML = unitList;
 
         document.querySelector("#loading").style.display = "none";
+    }
+
+    function showPopup(content) {
+        document.querySelector("#popup").style.display = "flex";
+        document.querySelector("#popup span").innerHTML = content;
     }
 
 </script>

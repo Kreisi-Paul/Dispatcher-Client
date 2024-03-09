@@ -71,7 +71,7 @@
                 cursor: pointer;
             }
 
-            #lst_call {
+            #lst_call, #lst_msg {
                 z-index: 100;
                 position: absolute;
                 top: 42.5%;
@@ -92,8 +92,25 @@
                 font-size: 36px;
             }
 
-            #lst_call_msg {
+            #lst_call_msg, #lst_msg_text {
                 text-align: center;
+            }
+
+            #lst_msg {
+                z-index: 90;
+            }
+
+            #lst_msg span {
+                font-size: 14px;
+                overflow: hidden;
+                text-wrap: wrap;
+                word-wrap: break-word;
+                max-width: calc(100% - 8px);
+                padding: 0 4px;
+            }
+
+            #lst_msg .material-symbols-outlined {
+                font-size: 30px;
             }
 
             #status_nmbr {
@@ -114,7 +131,6 @@
             }
 
             #job_info > .jobInfo {
-                width: 90%;
                 height: 16px;
                 font-size: 14px;
                 overflow: hidden;
@@ -154,7 +170,7 @@
                 overflow: visible;
             }
 
-            .jobTransInfo > .material-symbols-outlined {
+            .jobTransInfo .material-symbols-outlined {
                 font-size: 40px;
                 height: 40px;
             }
@@ -221,7 +237,7 @@
                     cursor: pointer;
                 }
 
-                .displayOption, .soundOption {
+                .displayOption, .soundOption, .connectionOption {
                     padding: 0 4px;
                     display: flex;
                 }
@@ -230,6 +246,16 @@
                     margin: 0 8px;
                     flex: 1;
                     height: 100%;
+                }
+
+                .connectionOption * {
+                    font-size: 17px;
+                    display: flex;
+                    align-items: flex-end;
+                }
+
+                #ping_0, #ping_1, #ping_2 {
+                    margin-left: 5px;
                 }
 
                 #ch_status {
@@ -339,6 +365,11 @@
             <span id="lst_call_msg">LST-RUF WICHTIG!</span>
         </span>
 
+        <span id="lst_msg">
+            <span class="material-symbols-outlined">mail</span>
+            <span id="lst_msg_text"></span>
+        </span>
+
 
         <span id="job_info">
             <span class="jobTransInfo" id="job_download">
@@ -374,7 +405,24 @@
         </div>
 
         <div class="ch_div" id="ch_connection">
-            connection
+            <div>
+                <span class="ch_header">Verbindung</span>
+                <div class="connectionOption">
+                    <span class="material-symbols-outlined">east</span>
+                    <span>:</span>
+                    <span id="ping_0"></span>
+                </div>
+                <div class="connectionOption">
+                    <span class="material-symbols-outlined">west</span>
+                    <span>:</span>
+                    <span id="ping_1"></span>
+                </div>
+                <div class="connectionOption">
+                    <span class="material-symbols-outlined">sync_alt</span>
+                    <span>:</span>
+                    <span id="ping_2"></span>
+                </div>
+            </div>
         </div>
 
         <div class="ch_div" id="ch_sound">
@@ -635,10 +683,6 @@
             openWindow = setting;
         }
 
-        function sendMsg() {
-            window.electronAPI.sendMsg("test");
-        }
-
         function btnOff() {
             window.close();
         }
@@ -685,7 +729,7 @@
 
         function jobUpdate(new_job_id) {
             let jobUpdated; //for preventing new_call sound
-            console.warn(new_job_id)
+            //console.warn(new_job_id)
 
             //clear previous job
             document.querySelector("span[data-job=title]").innerText = "";
@@ -792,12 +836,32 @@
             }, warningLength);
         }
 
+        function lstMsg(msg) {
+            let msgEl = document.querySelector("#lst_msg");
+
+            if(msgEl.style.display == "flex")
+                return;
+            
+            playSound("lst_msg");
+
+            //reset content in case this throws
+            msgEl.children.namedItem("lst_msg_text").innerText = "";
+
+            msgEl.children.namedItem("lst_msg_text").innerText = msg;
+            msgEl.style.display = "flex";
+
+            setTimeout(()=>{
+                msgEl.style.display = "none";
+            }, 8000);
+        }
+
         /* --- Sound --- */
 
         function playSound(soundName) {
             let soundLocations = {
                 "lst_call" : "../src/lst_call.mp3",
                 "lst_call_urgent" : "../src/lst_call_urgent.mp3",
+                "lst_msg" : "../src/lst_msg.mp3",
                 "new_job_1" : "../src/new_job_1.mp3",
                 "new_job_2" : "../src/new_job_2.mp3",
                 "new_job_3" : "../src/new_job_3.mp3",
