@@ -502,7 +502,8 @@
         let openWindow;
         let connected = false;
         let syncCooldown = false;
-        let settings = new Object();
+        let pagerSettings = new Object();
+        let soundset;
         let activeJobId = false;
 
         /* --- Pager Init --- */
@@ -510,8 +511,9 @@
         function initPager() {
             closeSettings();
             window.electronAPI.pagerSettings(["get","pager_s_touchscreen"]);
+            window.electronAPI.getSettings();
         }
-        function loadSettings(newSettings) {
+        function loadPagerSettings(newSettings) {
             console.log(newSettings)
 
             if(newSettings) {//apply saved options
@@ -524,7 +526,9 @@
                 setContrast(3);
                 setVolume(1);
             }
-
+        }
+        function loadSettings(newSettings) {
+            soundset = newSettings.soundset;
         }
 
         /* --- Settings --- */
@@ -552,7 +556,7 @@
             console.log("new opacity",newOpacity)
 
             //return if old value is selected
-            if(settings.opacity == newOpacity)
+            if(pagerSettings.opacity == newOpacity)
                 return;
 
             //remove all selection indicators
@@ -565,12 +569,12 @@
             window.electronAPI.pagerSettings(["opacity",opacitySettings[newOpacity]]);
 
             //only save settings if settings were already initialized
-            if(settings.opacity) {
-                settings.opacity = newOpacity;
-                window.electronAPI.pagerSettings(["set",["pager_s_touchscreen",settings]]);
+            if(pagerSettings.opacity) {
+                pagerSettings.opacity = newOpacity;
+                window.electronAPI.pagerSettings(["set",["pager_s_touchscreen",pagerSettings]]);
             }
             else
-                settings.opacity = newOpacity;
+                pagerSettings.opacity = newOpacity;
         }
 
         function setContrastInput(event) {
@@ -594,7 +598,7 @@
             console.log("new contrast",newContrast)
 
             //return if old value is selected
-            if(settings.contrast == newContrast)
+            if(pagerSettings.contrast == newContrast)
                 return;
 
 
@@ -611,12 +615,12 @@
             `;
 
             //only save settings if settings were already initialized
-            if(settings.contrast) {
-                settings.contrast = newContrast;
-                window.electronAPI.pagerSettings(["set",["pager_s_touchscreen",settings]]);
+            if(pagerSettings.contrast) {
+                pagerSettings.contrast = newContrast;
+                window.electronAPI.pagerSettings(["set",["pager_s_touchscreen",pagerSettings]]);
             }
             else
-                settings.contrast = newContrast;
+                pagerSettings.contrast = newContrast;
         }
 
         function setVolumeInput(event) {
@@ -642,7 +646,7 @@
             console.log("new volume",newVolume)
 
             //return if old value is selected
-            if(settings.volume == newVolume)
+            if(pagerSettings.volume == newVolume)
                 return;
 
 
@@ -658,13 +662,13 @@
             
 
             //only save settings if settings were already initialized
-            if(settings.volume) {
-                settings.volume = newVolume;
-                window.electronAPI.pagerSettings(["set",["pager_s_touchscreen",settings]]);
+            if(pagerSettings.volume) {
+                pagerSettings.volume = newVolume;
+                window.electronAPI.pagerSettings(["set",["pager_s_touchscreen",pagerSettings]]);
                 playSound("beep");//preview sound
             }
             else
-                settings.volume = newVolume;
+                pagerSettings.volume = newVolume;
         }
 
         /* --- Misc & UI --- */
@@ -858,20 +862,9 @@
         /* --- Sound --- */
 
         function playSound(soundName) {
-            let soundLocations = {
-                "lst_call" : "../src/lst_call.mp3",
-                "lst_call_urgent" : "../src/lst_call_urgent.mp3",
-                "lst_msg" : "../src/lst_msg.mp3",
-                "new_job_1" : "../src/new_job_1.mp3",
-                "new_job_2" : "../src/new_job_2.mp3",
-                "new_job_3" : "../src/new_job_3.mp3",
-                "update_job" : "../src/update_job.mp3",
-                "no_job" : "../src/no_job.mp3",
-                "beep" : "../src/beep.mp3"
-            }
             let audioEl = document.querySelector("#audio");
 
-            audioEl.src = soundLocations[soundName];
+            audioEl.src = `../src/${soundset}/${soundName}.mp3`;
             audioEl.play();
         }
     </script>

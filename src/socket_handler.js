@@ -30,7 +30,10 @@ window.electronAPI.mainProc((event, arg)=>{
         userAuth.unit = arg.unit;
     }
     if(Object.keys(arg).includes("pagersettings")) {
-        loadSettings(arg.pagersettings);
+        loadPagerSettings(arg.pagersettings);
+    }
+    if(Object.keys(arg).includes("settings")) {
+        loadSettings(arg.settings);
     }
 })
 

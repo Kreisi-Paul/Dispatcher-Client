@@ -362,8 +362,8 @@
     </span>
 
     <div id="actionbar">
-        <span class="material-symbols-outlined" title="Einsatz anlegen" id="save_job" onclick="saveJob()">folder_open</span>
-        <span class="material-symbols-outlined" title="Einsatz alarmieren" id="activate_job" onclick="activateJob()">detector_alarm</span>
+        <span class="material-symbols-outlined" title="Einsatz anlegen" id="save_job" onclick="saveJob(0)">folder_open</span>
+        <span class="material-symbols-outlined" title="Einsatz alarmieren" id="activate_job" onclick="saveJob(1)">detector_alarm</span>
     </div>
 
     <span class="divider"></span>
@@ -444,19 +444,11 @@
         }, 2000);
     }
 
-    function saveJob() {
-        if(jobActive)
-            editJob(0)
+    function saveJob(activate) {
+        if(jobId)
+            editJob(activate)
         else {
-            createJob(0);
-        }
-    }
-
-    async function activateJob() {
-        if(jobActive)
-            editJob(1)
-        else {
-            createJob(1);
+            createJob(activate);
         }
     }
 

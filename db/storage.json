@@ -3,11 +3,15 @@
 		"user_ident": "paul_kreismann",
 		"user_key": "ce1a6e845cc97480"
 	},
+	"settings": {
+		"lst_volume": 0.11,
+		"soundset": "soundset_1"
+	},
 	"pagerSettings": {
 		"pager_s_touchscreen": {
 			"opacity": "6",
 			"contrast": "3",
-			"volume": "3"
+			"volume": "1"
 		}
 	}
 }

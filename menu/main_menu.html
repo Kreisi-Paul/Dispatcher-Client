@@ -19,9 +19,12 @@
             height: 100svh;
             width: 100svw;
             margin: 0;
-            overflow-x: hidden;
-            overflow-y: scroll;
+            overflow: hidden;
             background-color: var(--color-1);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
 
         * {
@@ -167,7 +170,7 @@
             justify-content: center;
             align-items: center;
             text-align: center;
-            width: 80%;
+            width: 98%;
             padding: 10px;
             aspect-ratio: 2/1;
             border-radius: 20px;
@@ -270,6 +273,218 @@
         #login_btn:disabled {
             filter: brightness(90%);
         }
+
+
+        /* SETTINGS */
+
+        #settings {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
+            background-color: var(--color-1);
+            display: none;
+            flex-direction: column;
+        }
+
+        #settings_nav {
+            z-index: 2;
+            height: 40px;
+            background-color: var(--color-2);
+            padding: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            box-shadow: #000 0 0 10px;
+        }
+
+        #settings_nav span {
+            font-weight: bold;
+            flex: 1;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            text-underline-offset: 2px;
+        }
+
+        #settings_nav span:hover {
+            backdrop-filter: brightness(80%);
+        }
+
+        #close_settings, #logout {
+            flex: unset !important;
+            aspect-ratio: 1/1;
+        }
+
+        #settings_content {
+            z-index: 1;
+            flex: 1;
+        }
+
+        #settings_content > div {
+            padding: 20px 40px;
+            height: calc(100% - 40px);
+            width: calc(100% - 80px);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+        }
+
+        #settings_content hr {
+            margin: 20px 0;
+            width: 100%;
+            border: var(--color-2) 2px solid;
+        }
+
+        .settingsCategory {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: flex-start;
+        }
+
+        .settingsCategory > div {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+        }
+
+        .settingsCategory h3 {
+            text-decoration: underline 2px;
+            text-underline-offset: 2px;
+            margin-top: 0;
+        }
+
+        .settingsLabel {
+            align-self: flex-start;
+            margin-bottom: 5px;
+        }
+
+        .settingsSlider {
+            background:
+                linear-gradient(transparent 9px, #fff 9px, #fff 11px, transparent 11px),
+                linear-gradient(90deg, #fff 3px, transparent 3px),
+                linear-gradient(270deg, #fff 3px, transparent 3px);
+            height: 20px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .settingsSlider > span {
+            border-radius: 1em;
+            height: 100%;
+            aspect-ratio: 1/1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-left: 50%;
+            transform: translateX(-50%);
+            cursor: grab;
+        }
+
+        .settingsSlider > span:hover > span {
+            transition: box-shadow 0.15s ease-in;
+            box-shadow: #ffffff33 0 0 0 8px;
+        }
+
+        .settingsSlider > span > span {
+            background-color: #fff;
+            border-radius: 1em;
+            height: 50%;
+            aspect-ratio: 1/1;
+        }
+
+        .settingsSelector {
+            border-radius: 5px;
+            border: var(--color-2) 2px solid;
+            padding: 4px 6px;
+        }
+
+        .settingsSelector > span {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .collapseSelector {
+            cursor: pointer;
+        }
+
+        .settingsSelector div {
+            position: absolute;
+            border-radius: 5px;
+            border: var(--color-2) 2px solid;
+            transform: translate(-8px, 8px);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .settingsSelector div span {
+            background-color: var(--color-1);
+            padding: 4px 6px;
+        }
+
+        .settingsSelector div span:hover {
+            background-color: #333;
+        }
+
+
+        #logout_confirm {
+            z-index: 3;
+            background-color: var(--color-1);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            height: 100px;
+            width: 240px;
+            padding: 20px;
+            border-radius: 20px;
+            border: #000 1px solid;
+            box-shadow: #000 0 0 10px;
+            display: none;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #logout_confirm span {
+            background-color: var(--color-2);
+            height: 26px;
+            width: 50%;
+            font-size: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 4px 8px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #logout_confirm span:hover {
+            filter: brightness(80%);
+            box-shadow: #000 0 0 5px;
+        }
+
+        #logout_confirm span:nth-child(1) {
+            width: unset;
+            align-self: flex-end;
+            aspect-ratio: 1/1;
+            padding: 4px;
+        }
+
     </style>
 </head>
 <body>
@@ -281,7 +496,7 @@
         <div onclick="requestWindow('lst_rdil')" class="menuButton rdil">Leitstelle RDIL</div>
         <div onclick="openUnitSelection('pol')" class="menuButton pol">Dispatcher POL</div>
         <div onclick="requestWindow('lst_pol')" class="menuButton pol">Leitstelle POL</div>
-        <div onclick="requestWindow('settings')" class="menuButton">Einstellungen</div>
+        <div onclick="openSettings()" class="menuButton">Einstellungen</div>
         <div onclick="requestWindow('management')" class="menuButton">Berechtigungen</div>
     </div>
 
@@ -296,7 +511,6 @@
             </div>
         </div>
     </div>
-
 
     <div id="loading">
         <img src="../src/ll_logo.ico">
@@ -318,10 +532,64 @@
         </span>
     </div>
 
+    <div id="settings">
+        <div id="logout_confirm">
+            <span onclick="hideLogout()" class="material-symbols-outlined">close</span>
+            <span onclick="" onmouseenter="startLogoutTimer(this)" onmouseleave="resetLogoutTimer(this)" onmousedown="logoutBtn()">Ausloggen</span>
+        </div>
+        <div id="settings_nav">
+            <span id="close_settings" class="material-symbols-outlined" title="Einstellungen schließen" onclick="closeSettings()">close</span>
+            <span data-settings="sound" onclick="selectSetting(this.dataset.settings)">Sound</span>
+            <span data-settings="misc" onclick="selectSetting(this.dataset.settings)">Misc</span>
+            <span data-settings="info" onclick="selectSetting(this.dataset.settings)">Info</span>
+            <span id="logout" class="material-symbols-outlined" title="Ausloggen" onclick="showLogout()">logout</span>
+        </div>
+        <div id="settings_content">
+            <div data-settings="sound">
+                <div class="settingsCategory">
+                    <h3>Leitstelle</h3>
+                    <div>
+                        <span class="settingsLabel">Lautstärke:</span>
+                        <span data-setting="lst_volume" class="settingsSlider" onmousedown="sliderEvent(event)">
+                            <span><span></span></span>
+                        </span>
+                    </div>
+                </div>
+                <hr>
+                <div class="settingsCategory">
+                    <h3>Pager</h3>
+                    <span class="settingsLabel">Soundset:</span>
+                    <span data-setting="soundset" class="settingsSelector" onclick="selectorEvent(this,event)">
+                        <span>
+                            <span class="activeSelector">Soundsets</span>
+                            <span class="collapseSelector material-symbols-outlined">expand_more</span>
+                        </span>
+                        <div>
+                            <span data-option="soundset_0">soundset_0</span>
+                            <span data-option="soundset_1">soundset_1</span>
+                        </div>
+                    </span>
+                </div>
+            </div>
+            <div data-settings="misc"></div>
+            <div data-settings="info"></div>
+        </div>
+    </div>
+
+
+
+
+
+
+
     <script>
         let auth = new Object();
+        let logoutTimer = 10;
+        let logoutClock;
         window.electronAPI.getVersion();
         window.electronAPI.getAuth();
+        window.electronAPI.getSettings();
+        selectSetting("sound");//standard settings menu
 
         window.electronAPI.mainProc((event, arg)=>{
             console.log(event, arg)
@@ -335,6 +603,12 @@
             if(Object.keys(arg).includes("version")) {
                 document.querySelector("#loading_version").innerHTML = `${arg.version}<br><b>made with ♥ by Kreisi</b>`;
             }
+            if(Object.keys(arg).includes("settings")) {
+                if(arg.settings.lst_volume)
+                    setSlider(arg.settings.lst_volume, document.querySelector("span[data-setting=lst_volume]"));
+                if(arg.settings.soundset)
+                    setSelector(arg.settings.soundset, document.querySelector("span[data-setting=soundset]"));
+            }            
         })
 
 
@@ -350,7 +624,7 @@
         }
 
         function requestWindow(wType) {
-            let wTypes = ["pager_rdil","lst_rdil","pager_pol","lst_pol","settings","management"];
+            let wTypes = ["pager_rdil","lst_rdil","pager_pol","lst_pol"];
             if(wTypes.includes(wType))
                 window.electronAPI.sendMsg(wType);
         }
@@ -459,6 +733,113 @@
             }
         }
 
+        function openSettings() {
+            document.querySelector("#settings").style.display = "flex";
+        }
+        function closeSettings() {
+            document.querySelector("#settings").style.display = "none";
+        }
+
+        function showLogout() {
+            document.querySelector("#logout_confirm").style.display = "flex";
+        }
+        function hideLogout() {
+            document.querySelector("#logout_confirm").style.display = "none";
+        }
+
+        function startLogoutTimer(el) {
+            logoutClock = setInterval(()=>{
+                if(logoutTimer > 0) {
+                    logoutTimer = logoutTimer-1;
+                    el.innerText = logoutTimer;
+                }
+                else {
+                    el.innerText = "Ausloggen";
+                }
+            }, 1000);
+            el.innerText = logoutTimer;
+        }
+        function resetLogoutTimer(el) {
+            clearInterval(logoutClock);
+            logoutTimer = 9;
+            el.innerText = "Ausloggen";
+        }
+        function logoutBtn() {
+            if(logoutTimer == 0)
+                logout();
+        }
+
+        function logout() {
+            window.electronAPI.setAuth({"user_ident":null,"user_key":null});
+            location.reload();
+        }
+
+        function selectSetting(setting) {
+            //hide all settings
+            document.querySelectorAll("#settings_content > div").forEach((el)=>{el.style.display = "none"});
+            document.querySelectorAll(`#settings_nav > span`).forEach((el)=>{el.style.textDecoration = ""});
+
+            //show correct settings
+            document.querySelector(`#settings_content > div[data-settings="${setting}"]`).style.display = "";
+            document.querySelector(`#settings_nav > span[data-settings="${setting}"]`).style.textDecoration = "underline 2px";
+        }
+
+        function sliderEvent(event) {
+            //console.log(event)
+            if(event.target.dataset.setting) {//set slider
+                //console.log(event.target.children.item(0))
+                //console.log(event.target.dataset.setting)
+
+                let sliderValue = Math.round((event.offsetX / event.target.clientWidth) * 100) / 100
+
+                //snapping
+                if(sliderValue - 0.04 < 0)
+                    sliderValue = 0;
+                if(sliderValue + 0.04 > 1)
+                    sliderValue = 1;
+
+                //console.log("prozentwert", sliderValue)
+                setSlider(sliderValue, event.target);
+                window.electronAPI.sendMsg({"set_setting":[event.target.dataset.setting,sliderValue]});
+            }
+            else {//grab slider
+                //console.log("slide")
+                //TODO
+            }
+
+        }
+
+        function setSlider(value, el) {
+            el.children.item(0).style.marginLeft = `${Math.min(Math.max(value * 100, 1), 99)}%`;
+        }
+
+        function selectorEvent(el, event) {
+            //console.log(el,event)
+
+            if(event.target.dataset.option) {//set option
+                //collapse
+                el.children.item(0).children.item(1).innerText = "expand_more";
+                el.children.item(1).style.display = "none";
+
+                //set setting
+                setSelector(event.target.dataset.option, el);
+                window.electronAPI.sendMsg({"set_setting":[el.dataset.setting,event.target.dataset.option]});
+            }
+            else if(event.target.classList.contains("collapseSelector")) {//collapse / expand
+                if(event.target.innerText == "expand_more") {//expand
+                    event.target.innerText = "expand_less";
+                    el.children.item(1).style.display = "flex";
+                }
+                else {//collapse
+                    event.target.innerText = "expand_more";
+                    el.children.item(1).style.display = "none";
+                }
+            }
+        }
+
+        function setSelector(value, el) {
+            el.children.item(0).children.item(0).innerText = value;
+        }
     </script>
     <script src="../src/x_xxs.js"></script>
     <script src="../src/sort_unit_list.js"></script>

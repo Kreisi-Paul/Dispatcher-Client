@@ -23,9 +23,9 @@ app.whenReady().then(() => {
         width: 700,
         minWidth: 680,
         height: 800,
-        minHeight: 600,
+        minHeight: 760,
         autoHideMenuBar: true,
-        icon: "src/ll_logo.ico",
+        icon: path.join(__dirname, "src/ll_logo.ico"),
         webPreferences: {
             preload: path.join(__dirname, "preload/main_preload.js")
         }
@@ -37,7 +37,7 @@ app.whenReady().then(() => {
         app.quit(); //close app when main window is closed
     })
 
-    //mainWindow.webContents.openDevTools()
+    mainWindow.webContents.openDevTools()
 
     app.on('activate', ()=>{
         console.log("activated");
@@ -65,12 +65,18 @@ ipcMain.on("main_window", (event, content) => {
             case "lst_pol":
                 openLST("pol");
                 return;
+            case "get_settings":
+                event.sender.send("main_proc", {"settings":localDB.settings})
+                return;
         }
     }
     else {
-        if(Object.keys(content).includes("unit")) {
+        if(Object.keys(content)[0] == "unit") {
             pagerUnit = content.unit;
-            console.log(pagerUnit)
+        }
+        if(Object.keys(content)[0] == "set_setting") {
+            localDB.settings[content.set_setting[0]] = content.set_setting[1];//overwrite localDB
+            fs.writeFileSync(path.resolve("db/storage.json"),JSON.stringify(localDB, null, "\t"));//save db
         }
     }
 })
@@ -109,7 +115,10 @@ ipcMain.on("job_window", (event, content) => {
 })
 
 ipcMain.on(("get_auth"), (event) => {
-    event.sender.send('main_proc', {"auth":localDB.auth});
+    event.sender.send("main_proc", {"auth":localDB.auth});
+})
+ipcMain.on(("get_settings"), (event) => {
+    event.sender.send("main_proc", {"settings":localDB.settings});
 })
 ipcMain.on(("set_auth"), (event,data) => {
     console.log("setauth:",data)
@@ -159,7 +168,7 @@ function openPager(faction, pagerModel) {
         frame: false,
         autoHideMenuBar: true,
         titleBarStyle: 'hidden',
-        icon: "src/ll_logo.ico",
+        icon: path.join(__dirname, "src/ll_logo.ico"),
         webPreferences: {
             preload: path.join(__dirname, "preload/pager_preload.js")
         }
@@ -180,7 +189,7 @@ function openLST(faction) {
         minWidth: 950,
         minHeight: 510,
         autoHideMenuBar: true,
-        icon: "src/ll_logo.ico",
+        icon: path.join(__dirname, "src/ll_logo.ico"),
         webPreferences: {
             preload: path.join(__dirname, "preload/lst_preload.js")
         }
@@ -196,7 +205,7 @@ function openJobCreation() {
         height: 650,
         resizable: false,
         autoHideMenuBar: true,
-        icon: "src/ll_logo.ico",
+        icon: path.join(__dirname, "src/ll_logo.ico"),
         webPreferences: {
             preload: path.join(__dirname, "preload/job_preload.js")
         }

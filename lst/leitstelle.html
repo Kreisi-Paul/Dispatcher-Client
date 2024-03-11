@@ -338,10 +338,6 @@
             gap: 10px;
         }
 
-        #unit_card_sendmsg span {
-            
-        }
-
         #unit_card_sendmsg input{
             all: unset;
             height: calc(70% - 4px);
@@ -989,14 +985,9 @@
         }
 
         function playSound(soundName) {
-            let soundLocations = {
-                "status5":"../src/status5.mp3",
-                "status9":"../src/status9.mp3",
-                "beep": "../src/beep.mp3"
-            }
             let audioEl = document.querySelector("#audio");
 
-            audioEl.src = soundLocations[soundName];
+            audioEl.src = `../src/soundset_0/${soundName}.mp3`;
             audioEl.play();
         }
 
