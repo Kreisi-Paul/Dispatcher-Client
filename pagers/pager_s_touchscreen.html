@@ -792,18 +792,10 @@
                 }
 
                 //set new job info if available
-                if(new_job.title) {
                     document.querySelector("span[data-job=title]").innerText = new_job.title;
-                }
-                if(new_job.location) {
-                    document.querySelector("span[data-job=location]").innerHTML = `<span class="material-symbols-outlined">location_on</span> ${makeSafe(new_job.location)}`;
-                }
-                if(new_job.caller) {
-                    document.querySelector("span[data-job=caller]").innerHTML = `<span class="material-symbols-outlined">call</span> ${makeSafe(new_job.caller)}`;
-                }
-                if(new_job.msg) {
-                    document.querySelector("span[data-job=comment]").innerHTML = `<span class="material-symbols-outlined">notes</span> ${makeSafe(new_job.msg)}`;
-                }
+                    document.querySelector("span[data-job=location]").innerHTML = `<span class="material-symbols-outlined">location_on</span> ${makeSafe(new_job.location) || "-/-"}`;
+                    document.querySelector("span[data-job=caller]").innerHTML = `<span class="material-symbols-outlined">call</span> ${makeSafe(new_job.caller) || "-/-"}`;
+                    document.querySelector("span[data-job=comment]").innerHTML = `<span class="material-symbols-outlined">notes</span> ${makeSafe(new_job.msg) || "-/-"}`;
             });
         }
 
