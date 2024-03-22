@@ -286,6 +286,7 @@
                 padding: 20px;
                 background: #00000066;
                 backdrop-filter: blur(5px);
+                display: none;
             }
 
             #active_apps_options {
@@ -927,6 +928,7 @@
 
             //general actions
             closeNotificationTray();
+            closeAppManagement();
 
             //specific actions
             switch(button) {
@@ -937,16 +939,12 @@
                 
                     break;
                 case "home":
-                    document.querySelectorAll(".appFullscreen, .appLeft, .appRight").forEach((el)=>{el.classList.remove("appFullscreen","appLeft","appRight")});
+                    document.querySelectorAll(".appFullscreen, .appLeft, .appRight").forEach((el)=>{el.classList.remove("appFullscreen","appLeft","appRight")});//closes every open app
                     break;
                 case "menu":
-                
-                    break;
-                case "emergency":
-                
+                    openAppManagement();
                     break;
             }
-
         }
 
         function openNotificationTray() {
@@ -954,6 +952,13 @@
         }
         function closeNotificationTray() {
             document.querySelector("#notification_tray").style.display = "none";
+        }
+
+        function openAppManagement() {
+            document.querySelector("#active_apps").style.display = "flex";
+        }
+        function closeAppManagement() {
+            document.querySelector("#active_apps").style.display = "none";
         }
 
         function createNotification(app, content) {
