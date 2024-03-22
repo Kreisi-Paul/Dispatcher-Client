@@ -95,7 +95,7 @@ function sendSocket(message) {
 }
 
 function handleSocketMsg(message) {
-    console.log(message);
+    //console.log(message);
     let msgObj = JSON.parse(message);
     let msgKeys = Object.keys(msgObj);
 

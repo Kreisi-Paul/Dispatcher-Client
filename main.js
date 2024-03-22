@@ -25,7 +25,7 @@ app.whenReady().then(() => {
         height: 800,
         minHeight: 760,
         autoHideMenuBar: true,
-        icon: path.join(__dirname, "src/ll_logo.ico"),
+        icon: path.join(__dirname, "src/logo.ico"),
         webPreferences: {
             preload: path.join(__dirname, "preload/main_preload.js")
         }
@@ -178,7 +178,7 @@ function openPager(faction, pagerModel) {
         frame: false,
         autoHideMenuBar: true,
         titleBarStyle: 'hidden',
-        icon: path.join(__dirname, "src/ll_logo.ico"),
+        icon: path.join(__dirname, "src/logo.ico"),
         webPreferences: {
             preload: path.join(__dirname, "preload/pager_preload.js")
         }
@@ -203,7 +203,7 @@ function openLST(faction) {
         minWidth: 950,
         minHeight: 510,
         autoHideMenuBar: true,
-        icon: path.join(__dirname, "src/ll_logo.ico"),
+        icon: path.join(__dirname, "src/logo.ico"),
         webPreferences: {
             preload: path.join(__dirname, "preload/lst_preload.js")
         }
@@ -219,7 +219,7 @@ function openJobCreation() {
         height: 650,
         resizable: false,
         autoHideMenuBar: true,
-        icon: path.join(__dirname, "src/ll_logo.ico"),
+        icon: path.join(__dirname, "src/logo.ico"),
         webPreferences: {
             preload: path.join(__dirname, "preload/job_preload.js")
         }

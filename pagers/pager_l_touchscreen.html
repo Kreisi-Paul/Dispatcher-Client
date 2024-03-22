@@ -35,6 +35,14 @@
             font-family: Verdana, Geneva, Tahoma, sans-serif;
         }
 
+        *::selection {
+            background-color: #bbb;
+        }
+
+        .material-symbols-outlined {
+            user-select: none !important;
+        }
+
         #tablet {
             height: 100%;
             width: 100%;
@@ -224,7 +232,7 @@
             .notificationIcon {
                 font-size: 16px;
                 padding: 4px;
-                border-radius: 8px;
+                border-radius: 0.6ch;
             }
 
             .notificationInfo p {
@@ -237,6 +245,10 @@
                 text-wrap: wrap;
                 word-wrap: break-word;
                 word-break: break-all;
+                user-select: text;
+            }
+
+            .notificationContent * {
                 user-select: text;
             }
 
@@ -287,6 +299,8 @@
                 background: #00000066;
                 backdrop-filter: blur(5px);
                 display: none;
+                flex-direction: column;
+                align-items: stretch;
             }
 
             #active_apps_options {
@@ -313,6 +327,52 @@
             }
 
             #active_apps_options > span:hover {
+                background-color: #ffffff44;
+            }
+
+            #active_apps_list {
+                pointer-events: none;
+                flex: 1;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                gap: 20px;
+            }
+
+            .activeApp {
+                pointer-events: all;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 2px;
+            }
+
+            .activeAppActions {
+                display: flex;
+                margin-bottom: 4px;
+                transform: translateY(100%);
+                padding: 2px 4px;
+                opacity: 0;
+                background-color: #00000044;
+                backdrop-filter: blur(5px);
+                border-radius: 50ch;
+                border: #444 1px solid;
+                color: #fff;
+                transition: all ease-in-out 200ms;
+                cursor: pointer;
+            }
+
+            .activeApp:hover .activeAppActions {
+                transform: translateY(0);
+                opacity: 1;
+            }
+
+            .activeAppActions span {
+                border-radius: 50ch;
+                padding: 2px;
+            }
+
+            .activeAppActions span:hover {
                 background-color: #ffffff44;
             }
 
@@ -449,7 +509,6 @@
                 }
 
                 #job_info {
-                    flex: 1;
                     display: flex;
                     flex-direction: column;
                     justify-content: flex-start;
@@ -460,7 +519,7 @@
                 #job_info span[data-job="title"] {
                     font-size: 22px;
                     text-align: center;
-                    margin-bottom: auto;
+                    margin-bottom: 1em;
                     display: flex;
                     justify-content: center;
                     align-items: flex-end;
@@ -468,6 +527,7 @@
                     text-wrap: wrap;
                     word-wrap: break-word;
                     word-break: break-all;
+                    user-select: text;
                 }
 
                 #job_info span[data-job="title"] > b {
@@ -481,17 +541,17 @@
                     align-items: center;
                     gap: 2px;
                 }
-
+                
                 #job_info > div * {
                     text-wrap: wrap;
                     word-wrap: break-word;
                     word-break: break-all;
                     font-size: 16px;
+                    user-select: text;
                 }
 
                 #job_units {
                     flex: 1;
-                    max-height: 50%;
                     overflow: hidden;
                 }
                 
@@ -529,7 +589,128 @@
                     flex: 3;
                 }
 
+            .app[data-app="messages"] {
+                background-color: var(--ui-dark);
+                height: 100%;
+                width: 100%;
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
 
+            #messages_mainmenu {
+                width: 100%;
+                height: 10%;
+                background: linear-gradient(225deg, rgb(76, 218, 29) 20%, rgb(57, 108, 33) 80%);
+            }
+
+            #messages_contacts {
+                width: 20%;
+                height: 90%;
+                background-color: rgb(57, 108, 33);
+            }
+
+            #messages_contacts hr {
+                margin: 0;
+                border: #ffffff44 1px solid;
+            }
+
+            #messages_contacts > span {
+                display: flex;
+                justify-content: flex-start;
+                align-items: center;
+                gap: 2px;
+                padding: 2px 6px;
+                color: #fff;
+                cursor: pointer;
+            }
+
+            #messages_contacts > span:hover {
+                backdrop-filter: brightness(120%);
+            }
+
+            #messages_content {
+                flex: 1;
+                height: 90%;
+                background-color: #bbb;
+                display: flex;
+                flex-direction: column;
+                align-items: stretch;
+                box-shadow: #00000088 10px 10px 15px -10px inset;
+            }
+
+            #messages_input {
+                position: absolute;
+                bottom: 0;
+                width: 50%;
+                height: 34px;
+                padding: 0 18px;
+                margin-bottom: 20px;
+                margin-left: 20px;
+                border-radius: 50ch;
+                background-color: #fff;
+                box-shadow: #00000088 0 0 5px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                gap: 10px;
+            }
+
+            #messages_input input {
+                all: unset;
+                flex: 1;
+            }
+
+            #messages_input span {
+                border-radius: 50ch;
+                padding: 4px;
+                font-size: 22px;
+                cursor: pointer;
+            }
+
+            #messages_input span:hover {
+                background-color: #00000044;
+            }
+
+            #messages_chat {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                padding: 20px;
+                padding-bottom: calc(40px + 34px);
+                gap: 6px;
+                overflow-y: scroll;
+            }
+
+            .messageBubble {
+                box-shadow: #00000088 0 0 5px;
+                display: flex;
+                flex-direction: column;
+                max-width: 45%;
+                padding: 10px;
+                border-radius: 15px;
+            }
+
+            .messageBubble.sent {
+                background: rgb(76, 218, 29);
+                align-self: flex-end;
+                border-bottom-right-radius: 0;
+            }
+
+            .messageBubble.recieved {
+                background: #fff;
+                align-self: flex-start;
+                border-bottom-left-radius: 0;
+            }
+
+            .messageContent {
+                text-align: left;
+                user-select: text;
+            }
+
+            .messageTimestamp {
+                font-size: 10px;
+                text-align: right;
+            }
 
 
 
@@ -571,7 +752,7 @@
             .appIcon {
                 height: 60px;
                 aspect-ratio: 1/1;
-                border-radius: 20px;
+                border-radius: 0.6ch;
                 display: flex;
                 justify-content: center;
                 align-items: center;
@@ -587,27 +768,37 @@
 
             /* APP ICONS */
 
-            .appButton[data-app=alarm] .appIcon, .notificationIcon[data-app=alarm] {
+            .appButton[data-app=alarm] .appIcon,
+            .notificationIcon[data-app=alarm],
+            .activeApp[data-app=alarm] .appIcon {
                 background: linear-gradient(45deg, rgb(204, 29, 29) 20%, rgb(255, 132, 17) 80%);
                 color: #fff;
             }
 
-            .appButton[data-app=maps] .appIcon, .notificationIcon[data-app=maps] {
+            .appButton[data-app=maps] .appIcon,
+            .notificationIcon[data-app=maps],
+            .activeApp[data-app=maps] .appIcon {
                 background: linear-gradient(45deg, rgb(145, 100, 44) 20%, rgb(46, 46, 46) 80%);
                 color: #fff;
             }
 
-            .appButton[data-app=status] .appIcon, .notificationIcon[data-app=status] {
+            .appButton[data-app=status] .appIcon,
+            .notificationIcon[data-app=status],
+            .activeApp[data-app=status] .appIcon {
                 background: linear-gradient(45deg, rgb(105, 210, 215) 20%, rgb(129, 53, 146) 80%);
                 color: #fff;
             }
 
-            .appButton[data-app=follow_up] .appIcon, .notificationIcon[data-app=follow_up] {
+            .appButton[data-app=follow_up] .appIcon,
+            .notificationIcon[data-app=follow_up],
+            .activeApp[data-app=follow_up] .appIcon {
                 background: linear-gradient(45deg, rgb(13, 71, 206) 20%, rgb(209, 26, 26) 80%);
                 color: #fff;
             }
 
-            .appButton[data-app=messages] .appIcon, .notificationIcon[data-app=messages] {
+            .appButton[data-app=messages] .appIcon,
+            .notificationIcon[data-app=messages],
+            .activeApp[data-app=messages] .appIcon {
                 background: linear-gradient(45deg, rgb(76, 218, 29) 20%, rgb(57, 108, 33) 80%);
                 color: #fff;
             }
@@ -617,7 +808,9 @@
                 color: #fff;
             }
 
-            .appButton[data-app=settings] .appIcon, .notificationIcon[data-app=settings] {
+            .appButton[data-app=settings] .appIcon,
+            .notificationIcon[data-app=settings],
+            .activeApp[data-app=settings] .appIcon {
                 background: linear-gradient(45deg, rgb(51, 51, 51), rgb(172, 172, 172) 80%);
                 color: #fff;
             }
@@ -674,10 +867,12 @@
             <div id="status_notifications" onclick="openNotificationTray()"></div>
             <div id="notification_tray" onclick="event.target == this ? closeNotificationTray() : null"></div>
             <div id="active_notification"></div>
-            <div id="active_apps">
+            <div id="active_apps" onclick="event.target == this ? closeAppManagement() : null">
                 <div id="active_apps_options">
                     <span class="material-symbols-outlined" onclick="openApp('apps',{'category':'apps'})">settings</span>
                     <span class="material-symbols-outlined">power_settings_new</span>
+                </div>
+                <div id="active_apps_list">
                 </div>
             </div>
         </span>
@@ -762,7 +957,48 @@
                 </div>
             </div>
             <div class="app" data-app="follow_up"></div>
-            <div class="app" data-app="messages"></div>
+            <div class="app" data-app="messages">
+                <div id="messages_mainmenu">
+
+                </div>
+                <div id="messages_contacts">
+                    <span>
+                        <span class="material-symbols-outlined">cell_tower</span>
+                        <p>Leitstelle</p>
+                        <span class="unreadMessage"></span>
+                    </span>
+                    <hr>
+                    <span>
+                        <span class="material-symbols-outlined">minor_crash</span>
+                        <p>NEF-03 KAV</p>
+                        <span class="unreadMessage"></span>
+                    </span>
+                </div>
+                <div id="messages_content">
+                    <div id="messages_chat">
+                        <span class="messageBubble sent">
+                            <span class="messageContent">Hallo Hörbi! Es brennt! Bitte schick mir schnell Einheiten!</span>
+                            <span class="messageTimestamp">12:00</span>
+                        </span>
+                        <span class="messageBubble recieved">
+                            <span class="messageContent">Wo denn?</span>
+                            <span class="messageTimestamp">12:01</span>
+                        </span>
+                        <span class="messageBubble sent">
+                            <span class="messageContent">In der Eisfabrik!</span>
+                            <span class="messageTimestamp">12:02</span>
+                        </span>
+                        <span class="messageBubble sent">
+                            <span class="messageContent">HILFE!!!</span>
+                            <span class="messageTimestamp">12:02</span>
+                        </span>
+                    </div>
+                    <div id="messages_input">
+                        <input placeholder="Nachricht schreiben...">
+                        <span class="material-symbols-outlined">send</span>
+                    </div>
+                </div>
+            </div>
             <div class="app" data-app="settings"></div>
         </div>
 
@@ -802,7 +1038,7 @@
 
     <script>
         let soundset;
-        let openApps = new Array();
+        let openApps = new Set();
         let pagerSettings = new Object();
         let activeJobId = false;
         let sosStatus = false;
@@ -961,6 +1197,11 @@
             document.querySelector("#active_apps").style.display = "none";
         }
 
+        /**
+         * creates a notification for a specified app
+         * @param {string} app appname
+         * @param {string} content a **safe** string that shows up below the app name
+         */
         function createNotification(app, content) {
             if(content.length > 40) {//limit content to 40 chars
                 content = content.slice(0,36);
@@ -974,7 +1215,7 @@
                         <span class="notificationIcon material-symbols-outlined" data-app="${app}">${appInfo[app].icon}</span>
                         <p>${appInfo[app].name}</p>
                     </span>
-                    <span class="notificationContent">${makeSafe(content)}</span>
+                    <span class="notificationContent">${content}</span>
                     <span class="notificationTime">${new Date(Date.now()).toLocaleTimeString("de",{hour:"2-digit",minute:"2-digit"})}</span>
             </div>`;
 
@@ -987,7 +1228,7 @@
                     <span class="notificationIcon material-symbols-outlined" data-app="${app}">${appInfo[app].icon}</span>
                     <p>${appInfo[app].name}</p>
                 </span>
-                <span class="notificationContent">${makeSafe(content)}</span>`;
+                <span class="notificationContent">${content}</span>`;
 
                 activeNotification.classList.add("active");
 
@@ -1038,14 +1279,36 @@
 
         /* APP MANAGEMENT */
 
-        function openApp(appName) {
-            console.log(appName)
+        function openApp(appName, data) {
+            closeAppManagement()//close app management in case a shortcut from that menu was used
+            //console.log(appName, data)
 
-
-
-
+            //show app
             document.querySelector(`#apps > div[data-app="${appName}"]`).classList.add("appFullscreen");
-            openApps.push(appName)
+
+            //add app to active apps
+            if(!openApps.has(appName)) {
+                openApps.add(appName);
+                document.querySelector("#active_apps_list").innerHTML += `
+                <span class="activeApp" data-app="${appName}">
+                    <span class="activeAppActions">
+                        <span class="material-symbols-outlined" title="App schließen" onclick="closeApp('${appName}')">close</span>
+                        <span class="material-symbols-outlined" title="Appinformationen">info</span>
+                        <span class="material-symbols-outlined" title="In Spiltscreen-Modus öffnen">splitscreen_right</span>
+                    </span>
+                    <span class="appIcon material-symbols-outlined" onclick="openApp('${appName}')">${appInfo[appName].icon}</span>
+                    <span class="appName">${appInfo[appName].name}</span>
+                </span>`;
+            }
+        }
+
+        function closeApp(appName) {
+            //hide app
+            document.querySelector(`#apps > div[data-app="${appName}"]`).classList.remove("appFullscreen","appLeft","appRight");
+
+            //remove app from active apps
+            openApps.delete(appName);
+            document.querySelector(`#active_apps_list .activeApp[data-app="${appName}"]`).remove();
         }
 
 
@@ -1111,16 +1374,12 @@
 
             fetch(`https://limnos.kreisi.net/getjobinfo?id=${newJobId}&user_faction=${userAuth.faction}&user_ident=${encodeURIComponent(userAuth.user_ident)}&user_key=${encodeURIComponent(userAuth.user_key)}`).then(async(response)=>{
                 console.log(response)
-                if(response.status == 200) {
-                    //document.querySelector("#job_download").style.display = "none";
-                }
-                else {//display error message when job info cannot be obtained
-                    //document.querySelector("#job_download").style.display = "none";
-                    //document.querySelector("#job_download_fail").style.display = "flex";
+                if(response.status != 200) {
+                    createNotification("alarm","Einsatzinfo konnte nicht empfangen werden!")
                     return;
                 }
                 let newJob = await response.json();
-                console.log(newJob)
+
 
                 //play appropriate sound
                 if(!jobUpdated) {
@@ -1137,6 +1396,7 @@
                     default:
                         playSound("new_job_2");
                     }
+                    createNotification("alarm",`Neuer Einsatz: <b>${makeSafe(newJob.title)}</b>`)
                 }
 
                 //set new job info if available
