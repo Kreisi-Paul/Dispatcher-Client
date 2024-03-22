@@ -50,21 +50,14 @@ ipcMain.on("main_window", (event, content) => {
 
     if(typeof content == "string") {
         switch (content) {
-            case "pager_rdil":
-                openPager("rdil");
-                return;
-    
             case "lst_rdil":
                 openLST("rdil");
                 return;
-    
-            case "pager_pol":
-                openPager("pol");
-                return;
-    
+
             case "lst_pol":
                 openLST("pol");
                 return;
+
             case "get_settings":
                 event.sender.send("main_proc", {"settings":localDB.settings})
                 return;
@@ -77,6 +70,9 @@ ipcMain.on("main_window", (event, content) => {
         if(Object.keys(content)[0] == "set_setting") {
             localDB.settings[content.set_setting[0]] = content.set_setting[1];//overwrite localDB
             fs.writeFileSync(path.resolve("db/storage.json"),JSON.stringify(localDB, null, "\t"));//save db
+        }
+        if(Object.keys(content)[0] == "pager") {
+            openPager(content.pager[0], content.pager[1]);
         }
     }
 })
@@ -153,17 +149,31 @@ app.on('window-all-closed', () => {
 
 
 function openPager(faction, pagerModel) {
+    console.log(faction, pagerModel)
     //TODO: implement modular system
-    
+
     if(typeof pagerWindow != "undefined")//prevent multiple windows
         if(!pagerWindow.isDestroyed())
             return;
 
+    let pagerOptions = {
+        "pager_s_touchscreen": {
+            width: 295,
+            height: 180,
+            resizable: false
+        },
+        "pager_l_touchscreen": {
+            width: 820,
+            height: 480,
+            resizable: true
+        }
+    }
+
+    if(!Object.keys(pagerOptions).includes(pagerModel))
+        return;
+
     pagerFaction = faction;
-    pagerWindow = new BrowserWindow({
-        width: 295,
-        height: 180,
-        resizable: false,
+    pagerWindow = new BrowserWindow(Object.assign(pagerOptions[pagerModel], {
         transparent: true,
         frame: false,
         autoHideMenuBar: true,
@@ -172,9 +182,13 @@ function openPager(faction, pagerModel) {
         webPreferences: {
             preload: path.join(__dirname, "preload/pager_preload.js")
         }
-    });
+    }));
+
+
+
+
     pagerWindow.setAlwaysOnTop(true, "screen-saver");
-    pagerWindow.loadFile("pagers/pager_s_touchscreen.html");
+    pagerWindow.loadFile(`pagers/${pagerModel}.html`);
     pagerWindow.webContents.openDevTools()
 }
 

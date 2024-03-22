@@ -1,0 +1,1176 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Test</title>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+    <link href="../src/variables.css" rel="stylesheet">
+    <style>
+        html {
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            overflow: hidden;
+            --ui-dark: #222;
+            --ui-light: #444;
+        }
+
+        body {
+            position: absolute;
+            top: 0;
+            left: 0;
+            margin: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        ::-webkit-scrollbar {
+            width: 0px;
+            background: transparent;
+        }
+
+        * {
+            user-select: none;
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+        }
+
+        #tablet {
+            height: 100%;
+            width: 100%;
+            /* background-color: #222; */
+            background-color: #333;
+            box-shadow: #00000044 0 0 10px inset;
+            -webkit-app-region: drag;
+        }
+
+        #screen {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1;
+            background-color: #000;
+            border-radius: 10px;
+            height: calc(100% - 40px);
+            width: calc(100% - 40px);
+            overflow: hidden;
+            -webkit-app-region: no-drag;
+        }
+
+        /* GENERAL DIVS */
+        
+        #screen > div {
+            position: absolute;
+            height: 100%;
+            width: 100%;
+        }
+
+
+        #lockscreen {
+            z-index: 5;
+            background: linear-gradient(45deg, #926161 20%, #c54f4f 80%);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+            #lockscreen_logo {
+                position: absolute;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100%;
+                font-size: 70vh;
+                color: #00000022;
+            }
+
+
+
+        #navbuttons {
+            z-index: 4;
+            right: -40px;
+            height: 100% !important;
+            width: 80px !important;
+        }
+
+            #navbuttons > div {
+                position: relative;
+                height: 100%;
+                width: 40px;
+                background: #00000066;
+                transform: translateX(100%);
+                transition: transform 200ms ease-in-out;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-evenly;
+                align-items: center;
+            }
+
+            #navbuttons:hover > div {
+                transform: translateX(0%);
+            }
+
+            #navbuttons > div > span {
+                width: 30px;
+                color: #fff;
+                cursor: pointer;
+                aspect-ratio: 1/2;
+                border-radius: 15px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+
+            #navbuttons > div > span:hover {
+                background-color: #ffffff44;
+            }
+
+            #navbuttons > div > span:active {
+                background-color: #ffffff66;
+                transition: background-color 50ms ease-in-out;
+            }
+
+            .sosBtnReady {
+                background-color: #ff000088 !important;
+            }
+
+
+
+        #statusbar {
+            z-index: 3;
+        }
+
+            #status_info {
+                z-index: inherit;
+                position: absolute;
+                padding: 4px 10px;
+                display: flex;
+                gap: 6px;
+                border-bottom-right-radius: 0.5em;
+                background: #00000066;
+            }
+
+            #status_info span, #status_notifications span {
+                color: #fff;
+                font-size: 16px;
+            }
+
+            #status_notifications {
+                z-index: inherit;
+                position: absolute;
+                top: 0;
+                left: 50%;
+                transform: translateX(-50%);
+                min-width: 2em;
+                padding: 0 10px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                gap: 6px;
+                border-bottom-right-radius: 0.5em;
+                border-bottom-left-radius: 0.5em;
+                background: #00000066;
+                cursor: pointer;
+            }
+
+            #status_notifications span {
+                margin: 4px 0;
+            }
+
+            #notification_tray {
+                z-index: inherit;
+                position: absolute;
+                height: calc(100% - 40px);
+                width: 100%;
+                padding: 20px 0;
+                background: #00000066;
+                backdrop-filter: blur(5px);
+                display: none;
+                flex-direction: column;
+                justify-content: flex-start;
+                align-items: center;
+                gap: 20px;
+                overflow-y: scroll;
+            }
+
+            #notification_tray > div {
+                background: #00000044;
+                border: #444 1px solid;
+                color: #fff;
+                padding: 10px;
+                width: 35%;
+                border-radius: 10px;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                gap: 4px;
+                backdrop-filter: blur(10px);
+            }
+
+            .notificationDelete {
+                position: absolute;
+                right: 10px;
+                cursor: pointer;
+            }
+
+            .notificationInfo {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+            }
+
+            .notificationIcon {
+                font-size: 16px;
+                padding: 4px;
+                border-radius: 8px;
+            }
+
+            .notificationInfo p {
+                margin: 0;
+            }
+
+            .notificationContent {
+                flex: 1;
+                display: flex;
+                text-wrap: wrap;
+                word-wrap: break-word;
+                word-break: break-all;
+                user-select: text;
+            }
+
+            .notificationTime {
+                align-self: flex-end;
+                font-size: 12px;
+            }
+
+            #active_notification {
+                z-index: inherit;
+                position: absolute;
+                left: 50%;
+                top: -100px;
+                transform: translateX(-50%);
+                min-width: 20%;
+                max-width: 35%;
+                padding: 8px;
+                border-radius: 10px;
+                border: #444 1px solid;
+                color: #fff;
+                background-color: #00000088;
+                backdrop-filter: blur(10px);
+                display: flex;
+                flex-direction: column;
+                gap: 4px;
+            }
+
+            #active_notification .notificationInfo {
+                align-self: center;
+            }
+
+            #active_notification.active {
+                animation: notificationSlide 8s;
+            }
+
+            @keyframes notificationSlide {
+                0% {top: -100px;}
+                10%, 90% {top: 10px;}
+                100% {top: -100px;}
+            }
+
+            #active_apps {
+                z-index: inherit;
+                position: absolute;
+                height: calc(100% - 40px);
+                width: calc(100% - 40px);
+                padding: 20px;
+                background: #00000066;
+                backdrop-filter: blur(5px);
+            }
+
+            #active_apps_options {
+                border-radius: 50ch;
+                border: #444 1px solid;
+                background: #00000044;
+                color: #fff;
+                backdrop-filter: blur(10px);
+                padding: 4px 6px;
+                position: absolute;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                gap: 2px;
+            }
+
+            #active_apps_options > span {
+                font-size: 18px;
+                padding: 4px;
+                border-radius: 50ch;
+                aspect-ratio: 1/1;
+                display: flex;
+                cursor: pointer;
+            }
+
+            #active_apps_options > span:hover {
+                background-color: #ffffff44;
+            }
+
+
+
+        #apps {
+            z-index: 2;
+            pointer-events: none;
+            display: flex;
+            flex-direction: row;
+        }
+
+            .app {
+                display: none;
+                pointer-events: all;
+            }
+
+            .app.appFullscreen {
+                display: flex;
+                background-color: #f00;
+                position: absolute;
+                top: 0;
+                left: 0;
+                height: 100%;
+                width: 100%;
+            }
+
+            .app.appLeft {
+                background-color: #0f0;
+            }
+
+            .app.appRight {
+                background-color: #00f;
+            }
+
+            .app[data-app="status"] {
+                background-color: var(--ui-dark);
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                gap: 3vw;
+            }
+
+                #status_active {
+                    width: 30%;
+                    min-width: 150px;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    align-items: center;
+                    color: #fff;
+                    font-weight: bold;
+                    box-shadow: #00000066 0 0 30px inset;
+                    padding: 10px 0;
+                    border-radius: 5px;
+                    gap: 6px;
+                }
+
+                #status_buttons {
+                    width: 30%;
+                    min-width: 150px;
+                    display: grid;
+                    grid-template-columns: auto auto auto;
+                    grid-template-rows: auto auto auto;
+                    gap: 1vw;
+                }
+
+                #status_buttons span {
+                    font-size: 3vw;
+                    padding: 2vw;
+                    aspect-ratio: 1/1;
+                    background-color: #00f;
+                    border-radius: 5px;
+                    color: #fff;
+                    box-shadow: #00000066 0 0 30px inset;
+                    cursor: pointer;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                }
+
+                #status_buttons span:hover {
+                    filter: saturate(120%) brightness(110%) drop-shadow(#000 0 0 10px);
+                }
+
+                #status_buttons span[data-status="1"],
+                #status_buttons span[data-status="2"] {
+                    background-color: var(--status-green);
+                }
+                #status_buttons span[data-status="3"] {
+                    background-color: var(--status-yellow);
+                }
+                #status_buttons span[data-status="4"],
+                #status_buttons span[data-status="6"] {
+                    background-color: var(--status-red);
+                }
+                #status_buttons span[data-status="5"] {
+                    background-color: var(--status-blue);
+                }
+                #status_buttons span[data-status="7"],
+                #status_buttons span[data-status="8"] {
+                    background-color: var(--status-orange);
+                }
+                #status_buttons span[data-status="9"] {
+                    background: linear-gradient(45deg, var(--status-orange) 10%, var(--status-red) 90%);
+                }
+
+            .app[data-app="alarm"] {
+                background-color: var(--ui-dark);
+                color: #fff;
+                padding: 20px;
+                height: calc(100% - 40px);
+                width: calc(100% - 40px);
+                gap: 20px;
+            }
+
+                .app[data-app="alarm"] > div {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 20px;
+                }
+
+                .app[data-app="alarm"] > div:nth-child(1) {
+                    width: 60%;
+                }
+
+                .app[data-app="alarm"] > div:nth-child(2) {
+                    width: 40%;
+                }
+
+                .app[data-app="alarm"] > div > div{
+                    box-shadow: var(--ui-light) 0 0 0 2px inset;
+                    padding: 6px;
+                }
+
+                #job_info {
+                    flex: 1;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: flex-start;
+                    align-items: stretch;
+                    gap: 6px;
+                }
+
+                #job_info span[data-job="title"] {
+                    font-size: 22px;
+                    text-align: center;
+                    margin-bottom: auto;
+                    display: flex;
+                    justify-content: center;
+                    align-items: flex-end;
+                    gap: 8px;
+                    text-wrap: wrap;
+                    word-wrap: break-word;
+                    word-break: break-all;
+                }
+
+                #job_info span[data-job="title"] > b {
+                    font-size: 28px;
+                    text-wrap: nowrap;
+                }
+
+                #job_info > div {
+                    display: flex;
+                    justify-content: flex-start;
+                    align-items: center;
+                    gap: 2px;
+                }
+
+                #job_info > div * {
+                    text-wrap: wrap;
+                    word-wrap: break-word;
+                    word-break: break-all;
+                    font-size: 16px;
+                }
+
+                #job_units {
+                    flex: 1;
+                    max-height: 50%;
+                    overflow: hidden;
+                }
+                
+                #job_units p {
+                    margin: 0;
+                    font-size: 22px;
+                    text-align: center;
+                }
+
+                #job_units > div {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 5px;
+                    overflow-y: scroll;
+                }
+
+                #job_time {
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: flex-start;
+                    align-items: center;
+                }
+
+                #job_time p {
+                    font-size: 22px;
+                    margin: 0;
+                }
+
+                #job_time span {
+                    font-size: 28px;
+                    font-weight: bold;
+                }
+
+                #job_map {
+                    flex: 3;
+                }
+
+
+
+
+
+
+        #desktop {
+            z-index: 1;
+            background-image: url(../src/background.png);
+            background-size: cover;
+            background-position: center;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, 80px);
+            justify-content: center;
+            align-content: flex-start;
+            gap: 40px;
+            padding: 20px;
+            height: calc(100% - 40px) !important;
+            width: calc(100% - 40px) !important;
+        }
+
+            .appButton {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                width: 80px;
+                gap: 6px;
+                aspect-ratio: 3/4;
+                transition: filter 200ms ease-in-out;
+            }
+
+            .appButton:hover {
+                filter: drop-shadow(#000 0 0 5px);
+            }
+
+            .appButton:hover .appIcon {
+                filter: brightness(120%);
+            }
+
+            .appIcon {
+                height: 60px;
+                aspect-ratio: 1/1;
+                border-radius: 20px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                font-size: 36px;
+                font-weight: 400;
+                cursor: pointer;
+                transition: filter 200ms ease-in-out;
+            }
+
+            .appName {
+                color: #fff;
+            }
+
+            /* APP ICONS */
+
+            .appButton[data-app=alarm] .appIcon, .notificationIcon[data-app=alarm] {
+                background: linear-gradient(45deg, rgb(204, 29, 29) 20%, rgb(255, 132, 17) 80%);
+                color: #fff;
+            }
+
+            .appButton[data-app=maps] .appIcon, .notificationIcon[data-app=maps] {
+                background: linear-gradient(45deg, rgb(145, 100, 44) 20%, rgb(46, 46, 46) 80%);
+                color: #fff;
+            }
+
+            .appButton[data-app=status] .appIcon, .notificationIcon[data-app=status] {
+                background: linear-gradient(45deg, rgb(105, 210, 215) 20%, rgb(129, 53, 146) 80%);
+                color: #fff;
+            }
+
+            .appButton[data-app=follow_up] .appIcon, .notificationIcon[data-app=follow_up] {
+                background: linear-gradient(45deg, rgb(13, 71, 206) 20%, rgb(209, 26, 26) 80%);
+                color: #fff;
+            }
+
+            .appButton[data-app=messages] .appIcon, .notificationIcon[data-app=messages] {
+                background: linear-gradient(45deg, rgb(76, 218, 29) 20%, rgb(57, 108, 33) 80%);
+                color: #fff;
+            }
+
+            .appButton[data-app=status_5] .appIcon {
+                background: linear-gradient(45deg, var(--status-blue) 20%, rgb(52, 52, 52) 90%);
+                color: #fff;
+            }
+
+            .appButton[data-app=settings] .appIcon, .notificationIcon[data-app=settings] {
+                background: linear-gradient(45deg, rgb(51, 51, 51), rgb(172, 172, 172) 80%);
+                color: #fff;
+            }
+
+
+        /* STATUS BACKGROUNDS*/
+        .status1 {
+            background-color: var(--status-green);
+        }
+        .status2 {
+            background-color: var(--status-green);
+        }
+        .status3 {
+            background-color: var(--status-yellow);
+        }
+        .status4 {
+            background-color: var(--status-red);
+        }
+        .status5 {
+            background-color: var(--status-blue);
+        }
+        .status6 {
+            background-color: var(--status-red);
+        }
+        .status7 {
+            background-color: var(--status-orange);
+        }
+        .status8 {
+            background-color: var(--status-orange);
+        }
+        .status9 {
+            background-color: var(--status-red);
+            box-shadow: var(--status-orange) 0 0 10px;
+            animation: distress 1.6s step-start infinite;
+        }
+        @keyframes distress {
+            50% {
+                background-color: var(--status-orange);
+                box-shadow: var(--status-red) 0 0 10px;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <div id="tablet"></div>
+    <div id="screen">
+        <span id="statusbar">
+            <div id="status_info">
+                <span class="material-symbols-outlined">battery_horiz_075</span>
+                <span id="status_connection" class="material-symbols-outlined">signal_cellular_nodata</span>
+                <span id="status_sound" class="material-symbols-outlined">notifications_off</span>
+            </div>
+            <div id="status_notifications" onclick="openNotificationTray()"></div>
+            <div id="notification_tray" onclick="event.target == this ? closeNotificationTray() : null"></div>
+            <div id="active_notification"></div>
+            <div id="active_apps">
+                <div id="active_apps_options">
+                    <span class="material-symbols-outlined" onclick="openApp('apps',{'category':'apps'})">settings</span>
+                    <span class="material-symbols-outlined">power_settings_new</span>
+                </div>
+            </div>
+        </span>
+
+
+        <div id="lockscreen">
+            <div id="lockscreen_welcome">
+                <span>Hallo, </span>
+                <span>Max Mustermann</span>
+            </div>
+            <div>
+                <span class="material-symbols-outlined">lock</span>
+            </div>
+            <span id="lockscreen_logo" class="material-symbols-outlined">medical_services</span>
+        </div>
+
+
+
+        <div id="navbuttons">
+            <div>
+                <span class="material-symbols-outlined" onclick="navButton('splitscreen')">splitscreen_left</span>
+                <span class="material-symbols-outlined" onclick="navButton('back')">arrow_back_ios_new</span>
+                <span class="material-symbols-outlined" onclick="navButton('home')">crop_square</span>
+                <span class="material-symbols-outlined" onclick="navButton('menu')">menu</span>
+                <span id="sos_btn" class="material-symbols-outlined" onmousedown="triggerSOS()" onmouseleave="sendSOS(false)" onmouseup="sendSOS(true)">emergency</span>
+            </div>
+        </div>
+
+
+
+        <div id="apps">
+            <div class="app" data-app="alarm">
+                <div>
+                    <div id="job_info">
+                        <span data-job="title"></span>
+                        <div>
+                            <span class="material-symbols-outlined">location_on</span>
+                            <span data-job="location"></span>
+                        </div>
+                        <div>
+                            <span class="material-symbols-outlined">call</span>
+                            <span data-job="caller"></span>
+                        </div>
+                        <div>
+                            <span class="material-symbols-outlined">notes</span>
+                            <span data-job="comment"></span>
+                        </div>
+                    </div>
+                    <div id="job_units">
+                        <p>Einsatzkräfte:</p>
+                        <div data-job="units">
+
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div id="job_time">
+                        <p>Alarmiert:</p>
+                        <span data-job="timestamp"></span>
+                    </div>
+                    <div id="job_map">
+                        WIP
+                    </div>
+                </div>
+            </div>
+            <div class="app" data-app="maps"></div>
+            <div class="app" data-app="status">
+                <div id="status_active">
+                    <span id="unit_status"></span>
+                    <span id="active_status"></span>
+                </div>
+                <div id="status_buttons">
+                    <span data-status="1" onclick="sendStatus(1)">1</span>
+                    <span data-status="2" onclick="sendStatus(2)">2</span>
+                    <span data-status="3" onclick="sendStatus(3)">3</span>
+                    <span data-status="4" onclick="sendStatus(4)">4</span>
+                    <span data-status="5" onclick="sendStatus(5)">5</span>
+                    <span data-status="6" onclick="sendStatus(6)">6</span>
+                    <span data-status="7" onclick="sendStatus(7)">7</span>
+                    <span data-status="8" onclick="sendStatus(8)">8</span>
+                    <span data-status="9" onclick="sendStatus(9)">9</span>
+                </div>
+            </div>
+            <div class="app" data-app="follow_up"></div>
+            <div class="app" data-app="messages"></div>
+            <div class="app" data-app="settings"></div>
+        </div>
+
+
+        <div id="desktop">
+            <span class="appButton" data-app="alarm">
+                <span class="appIcon material-symbols-outlined" onclick="openApp(this.parentNode.dataset.app)">notifications_active</span>
+                <span class="appName">Alarminfo</span>
+            </span>
+            <span class="appButton" data-app="maps">
+                <span class="appIcon material-symbols-outlined" onclick="openApp(this.parentNode.dataset.app)">map</span>
+                <span class="appName">Lagekarten</span>
+            </span>
+            <span class="appButton" data-app="status">
+                <span class="appIcon material-symbols-outlined" onclick="openApp(this.parentNode.dataset.app)">cell_tower</span>
+                <span class="appName">Status</span>
+            </span>
+            <span class="appButton" data-app="follow_up">
+                <span class="appIcon material-symbols-outlined" onclick="openApp(this.parentNode.dataset.app)">e911_emergency</span>
+                <span class="appName">Nachalarm</span>
+            </span>
+            <span class="appButton" data-app="messages">
+                <span class="appIcon material-symbols-outlined" onclick="openApp(this.parentNode.dataset.app)">contact_emergency</span>
+                <span class="appName">Nachrichten</span>
+            </span>
+            <span class="appButton" data-app="status_5">
+                <span class="appIcon material-symbols-outlined" onclick="sendStatus(5)">call_quality</span>
+                <span class="appName">Status 5</span>
+            </span>
+            <span class="appButton" data-app="settings">
+                <span class="appIcon material-symbols-outlined" onclick="openApp(this.parentNode.dataset.app)">settings</span>
+                <span class="appName">Einstellungen</span>
+            </span>
+        </div>
+    </div>
+
+
+    <script>
+        let soundset;
+        let openApps = new Array();
+        let pagerSettings = new Object();
+        let activeJobId = false;
+        let sosStatus = false;
+        let notificationShown = false;
+        const appInfo = {
+            "alarm": {
+                name: "Alarminfo",
+                icon: "notifications_active"
+            },
+            "maps": {
+                name: "Lagekarten",
+                icon: "map"
+            },
+            "status": {
+                name: "Status",
+                icon: "cell_tower"
+            },
+            "follow_up": {
+                name: "Nachalarm",
+                icon: "e911_emergency"
+            },
+            "messages": {
+                name: "Nachrichten",
+                icon: "contact_emergency"
+            },
+            "settings": {
+                name: "Einstellungen",
+                icon: "settings"
+            }
+        };
+
+
+
+
+
+        /* INIT */
+
+        function initPager() {
+            window.electronAPI.pagerSettings(["get","pager_l_touchscreen"]);
+            window.electronAPI.getSettings();
+        }
+        function loadPagerSettings(newSettings) {
+            console.log(newSettings)
+
+            if(newSettings) {//apply saved options
+                setOpacity(newSettings.opacity);
+                setVolume(newSettings.volume);
+            }
+            else {//apply standard options
+                setOpacity(6);
+                setVolume(1);
+            }
+        }
+        function loadSettings(newSettings) {
+            soundset = newSettings.soundset;
+        }
+
+
+        /* SETTINGS */
+
+        function setOpacity(newOpacity) {
+            let opacitySettings = [
+                0.2,
+                0.3,
+                0.4,
+                0.5,
+                0.6,
+                0.8,
+                1
+            ];
+
+            //return if old value is selected
+            if(pagerSettings.opacity == newOpacity)
+                return;
+
+            //change opacity via main process
+            window.electronAPI.pagerSettings(["opacity",opacitySettings[newOpacity]]);
+
+            //only save settings if settings were already initialized
+            if(pagerSettings.opacity) {
+                pagerSettings.opacity = newOpacity;
+                window.electronAPI.pagerSettings(["set",["pager_l_touchscreen",pagerSettings]]);
+            }
+            else
+                pagerSettings.opacity = newOpacity;
+        }
+
+        function setVolume(newVolume) {
+            let volumeSettings = [
+                [0,"notifications_off"],
+                [0.05,"notifications"],
+                [0.1,"notifications"],
+                [0.15,"notifications"],
+                [0.2,"notifications_active"],
+                [0.4,"notifications_active"],
+                [0.6,"notifications_active"]
+            ];
+            console.log("new volume",newVolume)
+
+            //return if old value is selected
+            if(pagerSettings.volume == newVolume)
+                return;
+
+            //change volume, volume indicator
+            document.querySelector("#audio").volume = volumeSettings[newVolume][0];
+            document.querySelector("#status_sound").innerText = volumeSettings[newVolume][1];
+
+
+            //only save settings if settings were already initialized
+            if(pagerSettings.volume) {
+                pagerSettings.volume = newVolume;
+                window.electronAPI.pagerSettings(["set",["pager_l_touchscreen",pagerSettings]]);
+                playSound("beep");//preview sound
+            }
+            else
+                pagerSettings.volume = newVolume;
+        }
+
+
+        /* NAVBAR / STATUSBAR*/
+
+        function navButton(button) {
+
+            //general actions
+            closeNotificationTray();
+
+            //specific actions
+            switch(button) {
+                case "splitscreen":
+
+                    break;
+                case "back":
+                
+                    break;
+                case "home":
+                    document.querySelectorAll(".appFullscreen, .appLeft, .appRight").forEach((el)=>{el.classList.remove("appFullscreen","appLeft","appRight")});
+                    break;
+                case "menu":
+                
+                    break;
+                case "emergency":
+                
+                    break;
+            }
+
+        }
+
+        function openNotificationTray() {
+            document.querySelector("#notification_tray").style.display = "flex";
+        }
+        function closeNotificationTray() {
+            document.querySelector("#notification_tray").style.display = "none";
+        }
+
+        function createNotification(app, content) {
+            if(content.length > 40) {//limit content to 40 chars
+                content = content.slice(0,36);
+                content += " ..."
+            }
+
+            let notificationEl = `
+            <div>
+                <span class="notificationDelete material-symbols-outlined" onclick="deleteNotification(this.parentNode)">close</span>
+                    <span class="notificationInfo">
+                        <span class="notificationIcon material-symbols-outlined" data-app="${app}">${appInfo[app].icon}</span>
+                        <p>${appInfo[app].name}</p>
+                    </span>
+                    <span class="notificationContent">${makeSafe(content)}</span>
+                    <span class="notificationTime">${new Date(Date.now()).toLocaleTimeString("de",{hour:"2-digit",minute:"2-digit"})}</span>
+            </div>`;
+
+            if(!notificationShown) {
+                notificationShown = true;
+                let activeNotification = document.querySelector("#active_notification");
+
+                activeNotification.innerHTML = `
+                <span class="notificationInfo">
+                    <span class="notificationIcon material-symbols-outlined" data-app="${app}">${appInfo[app].icon}</span>
+                    <p>${appInfo[app].name}</p>
+                </span>
+                <span class="notificationContent">${makeSafe(content)}</span>`;
+
+                activeNotification.classList.add("active");
+
+                setTimeout(()=>{
+                    activeNotification.classList.remove("active");
+                    activeNotification.innerHTML = "";
+                    notificationShown = false;
+                }, 8000);
+            }
+
+            if(!document.querySelector(`#status_notifications span[data-app="${app}"]`)) {//only add icon if none if "app" is already present
+                document.querySelector("#status_notifications"). innerHTML += `<span data-app="${app}" class="material-symbols-outlined">${appInfo[app].icon}</span>`;
+            }
+
+            document.querySelector("#notification_tray").innerHTML += notificationEl;
+        }
+
+        function deleteNotification(el) {
+            let app = el.children.item(1).children.item(0).dataset.app;
+            el.remove();//remove notification
+
+            if(!document.querySelector(`#notification_tray span[data-app="${app}"]`))//remove icon if no other notifications of app are present
+                document.querySelector(`#status_notifications span[data-app="${app}"]`).remove();
+
+            if(!document.querySelector(`#notification_tray div`))
+                closeNotificationTray();
+        }
+
+        function triggerSOS() {
+            sosStatus = null;
+            setTimeout(()=>{
+                if(sosStatus == null) {
+                    document.querySelector("#sos_btn").classList.add("sosBtnReady");
+                    sosStatus = true;
+                }
+            }, 2000);
+        }
+
+        function sendSOS(confirm) {
+            if(sosStatus && confirm) {
+                sendStatus(9);
+            }
+            sosStatus = false;
+            document.querySelector("#sos_btn").classList.remove("sosBtnReady");
+        }
+
+
+
+        /* APP MANAGEMENT */
+
+        function openApp(appName) {
+            console.log(appName)
+
+
+
+
+            document.querySelector(`#apps > div[data-app="${appName}"]`).classList.add("appFullscreen");
+            openApps.push(appName)
+        }
+
+
+
+        /* APPS */
+
+
+
+
+
+
+
+
+
+
+
+        /* COMMUNICATION */
+
+        function connectionUpdate(connection) {
+            if(connection) {
+                document.querySelector("#status_connection").innerText = "signal_cellular_3_bar";
+                document.querySelector("#unit_status").innerText = userAuth.unit;
+            }
+            else
+                document.querySelector("#status_connection").innerText = "signal_cellular_nodata";
+        }
+
+        function statusUpdate(newStatus) {
+            document.querySelector("#active_status").innerText = newStatus;
+            document.querySelector("#status_active").classList = [`status${newStatus}`];
+        }
+
+        function jobUpdate(newJobId) {
+            let jobUpdated; //for preventing new_call sound
+
+            //clear previous job
+            document.querySelector("span[data-job=title]").innerText = "--- / ---";
+            document.querySelector("span[data-job=location]").innerText = "--- / ---";
+            document.querySelector("span[data-job=caller]").innerText = "--- / ---";
+            document.querySelector("span[data-job=comment]").innerText = "--- / ---";
+            document.querySelector("span[data-job=timestamp]").innerText = "--- / ---";
+            document.querySelector("div[data-job=units]").innerHTML = "";
+            //play sound
+            if(newJobId == false) {
+                playSound("no_job");
+            }
+            else if(newJobId == activeJobId) {
+                createNotification("alarm","Einsatzinformationen aktualisiert.")
+                jobUpdated = true;
+            }
+
+            //update active job id
+            activeJobId = newJobId;
+
+            if(newJobId == false)
+                return
+
+            /*
+            //display wait message, remove error message if needed
+            document.querySelector("#job_download_fail").style.display = "none";
+            document.querySelector("#job_download").style.display = "flex";
+            */
+
+            fetch(`https://limnos.kreisi.net/getjobinfo?id=${newJobId}&user_faction=${userAuth.faction}&user_ident=${encodeURIComponent(userAuth.user_ident)}&user_key=${encodeURIComponent(userAuth.user_key)}`).then(async(response)=>{
+                console.log(response)
+                if(response.status == 200) {
+                    //document.querySelector("#job_download").style.display = "none";
+                }
+                else {//display error message when job info cannot be obtained
+                    //document.querySelector("#job_download").style.display = "none";
+                    //document.querySelector("#job_download_fail").style.display = "flex";
+                    return;
+                }
+                let newJob = await response.json();
+                console.log(newJob)
+
+                //play appropriate sound
+                if(!jobUpdated) {
+                    switch(newJob.urgency) {
+                    case "R1":
+                        playSound("new_job_1");
+                        break;
+                    case "R2":
+                        playSound("new_job_2");
+                        break;
+                    case "R3":
+                        playSound("new_job_3");
+                        break;
+                    default:
+                        playSound("new_job_2");
+                    }
+                }
+
+                //set new job info if available
+                document.querySelector("span[data-job=title]").innerHTML = `<b>${makeSafe(newJob.urgency)}</b>${makeSafe(newJob.title)}`;
+                document.querySelector("span[data-job=location]").innerText = newJob.location || "-/-";
+                document.querySelector("span[data-job=caller]").innerText = newJob.caller || "-/-";
+                document.querySelector("span[data-job=comment]").innerText = newJob.msg || "-/-";
+                document.querySelector("span[data-job=timestamp]").innerText = new Date(parseInt(newJobId)).toLocaleTimeString("de");
+
+                setTimeout(()=>{
+                    fetch(`https://limnos.kreisi.net/getvehicles/${userAuth.faction}?user_ident=${encodeURIComponent(userAuth.user_ident)}&user_key=${encodeURIComponent(userAuth.user_key)}`).then(async(response)=>{
+                        response.json().then((units)=>{
+                            let jobUnits = "";
+
+                            for(let i=0,iLength=Object.keys(units).length; i<iLength; i++) {
+                                if(units[Object.keys(units)[i]].job == newJobId) {
+                                    jobUnits += `<span>- ${makeSafe(Object.keys(units)[i])}</span>`;
+                                }
+                            }
+                            document.querySelector("div[data-job=units]").innerHTML = jobUnits;//update unit list
+                        });
+                    });
+                }, 5000);
+            });
+        }
+
+
+        /* SOUND */
+
+        function playSound(soundName) {
+            let audioEl = document.querySelector("#audio");
+
+            audioEl.src = `../src/${soundset}/${soundName}.mp3`;
+            audioEl.play();
+        }
+
+    </script>
+    <script src="../src/socket_handler.js"></script>
+    <script src="../src/x_xxs.js"></script>
+    <audio id="audio"></audio>
+</body>
+</html>

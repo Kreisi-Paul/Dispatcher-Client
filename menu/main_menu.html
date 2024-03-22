@@ -137,12 +137,39 @@
 
         #pager_select_table {
             border-top: 1px solid var(--color-2);
+            background-color: var(--color-1);
             height: calc(30% - 1px);
             width: 100%;
             overflow-y: scroll;
             display: flex;
+            flex-direction: column;
             justify-content: center;
-            align-items: center;
+            align-items: stretch;
+            cursor: pointer;
+        }
+
+        #pager_select_table > span {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: flex-start;
+            border-top: var(--color-2) 1px solid;
+            border-bottom: var(--color-2) 1px solid;
+        }
+
+        #pager_select_table > span:hover {
+            background-color: #333;
+        }
+        
+        .pagerTitle {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .pagerTags {
+            font-size: 16px;
         }
 
         .unitListArea {
@@ -492,11 +519,11 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            height: 100px;
+            height: auto;
             width: 240px;
             padding: 20px;
             border-radius: 20px;
-            border: #000 1px solid;
+            border: var(--color-2) 1px solid;
             box-shadow: #000 0 0 10px;
             display: none;
             flex-direction: column;
@@ -527,6 +554,10 @@
             align-self: flex-end;
             aspect-ratio: 1/1;
             padding: 4px;
+        }
+
+        #logout_confirm p {
+            text-align: center;
         }
 
         .manageList {
@@ -751,7 +782,14 @@
 
             </div>
             <div id="pager_select_table">
-                <span>WIP</span>
+                <span onclick="selectedPager='pager_s_touchscreen'">
+                    <span class="pagerTitle">Pager S Touchscreen</span>
+                    <span class="pagerTags material-symbols-outlined">touch_app</span>
+                </span>
+                <span onclick="selectedPager='pager_l_touchscreen'">
+                    <span class="pagerTitle">Pager L Touchscreen</span>
+                    <span class="pagerTags material-symbols-outlined">touch_appmap</span>
+                </span>
             </div>
         </div>
     </div>
@@ -784,14 +822,15 @@
     <div id="settings">
         <div id="logout_confirm">
             <span onclick="hideLogout()" class="material-symbols-outlined">close</span>
-            <span onclick="" onmouseenter="startLogoutTimer(this)" onmouseleave="resetLogoutTimer(this)" onmousedown="logoutBtn()">Ausloggen</span>
+            <p>Willst du dich wirklich abmelden?</p>
+            <span onclick="" onmouseenter="startLogoutTimer(this)" onmouseleave="resetLogoutTimer(this)" onmousedown="logoutBtn()">Abmelden</span>
         </div>
         <div id="settings_nav">
             <span id="close_settings" class="material-symbols-outlined" title="Einstellungen schließen" onclick="closeSettings()">close</span>
             <span data-settings="sound" onclick="selectSetting(this.dataset.settings)">Sound</span>
             <span data-settings="manage" onclick="selectSetting(this.dataset.settings)">Management</span>
             <span data-settings="info" onclick="selectSetting(this.dataset.settings)">Info</span>
-            <span id="logout" class="material-symbols-outlined" title="Ausloggen" onclick="showLogout()">logout</span>
+            <span id="logout" class="material-symbols-outlined" title="Abmelden" onclick="showLogout()">logout</span>
         </div>
         <div id="settings_content">
             <div data-settings="sound">
@@ -838,7 +877,7 @@
                             </span>
                             <span>
                                 <span>Name:</span>
-                                <input data-value="new_name" placeholder="Max Mustermann" oninput="restrictInput(this, {'regex':/[^a-zA-Z .]/g,'length':20})">
+                                <input data-value="new_name" placeholder="Max Mustermann" oninput="restrictInput(this, {'regex':/[^a-zA-Z .äÄöÖüÜ]/g,'length':20})">
                             </span>
                         </div>
                         <span id="create_user_confirm" onclick="createUser()">Benutzer anlegen</span>
@@ -849,7 +888,7 @@
                         <span class="material-symbols-outlined" onclick="closeUserEdit()">close</span>
                         <div>
                             <span>max_mustermann</span>
-                            <input type="text" id="edit_name" value="Max Mustermann" oninput="restrictInput(this, {'regex':/[^a-zA-Z .]/g,'length':20})" onchange="editUser('change_name',this.value)">
+                            <input type="text" id="edit_name" value="Max Mustermann" oninput="restrictInput(this, {'regex':/[^a-zA-Z .äÄöÖüÜ]/g,'length':20})" onchange="editUser('change_name',this.value)">
                             <hr>
 
                             <div>
@@ -861,16 +900,16 @@
                                     </span>
                                     <div>
                                         <p>RDIL</p>
-                                        <span data-option="Praktikant">Praktikant</span>
-                                        <span data-option="Rettungshelfer">Rettungshelfer</span>
-                                        <span data-option="Rettungssanitäter">Rettungssanitäter</span>
-                                        <span data-option="Rettungsassistent">Rettungsassistent</span>
-                                        <span data-option="Noftallsanitäter">Noftallsanitäter</span>
-                                        <span data-option="Notarzt">Notarzt</span>
-                                        <span data-option="Abteilungskommandant">Abteilungskommandant</span>
-                                        <span data-option="Kolonnenkommandant">Kolonnenkommandant</span>
-                                        <span data-option="Rettungsrat">Rettungsrat</span>
                                         <span data-option="Oberrettungsrat">Oberrettungsrat</span>
+                                        <span data-option="Rettungsrat">Rettungsrat</span>
+                                        <span data-option="Kolonnenkommandant">Kolonnenkommandant</span>
+                                        <span data-option="Abteilungskommandant">Abteilungskommandant</span>
+                                        <span data-option="Notarzt">Notarzt</span>
+                                        <span data-option="Noftallsanitäter">Noftallsanitäter</span>
+                                        <span data-option="Rettungsassistent">Rettungsassistent</span>
+                                        <span data-option="Rettungssanitäter">Rettungssanitäter</span>
+                                        <span data-option="Rettungshelfer">Rettungshelfer</span>
+                                        <span data-option="Praktikant">Praktikant</span>
                                         <p>POL</p>
                                         <span data-option="Anwärter">Anwärter</span>
                                     </div>
@@ -935,14 +974,14 @@
 
     <script>
         let auth = new Object();
-        let logoutTimer = 10;
+        let logoutTimer = 5;
         let logoutClock;
         let localUsers;
+        let selectedPager = "pager_s_touchscreen";
         window.electronAPI.getVersion();
         window.electronAPI.getAuth();
         window.electronAPI.getSettings();
         selectSetting("manage");//standard settings menu
-        openSettings()
 
         window.electronAPI.mainProc((event, arg)=>{
             //console.log(event, arg)
@@ -981,18 +1020,17 @@
         function openPager(faction, unit) {
             if(faction == "rdil") {
                 window.electronAPI.sendMsg({"unit":unit});
-                requestWindow("pager_rdil");
+                requestWindow({"pager":["rdil",selectedPager]});
             }
             else {
                 window.electronAPI.sendMsg({"unit":unit});
-                requestWindow("pager_pol");
+                requestWindow({"pager":["pol",selectedPager]});
             }
         }
 
         function requestWindow(wType) {
-            let wTypes = ["pager_rdil","lst_rdil","pager_pol","lst_pol"];
-            if(wTypes.includes(wType))
-                window.electronAPI.sendMsg(wType);
+            console.log("opening window:", wType);
+            window.electronAPI.sendMsg(wType);
         }
 
         async function updateUnitList(faction) {
@@ -1115,23 +1153,23 @@
 
         function startLogoutTimer(el) {
             logoutClock = setInterval(()=>{
-                if(logoutTimer > 0) {
+                if(logoutTimer > 1) {
                     logoutTimer = logoutTimer-1;
                     el.innerText = logoutTimer;
                 }
                 else {
-                    el.innerText = "Ausloggen";
+                    el.innerText = "Abmelden";
                 }
             }, 1000);
             el.innerText = logoutTimer;
         }
         function resetLogoutTimer(el) {
             clearInterval(logoutClock);
-            logoutTimer = 9;
-            el.innerText = "Ausloggen";
+            logoutTimer = 5;
+            el.innerText = "Abmelden";
         }
         function logoutBtn() {
-            if(logoutTimer == 0)
+            if(logoutTimer == 1)
                 logout();
         }
 

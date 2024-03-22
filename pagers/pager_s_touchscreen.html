@@ -479,7 +479,7 @@
 
         <div id="status_bar">
             <span id="connection" onclick="btnPress('connection')" class="material-symbols-outlined">signal_cellular_nodata</span>
-            <span id="sound" onclick="btnPress('sound')" class="material-symbols-outlined">volume_off</span>
+            <span id="sound" onclick="btnPress('sound')" class="material-symbols-outlined">notifications_off</span>
             <span id="display" onclick="btnPress('display')" class="material-symbols-outlined">contrast</span>
             <span id="settings" onclick="btnPress('settings')" class="material-symbols-outlined">settings</span>
             <span id="sync" onclick="requestSync()" class="material-symbols-outlined">sync</span>
@@ -500,7 +500,6 @@
     <script>
         const jobInfo = document.querySelector("#job_info");
         let openWindow;
-        let connected = false;
         let syncCooldown = false;
         let pagerSettings = new Object();
         let soundset;

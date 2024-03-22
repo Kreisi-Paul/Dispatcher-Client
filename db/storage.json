@@ -5,16 +5,13 @@
 	},
 	"settings": {
 		"lst_volume": 0.16,
-		"soundset": "soundset_0",
-		"rank": "Rettungssanitäter",
-		"perm_rdil": "2",
-		"perm_pol": "3"
+		"soundset": "soundset_0"
 	},
 	"pagerSettings": {
 		"pager_s_touchscreen": {
 			"opacity": "6",
 			"contrast": "3",
-			"volume": "3"
+			"volume": "2"
 		}
 	}
 }
