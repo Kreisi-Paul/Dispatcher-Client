@@ -1,4 +1,4 @@
-This Repository inclued a passion project of mine.
+This Repository includes a passion project of mine.
 
 More info about the project will be include here soon.
 
