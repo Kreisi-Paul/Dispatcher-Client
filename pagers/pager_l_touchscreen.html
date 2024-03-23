@@ -75,6 +75,7 @@
         }
 
 
+
         #lockscreen {
             z-index: 5;
             background: linear-gradient(45deg, #926161 20%, #c54f4f 80%);
@@ -243,8 +244,7 @@
                 flex: 1;
                 display: flex;
                 text-wrap: wrap;
-                word-wrap: break-word;
-                word-break: break-all;
+                overflow-wrap: break-word;
                 user-select: text;
             }
 
@@ -593,20 +593,36 @@
                 background-color: var(--ui-dark);
                 height: 100%;
                 width: 100%;
-                flex-direction: row;
+                flex-direction: column;
                 flex-wrap: wrap;
             }
 
             #messages_mainmenu {
-                width: 100%;
-                height: 10%;
-                background: linear-gradient(225deg, rgb(76, 218, 29) 20%, rgb(57, 108, 33) 80%);
+                z-index: 1;
+                width: calc(80% - 40px);
+                padding: 0 20px;
+                height: 46px;
+                background: linear-gradient(45deg, rgb(76, 218, 29) 20%, rgb(57, 108, 33) 80%);
+                box-shadow: #00000088 0 0 10px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            #messages_mainmenu p {
+                margin: 0;
+                font-weight: bold;
+                font-size: 20px;
             }
 
             #messages_contacts {
+                z-index: 2;
                 width: 20%;
-                height: 90%;
-                background-color: rgb(57, 108, 33);
+                height: 100%;
+                padding-top: 46px;
+                background-color: var(--ui-dark);
+                box-shadow: #000 0 0 10px;
+                overflow-y: scroll;
             }
 
             #messages_contacts hr {
@@ -625,17 +641,29 @@
             }
 
             #messages_contacts > span:hover {
-                backdrop-filter: brightness(120%);
+                backdrop-filter: brightness(140%);
+            }
+
+            .unreadMessage.unread {
+                background-color: rgb(76, 218, 29);
+                border-radius: 50ch;
+                height: 0.5em;
+                aspect-ratio: 1/1;
+                display: flex;
+                transform: translateY(-0.5ch);
             }
 
             #messages_content {
+                position: absolute;
+                bottom: 0;
+                right: 0;
                 flex: 1;
                 height: 90%;
-                background-color: #bbb;
+                width: 80%;
+                background-color: var(--ui-light);
                 display: flex;
                 flex-direction: column;
                 align-items: stretch;
-                box-shadow: #00000088 10px 10px 15px -10px inset;
             }
 
             #messages_input {
@@ -648,7 +676,7 @@
                 margin-left: 20px;
                 border-radius: 50ch;
                 background-color: #fff;
-                box-shadow: #00000088 0 0 5px;
+                box-shadow: #000 0 0 5px;
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
@@ -705,6 +733,7 @@
             .messageContent {
                 text-align: left;
                 user-select: text;
+                overflow-wrap: break-word;
             }
 
             .messageTimestamp {
@@ -878,6 +907,7 @@
         </span>
 
 
+
         <div id="lockscreen">
             <div id="lockscreen_welcome">
                 <span>Hallo, </span>
@@ -958,44 +988,15 @@
             </div>
             <div class="app" data-app="follow_up"></div>
             <div class="app" data-app="messages">
+                <div id="messages_contacts"></div>
                 <div id="messages_mainmenu">
-
-                </div>
-                <div id="messages_contacts">
-                    <span>
-                        <span class="material-symbols-outlined">cell_tower</span>
-                        <p>Leitstelle</p>
-                        <span class="unreadMessage"></span>
-                    </span>
-                    <hr>
-                    <span>
-                        <span class="material-symbols-outlined">minor_crash</span>
-                        <p>NEF-03 KAV</p>
-                        <span class="unreadMessage"></span>
-                    </span>
+                    <p></p>
                 </div>
                 <div id="messages_content">
-                    <div id="messages_chat">
-                        <span class="messageBubble sent">
-                            <span class="messageContent">Hallo Hörbi! Es brennt! Bitte schick mir schnell Einheiten!</span>
-                            <span class="messageTimestamp">12:00</span>
-                        </span>
-                        <span class="messageBubble recieved">
-                            <span class="messageContent">Wo denn?</span>
-                            <span class="messageTimestamp">12:01</span>
-                        </span>
-                        <span class="messageBubble sent">
-                            <span class="messageContent">In der Eisfabrik!</span>
-                            <span class="messageTimestamp">12:02</span>
-                        </span>
-                        <span class="messageBubble sent">
-                            <span class="messageContent">HILFE!!!</span>
-                            <span class="messageTimestamp">12:02</span>
-                        </span>
-                    </div>
+                    <div id="messages_chat"></div>
                     <div id="messages_input">
-                        <input placeholder="Nachricht schreiben...">
-                        <span class="material-symbols-outlined">send</span>
+                        <input placeholder="Nachricht schreiben..." onkeydown="event.key == 'Enter' ? sendChatMsg() : null" oninput="this.value.length > 100 ? this.value = this.value.slice(0,100) : null">
+                        <span class="material-symbols-outlined" onclick="sendChatMsg()">send</span>
                     </div>
                 </div>
             </div>
@@ -1067,6 +1068,14 @@
             "settings": {
                 name: "Einstellungen",
                 icon: "settings"
+            }
+        };
+        let appStorage = {
+            "messages": {
+
+            },
+            "maps": {
+
             }
         };
 
@@ -1205,7 +1214,7 @@
         function createNotification(app, content) {
             if(content.length > 40) {//limit content to 40 chars
                 content = content.slice(0,36);
-                content += " ..."
+                content += "..."
             }
 
             let notificationEl = `
@@ -1283,6 +1292,56 @@
             closeAppManagement()//close app management in case a shortcut from that menu was used
             //console.log(appName, data)
 
+
+            try {//run app-specific code when it is not yet initialized
+            if(!appStorage[appName].init) {
+                switch(appName) {
+                    case "messages":
+                        fetch(`https://limnos.kreisi.net/getvehicles/${userAuth.faction}?user_ident=${encodeURIComponent(userAuth.user_ident)}&user_key=${encodeURIComponent(userAuth.user_key)}`).then(async(response)=>{
+                            if(response.status != 200)
+                                return;
+
+                            let units = await response.json();
+                            let contactEls = `
+                            <span onclick="switchChat(this.children.item(1).innerText)">
+                                <span class="material-symbols-outlined">cell_tower</span>
+                                <p>Leitstelle</p>
+                                <span class="unreadMessage unread"></span>
+                            </span>
+                            <hr>`;
+                            appStorage.messages.chats = {"Leitstelle": [
+                                ["sent","Das wurde gesendet","12:00"],
+                                ["recieved","Ich habs gesehn","12:01"],
+                                ["recieved","Ist gut","12:02"],
+                                ["sent","Ne seh ich nicht so","12:03"]
+                            ]};
+                            appStorage.messages.init = true;
+
+                            delete units[userAuth.unit];//delete own unit
+
+                            for(let i=0,iLength=Object.keys(units).length; i<iLength; i++) {
+
+                                appStorage.messages.chats[Object.keys(units)[i]] = [];
+
+                                contactEls += `
+                                <span onclick="switchChat(this.children.item(1).innerText)">
+                                    <span class="material-symbols-outlined">minor_crash</span>
+                                    <p>${makeSafe(Object.keys(units)[i])}</p>
+                                    <span class="unreadMessage"></span>
+                                </span>
+                                `;
+                                if(i+1 != iLength)
+                                    contactEls += "<hr>";
+                            }
+
+                            document.querySelector("#messages_contacts").innerHTML = contactEls;
+                        })
+                        switchChat("");
+                        break;
+                }
+            }
+            } catch {}
+
             //show app
             document.querySelector(`#apps > div[data-app="${appName}"]`).classList.add("appFullscreen");
 
@@ -1309,13 +1368,80 @@
             //remove app from active apps
             openApps.delete(appName);
             document.querySelector(`#active_apps_list .activeApp[data-app="${appName}"]`).remove();
+
+            //try to clear app storage
+            try {
+                appStorage[appName] = {};
+            }
+            catch {}
         }
 
 
 
         /* APPS */
 
+        function switchChat(chat) {
+            let chatDiv = document.querySelector("#messages_chat");
+            chatDiv.innerHTML = "";
+            let messagesEl = "";
 
+            document.querySelector("#messages_input input").value = "";
+            document.querySelector("#messages_mainmenu p").innerText = chat;
+
+            for(let i=0,iLength=appStorage.messages.chats[chat].length; i<iLength; i++) {
+                let tmpMessage = appStorage.messages.chats[chat][i];
+                messagesEl += `
+                <span class="messageBubble ${tmpMessage[0]}">
+                <span class="messageContent">${makeSafe(tmpMessage[1])}</span>
+                <span class="messageTimestamp">${tmpMessage[2]}</span>
+                </span>`;
+            }
+
+            chatDiv.innerHTML = messagesEl;
+
+            chatDiv.scrollTop = chatDiv.scrollHeight;//scroll to bottom
+        }
+
+        function sendChatMsg() {
+            let input = document.querySelector("#messages_input input");
+            let target = document.querySelector("#messages_mainmenu p").innerText;
+
+            if(!input.value || !target)
+                return;
+
+            sendSocket({"msg":[target,input.value,userAuth.unit]});
+
+            appStorage.messages.chats[target].push([//save sent message
+                "sent",
+                input.value,
+                new Date(Date.now()).toLocaleTimeString("de",{hour:"2-digit",minute:"2-digit"})
+            ]);
+            
+            switchChat(target);//refresh chat
+
+            input.value = "";
+        }
+
+        function recieveChatMsg(message) {
+            let newMsg = [
+                "recieved",
+                message[0],
+                new Date(Date.now()).toLocaleTimeString("de",{hour:"2-digit",minute:"2-digit"})
+            ];
+
+            console.log(appStorage.messages.chats)
+            appStorage.messages.chats[message[1]].push(newMsg);
+
+            if(document.querySelector("#messages_mainmenu p").innerText == message[1])//update chat when user is currently looking at it
+                switchChat(message[1]);
+
+            if(document.querySelector(".app[data-app='messages']").classList.contains("appFullscreen")) {
+
+            }
+            else {
+                createNotification("messages",`Nachricht von ${makeSafe(message[1])}: ${message[0]}`);
+            }
+        }
 
 
 

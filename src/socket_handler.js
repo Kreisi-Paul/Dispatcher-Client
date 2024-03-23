@@ -126,6 +126,10 @@ function handleSocketMsg(message) {
             case "lst_msg":
                 lstMsg(content);
                 return;
+
+            case "msg":
+                recieveChatMsg(content);
+                return;
         }
     }
 }
