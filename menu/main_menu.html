@@ -733,6 +733,7 @@
         #edit_user {
             justify-content: flex-start;
             height: auto;
+            gap: 8px;
         }
 
         #edit_user > div {
@@ -758,6 +759,10 @@
             flex-direction: row;
             align-items: center;
             gap: 6px;
+        }
+
+        #reset_password {
+            align-self: center;
         }
 
     </style>
@@ -948,6 +953,7 @@
                                 </span>
                             </div>
                         </div>
+                        <span onclick="editUser('reset_password','1')">Passwort zurücksetzen</span>
                     </div>
 
                     <!-- delete_user window -->
@@ -1112,8 +1118,8 @@
         async function login() {
             document.querySelector("#login_btn").disabled = true;
             let username = document.querySelector("#login_username").value;
-            let password = document.querySelector("#login_password").value;
-            let response = await fetch(`https://limnos.kreisi.net/login?username=${username}&password=${password}`);
+            let password = await hashDigest(document.querySelector("#login_password").value);
+            let response = await fetch(`https://limnos.kreisi.net/login?ident=${username}&password=${password}`);
 
             if(response.status == 200) {
                 window.electronAPI.setAuth({"user_ident":username,"user_key":await response.text()});
@@ -1135,6 +1141,20 @@
                 document.querySelector("#login_btn").disabled = false;
                 document.querySelector("#login").style.display = "none";
             }
+        }
+        async function hashDigest(data) {
+            let encoder = new TextEncoder();
+            let dataEnc = encoder.encode(data);
+            let result;
+
+            await crypto.subtle.digest("SHA-256", dataEnc).then((dataBuffer) => {
+                let hashArray = Array.from(new Uint8Array(dataBuffer));
+                result = hashArray
+                .map((b) => b.toString(16).padStart(2, "0"))
+                .join("");
+            })
+
+            return result;
         }
 
         function openSettings() {
@@ -1368,6 +1388,11 @@
 
             if(response.status == 200) {
                 getUserList();
+
+
+                if(category == "reset_password")
+                    navigator.clipboard.writeText(`https://limnos.kreisi.net/register?${encodeURIComponent(changeIdent)}`);
+
                 return true;
             }
             else {
@@ -1402,7 +1427,7 @@
             let response = await fetch(`https://limnos.kreisi.net/deleteuser?user_ident=${encodeURIComponent(auth.user_ident)}&user_key=${encodeURIComponent(auth.user_key)}&delete_ident=${encodeURIComponent(deleteUser)}`);
 
             if(response.status != 200) {
-                displayError(`Nutzer konnte nicht gelöscht werden.<br>(${response.status})`);
+                displayError(`Nutzer konnte nicht gelöscht werden.<br>(${response.status})`, 6000);
                 return;
             }
 

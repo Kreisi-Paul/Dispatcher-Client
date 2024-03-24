@@ -165,6 +165,7 @@ function openPager(faction, pagerModel) {
         "pager_l_touchscreen": {
             width: 820,
             height: 480,
+            minHeight: 380,
             resizable: true
         }
     }
@@ -185,6 +186,8 @@ function openPager(faction, pagerModel) {
     }));
 
 
+    if(pagerModel == "pager_l_touchscreen")
+        pagerWindow.setAspectRatio(5/3);
 
 
     pagerWindow.setAlwaysOnTop(true, "screen-saver");
