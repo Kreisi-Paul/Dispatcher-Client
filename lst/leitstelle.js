@@ -327,7 +327,7 @@ function jobsUpdate(jobs) {
     let activeJobList = document.querySelector("#active_jobs > .jobList");
     let newJobList = document.querySelector("#new_jobs > .jobList");
     let factionClasses = {
-        "rdil": "rdilJob",
+        "rd": "rdJob",
         "pol": "polJob"
     };
 

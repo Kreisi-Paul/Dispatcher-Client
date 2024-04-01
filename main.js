@@ -37,7 +37,8 @@ app.whenReady().then(() => {
         app.quit(); //close app when main window is closed
     })
 
-    mainWindow.webContents.openDevTools()
+    if(localDB.settings.devmode)
+        mainWindow.webContents.openDevTools()
 
     app.on('activate', ()=>{
         console.log("activated");
@@ -50,8 +51,8 @@ ipcMain.on("main_window", (event, content) => {
 
     if(typeof content == "string") {
         switch (content) {
-            case "lst_rdil":
-                openLST("rdil");
+            case "lst_rd":
+                openLST("rd");
                 return;
 
             case "lst_pol":
@@ -192,7 +193,9 @@ function openPager(faction, pagerModel) {
 
     pagerWindow.setAlwaysOnTop(true, "screen-saver");
     pagerWindow.loadFile(`pagers/${pagerModel}.html`);
-    pagerWindow.webContents.openDevTools()
+
+    if(localDB.settings.devmode)
+        pagerWindow.webContents.openDevTools()
 }
 
 function openLST(faction) {
@@ -213,7 +216,9 @@ function openLST(faction) {
     });
     lstWindow.loadFile(`lst/leitstelle.html`);
     lstWindow.maximize();
-    lstWindow.webContents.openDevTools()
+
+    if(localDB.settings.devmode)
+        lstWindow.webContents.openDevTools()
 }
 
 function openJobCreation() {
@@ -228,7 +233,9 @@ function openJobCreation() {
         }
     });
     jobWindow.loadFile(`lst/createjob.html`);
-    jobWindow.webContents.openDevTools()
+
+    if(localDB.settings.devmode)
+        jobWindow.webContents.openDevTools()
 
     //jobWindow.webContents.send('main_proc', {faction:faction,jobdata:jobData});
 }

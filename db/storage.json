@@ -5,7 +5,8 @@
 	},
 	"settings": {
 		"lst_volume": 0.16,
-		"soundset": "soundset_0"
+		"soundset": "soundset_0",
+		"devmode": true
 	},
 	"pagerSettings": {
 		"pager_s_touchscreen": {

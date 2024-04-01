@@ -248,8 +248,8 @@
             filter: saturate(160%);
         }
 
-        .rdil {
-            background-color: var(--rdil);
+        .rd {
+            background-color: var(--rd);
         }
 
         .pol {
@@ -765,6 +765,57 @@
             align-self: center;
         }
 
+        #settings_version {
+            text-align: center;
+            color: var(--color-2);
+            margin: 0;
+            margin-bottom: 20px;
+        }
+
+        #settings_version b {
+            color: var(--color-2);
+            user-select: text;
+        }
+
+        #devmode_toggle {
+            height: 16px;
+            aspect-ratio: 1/1;
+            background-color: #b00;
+            border-radius: 5px;
+            border: var(--color-2) 2px solid;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 200ms ease-in-out;
+        }
+
+        #devmode_toggle:hover {
+            border-color: #fff;
+        }
+
+        #devmode_toggle.toggled {
+            background-color: #0b0;
+        }
+
+        #devmode_warning {
+            align-self: flex-start;
+            color: var(--color-2);
+        }
+
+        div[data-settings="info"] {
+            gap: 4px;
+        }
+
+        div[data-settings="info"] > div {
+            align-self: stretch;
+            display: flex;
+            gap: 8px;
+            justify-content: flex-start;
+            align-items: center;
+        }
+
     </style>
 </head>
 <body>
@@ -772,8 +823,8 @@
     <h1 id="welcome"></h1>
 
     <div id="menu_grid">
-        <div onclick="openUnitSelection('rdil')" class="menuButton rdil">Dispatcher RDIL</div>
-        <div onclick="requestWindow('lst_rdil')" class="menuButton rdil">Leitstelle RDIL</div>
+        <div onclick="openUnitSelection('rd')" class="menuButton rd">Dispatcher RD</div>
+        <div onclick="requestWindow('lst_rd')" class="menuButton rd">Leitstelle RD</div>
         <div onclick="openUnitSelection('pol')" class="menuButton pol">Dispatcher POL</div>
         <div onclick="requestWindow('lst_pol')" class="menuButton pol">Leitstelle POL</div>
         <div onclick="openSettings()" class="menuButton">Einstellungen</div>
@@ -904,7 +955,7 @@
                                         <span class="collapseSelector material-symbols-outlined">expand_more</span>
                                     </span>
                                     <div>
-                                        <p>RDIL</p>
+                                        <p>RD</p>
                                         <span data-option="Oberrettungsrat">Oberrettungsrat</span>
                                         <span data-option="Rettungsrat">Rettungsrat</span>
                                         <span data-option="Kolonnenkommandant">Kolonnenkommandant</span>
@@ -923,7 +974,7 @@
     
                             <div>
                                 <span class="material-symbols-outlined">medical_services</span>
-                                <span data-edit_user="change_perm_rdil" class="settingsSelector" onclick="selectorEvent(this,event)">
+                                <span data-edit_user="change_perm_rd" class="settingsSelector" onclick="selectorEvent(this,event)">
                                     <span>
                                         <span class="activeSelector">0</span>
                                         <span class="collapseSelector material-symbols-outlined">expand_more</span>
@@ -968,7 +1019,14 @@
                     </div>
                 </div>
             </div>
-            <div data-settings="info"></div>
+            <div data-settings="info">
+                <p id="settings_version"></p>
+                <div>
+                    <span>DevTools</span>
+                    <span id="devmode_toggle" onclick="toggleDevTools()"></span>
+                </div>
+                <span id="devmode_warning">Bitte aktiviere diese Einstellung nur, wenn du weißt was du tust!<br>Du könntest deinen Account oder deine Installation gefährden.</span>
+            </div>
         </div>
     </div>
 
@@ -987,7 +1045,7 @@
         window.electronAPI.getVersion();
         window.electronAPI.getAuth();
         window.electronAPI.getSettings();
-        selectSetting("manage");//standard settings menu
+        selectSetting("sound");//standard settings menu
 
         window.electronAPI.mainProc((event, arg)=>{
             //console.log(event, arg)
@@ -1000,12 +1058,15 @@
             }
             if(Object.keys(arg).includes("version")) {
                 document.querySelector("#loading_version").innerHTML = `${arg.version}<br><b>made with ♥ by Kreisi</b>`;
+                document.querySelector("#settings_version").innerHTML = `<b>${arg.version}</b><br>Mehr Informationen unter <b>www.kreisi.net</b>`;
             }
             if(Object.keys(arg).includes("settings")) {
                 if(arg.settings.lst_volume)
                     setSlider(arg.settings.lst_volume, document.querySelector("span[data-setting=lst_volume]"));
                 if(arg.settings.soundset)
                     setSelector(arg.settings.soundset, document.querySelector("span[data-setting=soundset]"));
+                if(arg.settings.devmode)
+                    document.querySelector("#devmode_toggle").classList.add("toggled");
             }            
         })
 
@@ -1024,9 +1085,9 @@
 
 
         function openPager(faction, unit) {
-            if(faction == "rdil") {
+            if(faction == "rd") {
                 window.electronAPI.sendMsg({"unit":unit});
-                requestWindow({"pager":["rdil",selectedPager]});
+                requestWindow({"pager":["rd",selectedPager]});
             }
             else {
                 window.electronAPI.sendMsg({"unit":unit});
@@ -1304,7 +1365,7 @@
                     <span class="userRanks">
                         <span>
                             <span class="material-symbols-outlined">medical_services</span>
-                            <span>${tmpUser.permissionLvlRDIL}</span>
+                            <span>${tmpUser.permissionLvlRD}</span>
                         </span>
                         <span>
                             <span class="material-symbols-outlined">local_police</span>
@@ -1371,7 +1432,7 @@
             //set values
             document.querySelector("#edit_name").value = localUsers[userIdent].name;
             document.querySelector("#edit_user span[data-edit_user='change_rank'] .activeSelector").innerText = localUsers[userIdent].rank || "-- / --";
-            document.querySelector("#edit_user span[data-edit_user='change_perm_rdil'] .activeSelector").innerText = localUsers[userIdent].permissionLvlRDIL;
+            document.querySelector("#edit_user span[data-edit_user='change_perm_rd'] .activeSelector").innerText = localUsers[userIdent].permissionLvlRD;
             document.querySelector("#edit_user span[data-edit_user='change_perm_pol'] .activeSelector").innerText = localUsers[userIdent].permissionLvlPOL;
 
             //open window
@@ -1446,6 +1507,19 @@
             elValue = elValue.slice(0, length);
 
             el.value = elValue;
+        }
+
+        function toggleDevTools() {
+            let toggle = document.querySelector("#devmode_toggle");
+
+            if(toggle.classList.contains("toggled")) {
+                window.electronAPI.sendMsg({"set_setting":["devmode",false]});
+                toggle.classList.remove("toggled");
+            }
+            else {
+                window.electronAPI.sendMsg({"set_setting":["devmode",true]});
+                toggle.classList.add("toggled");
+            }
         }
 
 
