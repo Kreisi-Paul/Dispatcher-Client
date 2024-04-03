@@ -41,7 +41,7 @@ window.electronAPI.mainProc((event, arg)=>{
 
 function openSocket() {
     console.log("opening socket")
-    socket = new WebSocket("wss://limnos.kreisi.net");
+    socket = new WebSocket("wss://dispatch.kreisi.net");
 
     // Connection opened
     socket.addEventListener('open', () => {

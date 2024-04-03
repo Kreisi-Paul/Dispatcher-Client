@@ -261,7 +261,7 @@ function jobUpdate(new_job_id) {
     document.querySelector("#job_download").style.display = "flex";
 
 
-    fetch(`https://limnos.kreisi.net/getjobinfo?id=${new_job_id}&user_faction=${userAuth.faction}&user_ident=${encodeURIComponent(userAuth.user_ident)}&user_key=${encodeURIComponent(userAuth.user_key)}`).then(async(response)=>{
+    fetch(`https://dispatch.kreisi.net/getjobinfo?id=${new_job_id}&user_faction=${userAuth.faction}&user_ident=${encodeURIComponent(userAuth.user_ident)}&user_key=${encodeURIComponent(userAuth.user_key)}`).then(async(response)=>{
         console.log(response)
         if(response.status == 200) {
             document.querySelector("#job_download").style.display = "none";

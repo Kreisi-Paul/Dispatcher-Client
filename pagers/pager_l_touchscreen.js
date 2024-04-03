@@ -257,7 +257,7 @@ function openApp(appName, data) {
         if (!appStorage[appName].init) {
             switch (appName) {
                 case "messages":
-                    fetch(`https://limnos.kreisi.net/getvehicles/${userAuth.faction}?user_ident=${encodeURIComponent(userAuth.user_ident)}&user_key=${encodeURIComponent(userAuth.user_key)}`).then(async (response) => {
+                    fetch(`https://dispatch.kreisi.net/getvehicles/${userAuth.faction}?user_ident=${encodeURIComponent(userAuth.user_ident)}&user_key=${encodeURIComponent(userAuth.user_key)}`).then(async (response) => {
                         if (response.status != 200)
                             return;
 
@@ -460,7 +460,7 @@ function jobUpdate(newJobId) {
     document.querySelector("#job_download").style.display = "flex";
     */
 
-    fetch(`https://limnos.kreisi.net/getjobinfo?id=${newJobId}&user_faction=${userAuth.faction}&user_ident=${encodeURIComponent(userAuth.user_ident)}&user_key=${encodeURIComponent(userAuth.user_key)}`).then(async (response) => {
+    fetch(`https://dispatch.kreisi.net/getjobinfo?id=${newJobId}&user_faction=${userAuth.faction}&user_ident=${encodeURIComponent(userAuth.user_ident)}&user_key=${encodeURIComponent(userAuth.user_key)}`).then(async (response) => {
         console.log(response)
         if (response.status != 200) {
             createNotification("alarm", "Einsatzinfo konnte nicht empfangen werden!")
@@ -495,7 +495,7 @@ function jobUpdate(newJobId) {
         document.querySelector("span[data-job=timestamp]").innerText = new Date(parseInt(newJobId)).toLocaleTimeString("de");
 
         setTimeout(() => {
-            fetch(`https://limnos.kreisi.net/getvehicles/${userAuth.faction}?user_ident=${encodeURIComponent(userAuth.user_ident)}&user_key=${encodeURIComponent(userAuth.user_key)}`).then(async (response) => {
+            fetch(`https://dispatch.kreisi.net/getvehicles/${userAuth.faction}?user_ident=${encodeURIComponent(userAuth.user_ident)}&user_key=${encodeURIComponent(userAuth.user_key)}`).then(async (response) => {
                 response.json().then((units) => {
                     let jobUnits = "";
 

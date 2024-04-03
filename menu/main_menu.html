@@ -1109,7 +1109,7 @@
 
 
             //get data
-            let response = await fetch(`https://limnos.kreisi.net/getvehicles/${encodeURIComponent(faction)}?user_ident=${encodeURIComponent(auth.user_ident)}&user_key=${encodeURIComponent(auth.user_key)}`);
+            let response = await fetch(`https://dispatch.kreisi.net/getvehicles/${encodeURIComponent(faction)}?user_ident=${encodeURIComponent(auth.user_ident)}&user_key=${encodeURIComponent(auth.user_key)}`);
             let unitList = await response.json();
             console.log(unitList)
 
@@ -1156,12 +1156,12 @@
         }
 
         async function confirmAuth() {
-            let response = await fetch(`https://limnos.kreisi.net/checkauth?user_ident=${encodeURIComponent(auth.user_ident)}&user_key=${encodeURIComponent(auth.user_key)}`);
+            let response = await fetch(`https://dispatch.kreisi.net/checkauth?user_ident=${encodeURIComponent(auth.user_ident)}&user_key=${encodeURIComponent(auth.user_key)}`);
 
             if(response.status == 200) {//lädt Username, schließt Ladebildschirm
                 document.querySelector("#loading_status").innerText = "Authorisierung erfolgreich";
                 setTimeout(async ()=> {
-                    let userResponse = await fetch(`https://limnos.kreisi.net/getusername?user_ident=${encodeURIComponent(auth.user_ident)}`);
+                    let userResponse = await fetch(`https://dispatch.kreisi.net/getusername?user_ident=${encodeURIComponent(auth.user_ident)}`);
                     let username = await userResponse.text();
                     document.querySelector("#welcome").innerText = `Hallo, ${username}`;
                     document.querySelector("#loading_version").style.display = "none";
@@ -1180,7 +1180,7 @@
             document.querySelector("#login_btn").disabled = true;
             let username = document.querySelector("#login_username").value;
             let password = await hashDigest(document.querySelector("#login_password").value);
-            let response = await fetch(`https://limnos.kreisi.net/login?ident=${username}&password=${password}`);
+            let response = await fetch(`https://dispatch.kreisi.net/login?ident=${username}&password=${password}`);
 
             if(response.status == 200) {
                 window.electronAPI.setAuth({"user_ident":username,"user_key":await response.text()});
@@ -1335,7 +1335,7 @@
 
 
         async function getUserList() {
-            let response = await fetch(`https://limnos.kreisi.net/getusers?user_ident=${encodeURIComponent(auth.user_ident)}&user_key=${encodeURIComponent(auth.user_key)}`);
+            let response = await fetch(`https://dispatch.kreisi.net/getusers?user_ident=${encodeURIComponent(auth.user_ident)}&user_key=${encodeURIComponent(auth.user_key)}`);
             if(response.status == 200) {
                 let responseData = await response.json();
                 updateUserList(responseData);
@@ -1414,7 +1414,7 @@
                 return;
             }
 
-            let response = await fetch(`https://limnos.kreisi.net/createuser?user_ident=${encodeURIComponent(auth.user_ident)}&user_key=${encodeURIComponent(auth.user_key)}&new_ident=${encodeURIComponent(newUser.ident)}&new_name=${encodeURIComponent(newUser.name)}`);
+            let response = await fetch(`https://dispatch.kreisi.net/createuser?user_ident=${encodeURIComponent(auth.user_ident)}&user_key=${encodeURIComponent(auth.user_key)}&new_ident=${encodeURIComponent(newUser.ident)}&new_name=${encodeURIComponent(newUser.name)}`);
 
             if(response.status != 200) {
                 displayError(`Anfrage fehlgeschlagen.<br>(${response.status})`, 6000);
@@ -1445,14 +1445,14 @@
             //console.log(category,value)
             let changeIdent = document.querySelector("#edit_user > div > span").innerText;
 
-            let response = await fetch(`https://limnos.kreisi.net/edituser?user_ident=${encodeURIComponent(auth.user_ident)}&user_key=${encodeURIComponent(auth.user_key)}&change_ident=${encodeURIComponent(changeIdent)}&${encodeURIComponent(category)}=${encodeURIComponent(value)}`);
+            let response = await fetch(`https://dispatch.kreisi.net/edituser?user_ident=${encodeURIComponent(auth.user_ident)}&user_key=${encodeURIComponent(auth.user_key)}&change_ident=${encodeURIComponent(changeIdent)}&${encodeURIComponent(category)}=${encodeURIComponent(value)}`);
 
             if(response.status == 200) {
                 getUserList();
 
 
                 if(category == "reset_password")
-                    navigator.clipboard.writeText(`https://limnos.kreisi.net/register?${encodeURIComponent(changeIdent)}`);
+                    navigator.clipboard.writeText(`https://dispatch.kreisi.net/register?${encodeURIComponent(changeIdent)}`);
 
                 return true;
             }
@@ -1485,7 +1485,7 @@
             if(!deleteUser)
                 displayError("Nutzer konnte nicht gelöscht werden.", 6000);
 
-            let response = await fetch(`https://limnos.kreisi.net/deleteuser?user_ident=${encodeURIComponent(auth.user_ident)}&user_key=${encodeURIComponent(auth.user_key)}&delete_ident=${encodeURIComponent(deleteUser)}`);
+            let response = await fetch(`https://dispatch.kreisi.net/deleteuser?user_ident=${encodeURIComponent(auth.user_ident)}&user_key=${encodeURIComponent(auth.user_key)}&delete_ident=${encodeURIComponent(deleteUser)}`);
 
             if(response.status != 200) {
                 displayError(`Nutzer konnte nicht gelöscht werden.<br>(${response.status})`, 6000);

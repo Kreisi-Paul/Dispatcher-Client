@@ -7,7 +7,7 @@ let lastPing = null;
 
 function openSocket() {
     console.log("opening socket")
-    socket = new WebSocket("wss://limnos.kreisi.net");
+    socket = new WebSocket("wss://dispatch.kreisi.net");
 
     // Connection opened
     socket.addEventListener('open', () => {//TODO
@@ -16,7 +16,6 @@ function openSocket() {
         connectionUpdate(true); //to pager
         syncLst();
         keepSocketAlive();
-        sendSocket({"tracklst":true});
     });
 
     // Connection closed
@@ -111,11 +110,6 @@ function keepSocketAlive() {
         pinging = true;
 
         setInterval(ping, 20000);
-
-        //track LST
-        setInterval(()=>{
-            sendSocket({"tracklst":true});
-        }, 600000);//every 10min
     }
 }
 

@@ -70,7 +70,7 @@ setInterval(() => {
 
 async function drawUnitList() {
     //get data
-    let response = await fetch(`https://limnos.kreisi.net/getvehicles/${encodeURIComponent(auth.faction)}?user_ident=${encodeURIComponent(auth.user_ident)}&user_key=${encodeURIComponent(auth.user_key)}`);
+    let response = await fetch(`https://dispatch.kreisi.net/getvehicles/${encodeURIComponent(auth.faction)}?user_ident=${encodeURIComponent(auth.user_ident)}&user_key=${encodeURIComponent(auth.user_key)}`);
     let unitList = await response.json();
     //console.log(unitList)
     localUnits = unitList;
@@ -252,7 +252,7 @@ function openJobEdit(jobId) {
 }
 
 function deleteJob(jobId) {
-    fetch(`https://limnos.kreisi.net/deletejob?id=${jobId}&user_faction=${auth.faction}&user_ident=${encodeURIComponent(auth.user_ident)}&user_key=${encodeURIComponent(auth.user_key)}`);
+    fetch(`https://dispatch.kreisi.net/deletejob?id=${jobId}&user_faction=${auth.faction}&user_ident=${encodeURIComponent(auth.user_ident)}&user_key=${encodeURIComponent(auth.user_key)}`);
 }
 
 function callUnit(unit, urgent) {

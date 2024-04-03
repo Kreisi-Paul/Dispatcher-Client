@@ -74,7 +74,7 @@ async function createJob(activate) {
     };
 
     //create job, get id
-    fetch(`https://limnos.kreisi.net/createjob?user_faction=${encodeURIComponent(auth.faction)}&user_ident=${encodeURIComponent(auth.user_ident)}&user_key=${encodeURIComponent(auth.user_key)}&job_title=${encodeURIComponent(tmpJob.title)}&job_caller=${encodeURIComponent(tmpJob.caller)}&job_location=${encodeURIComponent(tmpJob.location)}&job_msg=${encodeURIComponent(tmpJob.msg)}&job_urgency=${encodeURIComponent(tmpJob.urgency)}&job_active=${activate}`).then(async (response) => {
+    fetch(`https://dispatch.kreisi.net/createjob?user_faction=${encodeURIComponent(auth.faction)}&user_ident=${encodeURIComponent(auth.user_ident)}&user_key=${encodeURIComponent(auth.user_key)}&job_title=${encodeURIComponent(tmpJob.title)}&job_caller=${encodeURIComponent(tmpJob.caller)}&job_location=${encodeURIComponent(tmpJob.location)}&job_msg=${encodeURIComponent(tmpJob.msg)}&job_urgency=${encodeURIComponent(tmpJob.urgency)}&job_active=${activate}`).then(async (response) => {
         if (response.status != 200) {
             showPopup(`Anfrage fehlgeschlagen<br>(${response.status})`);
             return;
@@ -86,7 +86,7 @@ async function createJob(activate) {
         if (activate) {
             //assign units
             for (let i = 0, iLength = assignedUnits.new.length; i < iLength; i++) {
-                await fetch(`https://limnos.kreisi.net/assignunit?user_faction=${encodeURIComponent(auth.faction)}&user_ident=${encodeURIComponent(auth.user_ident)}&user_key=${encodeURIComponent(auth.user_key)}&id=${id}&unit=${encodeURIComponent(assignedUnits.new[i])}`);
+                await fetch(`https://dispatch.kreisi.net/assignunit?user_faction=${encodeURIComponent(auth.faction)}&user_ident=${encodeURIComponent(auth.user_ident)}&user_key=${encodeURIComponent(auth.user_key)}&id=${id}&unit=${encodeURIComponent(assignedUnits.new[i])}`);
             }
         }
 
@@ -105,7 +105,7 @@ async function editJob(active) {
         "urgency": document.querySelector("#current_urgency").innerText
     };
 
-    let response = await fetch(`https://limnos.kreisi.net/editjob?user_faction=${encodeURIComponent(auth.faction)}&user_ident=${encodeURIComponent(auth.user_ident)}&user_key=${encodeURIComponent(auth.user_key)}&job_title=${encodeURIComponent(tmpJob.title)}&job_caller=${encodeURIComponent(tmpJob.caller)}&job_location=${encodeURIComponent(tmpJob.location)}&job_msg=${encodeURIComponent(tmpJob.msg)}&job_urgency=${encodeURIComponent(tmpJob.urgency)}&job_id=${jobId}&job_active=${active}`);
+    let response = await fetch(`https://dispatch.kreisi.net/editjob?user_faction=${encodeURIComponent(auth.faction)}&user_ident=${encodeURIComponent(auth.user_ident)}&user_key=${encodeURIComponent(auth.user_key)}&job_title=${encodeURIComponent(tmpJob.title)}&job_caller=${encodeURIComponent(tmpJob.caller)}&job_location=${encodeURIComponent(tmpJob.location)}&job_msg=${encodeURIComponent(tmpJob.msg)}&job_urgency=${encodeURIComponent(tmpJob.urgency)}&job_id=${jobId}&job_active=${active}`);
     console.log(response)
 
     if (response.status == 200) {
@@ -129,12 +129,12 @@ async function editJob(active) {
         setTimeout(async () => {
             //remove assignments
             for (let i = 0, iLength = removedUnits.length; i < iLength; i++) {
-                await fetch(`https://limnos.kreisi.net/assignunit?user_faction=${encodeURIComponent(auth.faction)}&user_ident=${encodeURIComponent(auth.user_ident)}&user_key=${encodeURIComponent(auth.user_key)}&id=false&unit=${encodeURIComponent(removedUnits[i])}`);
+                await fetch(`https://dispatch.kreisi.net/assignunit?user_faction=${encodeURIComponent(auth.faction)}&user_ident=${encodeURIComponent(auth.user_ident)}&user_key=${encodeURIComponent(auth.user_key)}&id=false&unit=${encodeURIComponent(removedUnits[i])}`);
             }
 
             //add assignments
             for (let i = 0, iLength = addedUnits.length; i < iLength; i++) {
-                await fetch(`https://limnos.kreisi.net/assignunit?user_faction=${encodeURIComponent(auth.faction)}&user_ident=${encodeURIComponent(auth.user_ident)}&user_key=${encodeURIComponent(auth.user_key)}&id=${jobId}&unit=${encodeURIComponent(addedUnits[i])}`);
+                await fetch(`https://dispatch.kreisi.net/assignunit?user_faction=${encodeURIComponent(auth.faction)}&user_ident=${encodeURIComponent(auth.user_ident)}&user_key=${encodeURIComponent(auth.user_key)}&id=${jobId}&unit=${encodeURIComponent(addedUnits[i])}`);
             }
 
             window.close();
@@ -185,7 +185,7 @@ function setUrgency(newUrgency) {
 }
 
 async function drawUnitList() {
-    let response = await fetch(`https://limnos.kreisi.net/getvehicles/${encodeURIComponent(auth.faction)}?user_ident=${encodeURIComponent(auth.user_ident)}&user_key=${encodeURIComponent(auth.user_key)}`);
+    let response = await fetch(`https://dispatch.kreisi.net/getvehicles/${encodeURIComponent(auth.faction)}?user_ident=${encodeURIComponent(auth.user_ident)}&user_key=${encodeURIComponent(auth.user_key)}`);
     let units = await response.json()
     let unitList = "";
 
