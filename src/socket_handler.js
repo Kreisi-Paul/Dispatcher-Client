@@ -74,10 +74,10 @@ function openSocket() {
 function reconnectSocket () {
     if(!reconnection) {
         reconnection = true;
-        setInterval(()=>{
+        let interval = setInterval(()=>{
             if(socket.readyState == 1) {
                 reconnection = false;
-                delete this;
+                clearInterval(interval);
             }
             else
                 openSocket();

@@ -6,7 +6,7 @@
 	"settings": {
 		"lst_volume": 0.16,
 		"soundset": "soundset_0",
-		"devmode": true
+		"devmode": false
 	},
 	"pagerSettings": {
 		"pager_s_touchscreen": {

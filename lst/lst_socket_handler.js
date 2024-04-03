@@ -16,6 +16,7 @@ function openSocket() {
         connectionUpdate(true); //to pager
         syncLst();
         keepSocketAlive();
+        sendSocket({"tracklst":true});
     });
 
     // Connection closed
@@ -40,10 +41,10 @@ function openSocket() {
 function reconnectSocket () {
     if(!reconnection) {
         reconnection = true;
-        setInterval(()=>{
+        let interval = setInterval(()=>{
             if(socket.readyState == 1) {
                 reconnection = false;
-                delete this;
+                clearInterval(interval);
             }
             else
                 openSocket();
@@ -108,7 +109,13 @@ function updatePing(pingTime) {
 function keepSocketAlive() {
     if(!pinging) {
         pinging = true;
+
         setInterval(ping, 20000);
+
+        //track LST
+        setInterval(()=>{
+            sendSocket({"tracklst":true});
+        }, 600000);//every 10min
     }
 }
 
