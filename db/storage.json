@@ -1,10 +1,10 @@
 {
 	"auth": {
-		"user_ident": "paul_kreismann",
-		"user_key": "MRhPKncpdxZNciJGnEeq6Q=="
+		"user_ident": null,
+		"user_key": null
 	},
 	"settings": {
-		"lst_volume": 0.16,
+		"lst_volume": 0.2,
 		"soundset": "soundset_0",
 		"devmode": false
 	},

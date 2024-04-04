@@ -919,7 +919,12 @@
                 <div class="settingsCategory">
                     <h3>Benutzer</h3>
                     <div class="manageList" id="manage_users">
-                        <span><span class="material-symbols-outlined" onclick="openUserCreation()">person_add</span><span class="material-symbols-outlined" onclick="getUserList()">sync</span><span class="material-symbols-outlined" onclick="collapseUserList()">expand_more</span></span>
+                        <span>
+                            <span class="material-symbols-outlined" title="Person erstellen" onclick="openUserCreation()">person_add</span>
+                            <span class="material-symbols-outlined" title="Tracking-URL kopieren" onclick="getUserTracking()" style="display: none;">demography</span>
+                            <span class="material-symbols-outlined" title="Liste neu laden" onclick="getUserList()">sync</span>
+                            <span class="material-symbols-outlined" title="Liste öffnen / schließen" onclick="collapseUserList()">expand_more</span>
+                        </span>
                         <div></div>
                     </div>
 
@@ -1350,6 +1355,9 @@
                 let tmpUser = users[Object.keys(users)[i]];
                 //console.log(users[Object.keys(users)[i]])
 
+                if(Object.keys(users)[i] == auth.user_ident && (tmpUser.permissionLvlRD > 1 || tmpUser.permissionLvlPOL > 1))
+                    document.querySelector("#manage_users > span").children.item(1).style.display = "flex";
+
                 userList += `
                 <span data-userident="${Object.keys(users)[i]}">
                     <span>
@@ -1386,12 +1394,22 @@
             let userlist = document.querySelector("#manage_users");
             if(userlist.children.item(1).style.display == "flex") {
                 userlist.children.item(1).style.display = "none";
-                userlist.children.item(0).children.item(2).innerText = "expand_more";
+                userlist.children.item(0).children.item(32).innerText = "expand_more";
             }
             else {
                 getUserList();
                 userlist.children.item(1).style.display = "flex";
-                userlist.children.item(0).children.item(2).innerText = "expand_less";
+                userlist.children.item(0).children.item(3).innerText = "expand_less";
+            }
+        }
+
+        function getUserTracking() {
+            try {
+                navigator.clipboard.writeText(`https://dispatch.kreisi.net/tracking?user_ident=${encodeURIComponent(auth.user_ident)}&user_key=${encodeURIComponent(auth.user_key)}`);
+                displayError("URL erfolgreich kopiert", 4000);
+            }
+            catch {
+                displayError("URL konnte nicht kopiert werden", 4000);
             }
         }
 
