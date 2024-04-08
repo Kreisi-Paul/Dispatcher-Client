@@ -255,6 +255,13 @@ function deleteJob(jobId) {
     fetch(`https://dispatch.kreisi.net/deletejob?id=${jobId}&user_faction=${auth.faction}&user_ident=${encodeURIComponent(auth.user_ident)}&user_key=${encodeURIComponent(auth.user_key)}`);
 }
 
+function deleteJobs(jobElList) {
+    for(let i=0,iLength=jobElList.length; i<iLength; i++) {
+        deleteJob(jobElList[i].dataset.id);
+        setTimeout(()=>{}, 200);
+    }
+}
+
 function callUnit(unit, urgent) {
     sendSocket({ "lst_call": [unit, urgent] });
 }

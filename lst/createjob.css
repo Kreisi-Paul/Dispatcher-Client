@@ -1,0 +1,327 @@
+html {
+    height: 100vh;
+    width: 100vw;
+}
+
+body {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: calc(100% - 40px);
+    width: calc(100% - 40px);
+    padding: 20px;
+    margin: 0;
+    background-color: var(--color-1);
+    color: #fff;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+* {
+    user-select: none;
+}
+
+::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+}
+
+#loading {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    left: 0;
+    z-index: 100;
+    backdrop-filter: brightness(80%) blur(5px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#loading span {
+    font-size: 80px;
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#loading_0 {
+    z-index: 120;
+    color: #fff;
+    animation: 1.8s cubic-bezier(0.28, -0.01, 0.45, 0.95) 0s infinite loading;
+}
+#loading_1 {
+    z-index: 110;
+    color: #aaa;
+    animation: 1.8s ease-in-out 0s infinite loading;
+}
+
+@keyframes loading {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+#popup {
+    z-index: 200;
+    background-color: var(--color-1);
+    border-radius: 10px;
+    border: var(--color-2) 1px solid;
+    box-shadow: #000 0 0 5px;
+    position: absolute;
+    top: 70%;
+    left: 50%;
+    height: 100px;
+    width: 300px;
+    transform: translateX(-50%);
+    display: none;
+    justify-content: center;
+    align-items: center;
+}
+
+#popup span {
+    font-size: 20px;
+    text-align: center;
+    text-wrap: wrap;
+}
+
+#urgency_selection {
+    font-size: 20px;
+    border-radius: 5px;
+    border: var(--color-2) 2px solid;
+    box-shadow: #000 0 0 5px;
+    padding: 0 8px;
+    width: calc(50% - 4px - 16px);
+    height: calc(44px - 4px);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 4px;
+}
+
+#urgency_selection > div {
+    position: absolute;
+    top: 68px;
+    left: 320px;
+    width: 73px;
+    border-radius: 5px;
+    border: var(--color-2) 2px solid;
+    box-shadow: #000 0 0 5px;
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+#urgency_selection > div > span {
+    background-color: var(--color-1);
+    padding: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    text-align: center;
+}
+
+#urgency_selection > div > span:hover {
+    background-color: #333;
+}
+
+#current_urgency {
+    margin-right: auto;
+    font-weight: bold;
+}
+
+#collapse_urgency {
+    height: 80%;
+    aspect-ratio: 1/1;
+    border-radius: 1em;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#collapse_urgency:hover {
+    background-color: #333;
+}
+
+#job_info {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+#actionbar {
+    height: 44px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 20px;
+}
+
+#actionbar span {
+    aspect-ratio: 3/2;
+    border-radius: 5px;
+    border: var(--color-2) 2px solid;
+    box-shadow: #000 0 0 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+#actionbar span:hover {
+    filter: brightness(90%);
+}
+#save_job {
+    background-color: var(--misc);
+}
+#activate_job {
+    background-color: var(--rd);
+    transform: rotate(180deg);
+}
+
+.divider {
+    width: 90vw;
+    height: 2px;
+    background-color: var(--color-2);
+    margin: 20px 0;
+    box-shadow: #000 0 0 5px;
+}
+
+#data_input {
+    width: 100%;
+    height: calc(100% - 44px - 10px - 42px - 30px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+#data_input div {
+    gap: 20px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#job_caller, #job_location, #job_msg {
+    flex: 1;
+}
+
+#job_title {
+    font-size: 20px;
+    text-align: center;
+    width: calc(50% - 4px - 16px);
+}
+
+.fieldLabel {
+    color: var(--color-2);
+    margin-right: -18px;
+    font-size: 30px;
+    text-shadow: #000 0 0 5px;
+}
+
+input[type=text] {
+    all: unset;
+    border-radius: 5px;
+    border: var(--color-2) 2px solid;
+    box-shadow: #000 0 0 5px;
+    padding: 8px;
+}
+
+#unit_list {
+    width: 70% !important;
+    flex: 1;
+    border: var(--color-2) 2px solid;
+    box-shadow: #000 0 0 05px;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    align-content: space-between;
+    gap: 0 !important;
+    overflow-y: scroll;
+}
+
+.unitField {
+    border: var(--color-2) 1px solid;
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+}
+
+.unitField div {
+    flex: 1;
+    padding: 0 6px;
+    display: flex;
+    align-items: center;
+    gap: 5px !important;
+}
+
+.unitTitle {
+    margin-right: auto;
+}
+
+.unitWarning {
+    color: var(--color-2);
+}
+
+.unitStatus {
+    width: 35px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    border-right: var(--color-2) 1px solid;
+}
+
+.addUnitBtn {
+    height: 100%;
+    padding: 6px 0;
+    aspect-ratio: 1/1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+/* STATUS COLORS */
+
+.status1 {
+    background-color: var(--status-green);
+}
+.status2 {
+    background-color: var(--status-green);
+}
+.status3 {
+    background-color: var(--status-yellow);
+}
+.status4 {
+    background-color: var(--status-red);
+}
+.status5 {
+    background-color: var(--status-blue);
+}
+.status6 {
+    background-color: var(--status-red);
+}
+.status7 {
+    background-color: var(--status-orange);
+}
+.status8 {
+    background-color: var(--status-orange);
+}
+.status9 {
+    background-color: var(--status-red);
+    animation: distress 1.6s step-start infinite;
+}
+@keyframes distress {
+    50% {background-color: var(--status-orange);}
+}
