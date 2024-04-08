@@ -691,6 +691,11 @@ input[type=text] {
     gap: 10px;
 }
 
+#create_user div > span {
+    display: flex;
+    flex-direction: columnn;
+}
+
 #create_user input {
     all: unset;
     border-radius: 5px;
