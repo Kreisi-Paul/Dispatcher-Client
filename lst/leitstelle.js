@@ -358,7 +358,7 @@ function jobsUpdate(jobs) {
                 </span>
                 <span>
                     <span class="material-symbols-outlined">location_on</span>
-                    <span>${tmpJob.location || "-- / --"}</span>
+                    <span>${makeSafe(tmpJob.location) || "-- / --"}</span>
                 </span>
             </span>
             `;
@@ -369,11 +369,11 @@ function jobsUpdate(jobs) {
             <span class="jobInfo">
                 <span>
                     <span class="material-symbols-outlined">call</span>
-                    <span>${tmpJob.caller || "-- / --"}</span>
+                    <span>${makeSafe(tmpJob.caller) || "-- / --"}</span>
                 </span>
                 <span>
                     <span class="material-symbols-outlined">location_on</span>
-                    <span>${tmpJob.location || "-- / --"}</span>
+                    <span>${makeSafe(tmpJob.location) || "-- / --"}</span>
                 </span>
             </span>
             `;
@@ -381,7 +381,7 @@ function jobsUpdate(jobs) {
 
         correctTable.innerHTML += `
         <span class="jobListing ${factionClasses[tmpJob.creator]}" data-id="${Object.keys(jobs)[i]}">
-            <span class="jobTitle">${tmpJob.title}</span>
+            <span class="jobTitle">${makeSafe(tmpJob.title)}</span>
             <span class="jobTimestamp" name="timestamp"></span>
             ${jobInfo}
             <span class="editJobBtn material-symbols-outlined" onclick="openJobEdit(this.parentNode.dataset.id)">edit</span>
