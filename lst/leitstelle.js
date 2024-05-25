@@ -33,11 +33,9 @@ onload = (event) => {
 setInterval(() => {
     try {
         let jobs = document.querySelectorAll(".jobListing");
-        let currentDate = new Date(Date.now());
         let currentDateNr = Date.now();
 
         for (let i = 0, iLength = jobs.length; i < iLength; i++) {
-            let jobDate = new Date(parseInt(jobs[i].dataset.id));
             let jobDateNr = jobs[i].dataset.id;
 
             let diff = currentDateNr - jobDateNr;
