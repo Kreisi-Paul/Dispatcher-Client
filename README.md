@@ -1,6 +1,6 @@
 This Repository contains a passion project of mine.
 
-More info about the project will be include here soon.
+More info about the project will be included here soon.
 
 
 
