@@ -11,10 +11,7 @@ let jobInfo;
 
 
 let localDB = JSON.parse(fs.readFileSync(path.resolve("db/storage.json")));
-
-
 let clientVersion = fs.readFileSync(path.join(__dirname, "version.txt")).toString();
-
 
 
 app.whenReady().then(() => {
