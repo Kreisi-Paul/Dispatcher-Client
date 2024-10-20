@@ -4,6 +4,7 @@ let userAuth = new Object();
 let reconnection = false;
 let pinging = false;
 let lastPing = null;
+let pingInterval = null;
 
 onload = ()=> {
     initPager();//initialize pager settings
@@ -72,6 +73,7 @@ function openSocket() {
 }
 
 function reconnectSocket () {
+    clearInterval(pingInterval)
     if(!reconnection) {
         reconnection = true;
         let interval = setInterval(()=>{
@@ -154,7 +156,7 @@ function updatePing(pingTime) {
 function keepSocketAlive() {
     if(!pinging) {
         pinging = true;
-        setInterval(ping, 20000);
+        pingInterval = setInterval(ping, 20000);
     }
 }
 

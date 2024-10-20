@@ -3,6 +3,7 @@ let socket;
 let reconnection = false;
 let pinging = false;
 let lastPing = null;
+let pingInterval = null;
 
 
 function openSocket() {
@@ -38,6 +39,7 @@ function openSocket() {
 }
 
 function reconnectSocket () {
+    clearInterval(pingInterval)
     if(!reconnection) {
         reconnection = true;
         let interval = setInterval(()=>{
@@ -109,7 +111,7 @@ function keepSocketAlive() {
     if(!pinging) {
         pinging = true;
 
-        setInterval(ping, 20000);
+        pingInterval = setInterval(ping, 20000);
     }
 }
 
