@@ -30,7 +30,7 @@ body {
     height: 0;
 }
 
-#loading {
+#loading, #loading_list {
     position: absolute;
     height: 100%;
     width: 100%;
@@ -38,12 +38,16 @@ body {
     left: 0;
     z-index: 100;
     backdrop-filter: brightness(80%) blur(5px);
-    display: flex;
+    display: none;
     justify-content: center;
     align-items: center;
 }
 
-#loading span {
+#loading_list {
+    backdrop-filter: none;
+}
+
+#loading span, #loading_list span {
     font-size: 80px;
     position: absolute;
     display: flex;
@@ -51,12 +55,12 @@ body {
     align-items: center;
 }
 
-#loading_0 {
+#loading_0, #loading_list_0 {
     z-index: 120;
     color: #fff;
     animation: 1.8s cubic-bezier(0.28, -0.01, 0.45, 0.95) 0s infinite loading;
 }
-#loading_1 {
+#loading_1, #loading_list_1 {
     z-index: 110;
     color: #aaa;
     animation: 1.8s ease-in-out 0s infinite loading;
@@ -213,7 +217,7 @@ body {
     align-items: center;
 }
 
-#job_caller, #job_location, #job_msg {
+#job_caller, #job_location, #job_msg, #job_coords {
     flex: 1;
 }
 
@@ -239,6 +243,7 @@ input[type=text] {
 }
 
 #unit_list {
+    position: relative;
     width: 70% !important;
     flex: 1;
     border: var(--color-2) 2px solid;

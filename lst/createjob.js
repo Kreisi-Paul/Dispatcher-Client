@@ -27,6 +27,7 @@ window.electronAPI.mainProc((event, arg) => {
             document.querySelector("#job_caller").value = arg.jobdata[1].caller;
             document.querySelector("#job_msg").value = arg.jobdata[1].msg;
             document.querySelector("#job_location").value = arg.jobdata[1].location;
+            document.querySelector("#job_coords").value = arg.jobdata[1].coords;
 
             document.querySelector("#current_urgency").innerText = arg.jobdata[1].urgency;
 
@@ -40,6 +41,10 @@ window.electronAPI.mainProc((event, arg) => {
 
                 document.querySelector("#save_job").style.display = "none";
             }
+        }
+
+        if(arg.jobdata[2]) {
+            document.querySelector("#job_coords").value = arg.jobdata[2];
         }
     }
 })
@@ -69,12 +74,13 @@ async function createJob(activate) {
         "title": document.querySelector("#job_title").value,
         "caller": document.querySelector("#job_caller").value,
         "location": document.querySelector("#job_location").value,
+        "coords": document.querySelector("#job_coords").value,
         "msg": document.querySelector("#job_msg").value,
         "urgency": document.querySelector("#current_urgency").innerText
     };
 
     //create job, get id
-    fetch(`https://dispatch.kreisi.net/createjob?user_faction=${encodeURIComponent(auth.faction)}&user_ident=${encodeURIComponent(auth.user_ident)}&user_key=${encodeURIComponent(auth.user_key)}&job_title=${encodeURIComponent(tmpJob.title)}&job_caller=${encodeURIComponent(tmpJob.caller)}&job_location=${encodeURIComponent(tmpJob.location)}&job_msg=${encodeURIComponent(tmpJob.msg)}&job_urgency=${encodeURIComponent(tmpJob.urgency)}&job_active=${activate}`).then(async (response) => {
+    fetch(`https://dispatch.kreisi.net/createjob?user_faction=${encodeURIComponent(auth.faction)}&user_ident=${encodeURIComponent(auth.user_ident)}&user_key=${encodeURIComponent(auth.user_key)}&job_title=${encodeURIComponent(tmpJob.title)}&job_caller=${encodeURIComponent(tmpJob.caller)}&job_location=${encodeURIComponent(tmpJob.location)}&job_coords=${encodeURIComponent(tmpJob.coords)}&job_msg=${encodeURIComponent(tmpJob.msg)}&job_urgency=${encodeURIComponent(tmpJob.urgency)}&job_active=${activate}`).then(async (response) => {
         if (response.status != 200) {
             showPopup(`Anfrage fehlgeschlagen<br>(${response.status})`);
             return;
@@ -101,11 +107,12 @@ async function editJob(active) {
         "title": document.querySelector("#job_title").value,
         "caller": document.querySelector("#job_caller").value,
         "location": document.querySelector("#job_location").value,
+        "coords": document.querySelector("#job_coords").value,
         "msg": document.querySelector("#job_msg").value,
         "urgency": document.querySelector("#current_urgency").innerText
     };
 
-    let response = await fetch(`https://dispatch.kreisi.net/editjob?user_faction=${encodeURIComponent(auth.faction)}&user_ident=${encodeURIComponent(auth.user_ident)}&user_key=${encodeURIComponent(auth.user_key)}&job_title=${encodeURIComponent(tmpJob.title)}&job_caller=${encodeURIComponent(tmpJob.caller)}&job_location=${encodeURIComponent(tmpJob.location)}&job_msg=${encodeURIComponent(tmpJob.msg)}&job_urgency=${encodeURIComponent(tmpJob.urgency)}&job_id=${jobId}&job_active=${active}`);
+    let response = await fetch(`https://dispatch.kreisi.net/editjob?user_faction=${encodeURIComponent(auth.faction)}&user_ident=${encodeURIComponent(auth.user_ident)}&user_key=${encodeURIComponent(auth.user_key)}&job_title=${encodeURIComponent(tmpJob.title)}&job_caller=${encodeURIComponent(tmpJob.caller)}&job_location=${encodeURIComponent(tmpJob.location)}&job_coords=${encodeURIComponent(tmpJob.coords)}&job_msg=${encodeURIComponent(tmpJob.msg)}&job_urgency=${encodeURIComponent(tmpJob.urgency)}&job_id=${jobId}&job_active=${active}`);
     console.log(response)
 
     if (response.status == 200) {
@@ -212,8 +219,6 @@ async function drawUnitList() {
     }
 
     document.querySelector("#unit_list").innerHTML = unitList;
-
-    document.querySelector("#loading").style.display = "none";
 }
 
 function showPopup(content) {

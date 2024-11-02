@@ -26,7 +26,7 @@
 
     <div id="popups"></div>
 
-    <div id="unit_card" onclick="event.target.id == 'unit_card' ? closeUnitCard() : null">
+    <div id="unit_card" onclick="event.target == this ? closeUnitCard() : null">
         <div id="unit_card_content">
             <div id="unit_card_title">
                 <h2></h2>
@@ -78,9 +78,25 @@
         </div>
     </div>
 
+    <div id="map_container" onmousedown="event.target == this ? closeMap() : null">
+        <span id="map">
+            <span id="target_mode_popup" onclick="setMapTargetMode(false)">Abbrechen</span>
+            <span id="map_toolbar">
+                <span class="material-symbols-outlined" onclick="setMapTargetMode(true)" title="Einsatz erstellen">point_scan</span>
+                <span class="material-symbols-outlined" onclick="resetMap()" title="Karte zurücksetzen">center_focus_weak</span>
+            </span>
+            <span id="map_img" onmousewheel="mapScroll(event)" onmousedown="setPanMap(true, event)" onmouseup="setPanMap(false)" onmouseleave="setPanMap(false)" onmousemove="panMap(event)" onclick="createJobOnMap(event)">
+                <img src="../src/map.png">
+            </span>
+        </span>
+    </div>
+
     <div id="status_bar">
-        <h1>Leitstelle</h1>
-        <h2 id="faction_text"></h2>
+        <span>
+            <h1>Leitstelle</h1>
+            <h2 id="faction_text"></h2>
+        </span>
+        <span class="material-symbols-outlined" id="map_btn" onclick="openMap()">map</span>
     </div>
 
 

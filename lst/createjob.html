@@ -51,12 +51,17 @@
         <div>
             <span class="material-symbols-outlined fieldLabel">notes</span>
             <input type="text" id="job_msg" placeholder="Kommentar" oninput="limitInput(this, 29)">
+            <span class="material-symbols-outlined fieldLabel">map</span>
+            <input type="text" id="job_coords" placeholder="{'x':0,'y':0}" oninput="limitInput(this, 29)">
         </div>
 
         <span class="divider"></span>
 
         <div id="unit_list">
-            
+            <div id="loading_list">
+                <span id="loading_list_0" class="material-symbols-outlined">progress_activity</span>
+                <span id="loading_list_1" class="material-symbols-outlined">progress_activity</span>
+            </div>
         </div>
     </div>
 <script src="createjob.js"></script>

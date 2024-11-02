@@ -1,12 +1,13 @@
 {
 	"auth": {
-		"user_ident": "paul_kreismann",
-		"user_key": "E4QTW983F6CxJVyJVf4NoA=="
+		"user_ident": null,
+		"user_key": null
 	},
 	"settings": {
-		"lst_volume": 0.22,
+		"lst_volume": 0.2,
 		"soundset": "soundset_0",
-		"devmode": true
+		"devmode": false,
+		"pagersRestricted": false
 	},
 	"pagerSettings": {
 		"pager_s_touchscreen": {

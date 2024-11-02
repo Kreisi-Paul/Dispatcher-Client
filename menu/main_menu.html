@@ -12,9 +12,9 @@
     <h1 id="welcome"></h1>
 
     <div id="menu_grid">
-        <div onclick="openUnitSelection('rd')" class="menuButton rd">Dispatcher RD</div>
+        <div onclick="openUnitSelection('rd')" class="menuButton rd pagerBtns">Dispatcher RD</div>
         <div onclick="requestWindow('lst_rd')" class="menuButton rd">Leitstelle RD</div>
-        <div onclick="openUnitSelection('pol')" class="menuButton pol">Dispatcher POL</div>
+        <div onclick="openUnitSelection('pol')" class="menuButton pol pagerBtns">Dispatcher POL</div>
         <div onclick="requestWindow('lst_pol')" class="menuButton pol">Leitstelle POL</div>
         <div onclick="openSettings()" class="menuButton">Einstellungen</div>
     </div>
@@ -62,6 +62,16 @@
         <span>
             <input type="button" id="login_btn" value="Login" onclick="login()">
         </span>
+        <div>
+            <p>oder</p>
+        </div>
+        <span>
+            <label for="login_code">Logincode</label>
+            <span id="login_code_container">
+                <input type="text" id="login_code">
+                <span class="material-symbols-outlined" id="code_login_btn" onclick="loginWithCode()">login</span>
+            </span>
+        </span>
     </div>
 
     <div id="settings">
@@ -79,7 +89,7 @@
         </div>
         <div id="settings_content">
             <div data-settings="sound">
-                <div class="settingsCategory">
+                <div class="settingsCategory" style="display: none;"><!--TODO: implement LST sound settings-->
                     <h3>Leitstelle</h3>
                     <div>
                         <span class="settingsLabel">Lautstärke:</span>
@@ -88,7 +98,7 @@
                         </span>
                     </div>
                 </div>
-                <hr>
+                <hr style="display: none;">
                 <div class="settingsCategory">
                     <h3>Pager</h3>
                     <span class="settingsLabel">Soundset:</span>
@@ -142,7 +152,7 @@
                             <hr>
 
                             <div>
-                                <span class="material-symbols-outlined">medical_services</span>
+                                <span class="material-symbols-outlined">military_tech</span>
                                 <span data-edit_user="change_rank" class="settingsSelector" onclick="selectorEvent(this,event)">
                                     <span>
                                         <span class="activeSelector">-- / --</span>

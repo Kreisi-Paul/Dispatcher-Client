@@ -2,6 +2,15 @@ let auth = new Object();
 let unitCard;//saves the opened unit card target
 let localUnits;
 let localJobs;
+let mapInfo = {
+    x: 0,
+    y: 0,
+    zoom: 1000,
+    panning: false,
+    panOrigin: null,
+    dimensions: null,
+    targetMode: false
+};
 
 window.electronAPI.mainProc((event, arg) => {
     //console.log(event, arg)
@@ -239,14 +248,14 @@ function sendToUnit(sendToJob) {
 }
 
 function openJobCreation() {
-    window.electronAPI.sendMsg(["createjob", [auth.faction, null]]);
+    window.electronAPI.sendMsg(["createjob", [auth.faction, null, null]]);
 }
 
 function openJobEdit(jobId) {
     let tmpJob = localJobs[jobId];
     tmpJob.id = jobId;
 
-    window.electronAPI.sendMsg(["createjob", [auth.faction, tmpJob]]);
+    window.electronAPI.sendMsg(["createjob", [auth.faction, tmpJob, null]]);
 }
 
 function deleteJob(jobId) {
@@ -327,7 +336,12 @@ function unitsUpdate(message) {
 }
 
 function jobsUpdate(jobs) {
-    //console.log(jobs)
+    //play sound if new job is added
+    if(localJobs) {//only if LST didn't just start
+        if(Object.keys(jobs).filter(el => !Object.keys(localJobs).includes(el)).length > 0)
+            playSound("new_call");
+    }
+
     localJobs = jobs;
     let activeJobList = document.querySelector("#active_jobs > .jobList");
     let newJobList = document.querySelector("#new_jobs > .jobList");
@@ -389,21 +403,160 @@ function jobsUpdate(jobs) {
     updateJobUnits();
 }
 
+function openMap() {
+    let mapContainer = document.getElementById("map_container");
+    mapContainer.classList.add("shown");
+    populateMap();
+}
+
+function closeMap() {
+    let mapContainer = document.getElementById("map_container");
+    mapContainer.classList.remove("shown");
+
+    depopulateMap();
+    setPanMap(false);
+    setMapTargetMode(false);
+}
+
+function populateMap() {
+    console.log(localJobs)
+
+    Object.values(localJobs).forEach((job, i)=>{
+        if(job.coords) {
+            let coords = JSON.parse(job.coords);
+            drawJobOnMap(Object.keys(localJobs)[i], coords.x, coords.y);
+        }
+    });
+}
+
+function depopulateMap() {
+    document.querySelectorAll(".mapJobMarker").forEach((el)=>{
+        el.remove();
+    });
+}
+
+function updateMapTransforms() {
+    document.getElementById("map_img").style.setProperty("--offsetX", `${mapInfo.x}%`);
+    document.getElementById("map_img").style.setProperty("--offsetY", `${mapInfo.y}%`);
+    document.getElementById("map_img").style.setProperty("--zoom", `${mapInfo.zoom}px`);
+}
+
+function setPanMap(panning, e) {
+    if(mapInfo.targetMode)
+        return;
+
+    mapInfo.panning = panning;
+    let mapImg = document.querySelector("#map_img img");
+
+    if(panning) {
+        mapInfo.dimensions = document.getElementById("map_img").getBoundingClientRect();
+        mapImg.classList.add("panning");
+    }
+    else {
+        mapInfo.dimensions = null;
+        mapImg.classList.remove("panning");
+    }
+}
+
+function panMap(e) {
+    if(mapInfo.panning) {
+        mapInfo.x += e.movementX / mapInfo.dimensions.width * 100
+        mapInfo.y += e.movementY / mapInfo.dimensions.height * 100
+        updateMapTransforms();
+    }
+}
+
+function mapScroll(e) {
+    if(mapInfo.targetMode)
+        return;
+    mapInfo.zoom = Math.max(800, mapInfo.zoom - e.deltaY*2);
+    updateMapTransforms();
+}
+
+function setMapOffset(x, y) {
+    mapInfo.x = x;
+    mapInfo.y = y;
+    updateMapTransforms();
+}
+
+function resetMap() {
+    mapInfo.zoom = 1000;
+    mapInfo.x = 0;
+    mapInfo.y = 0;
+    updateMapTransforms();
+}
+
+function setMapTargetMode(targetMode) {
+    let mapImg = document.querySelector("#map_img img");
+    let targetModePopup = document.getElementById("target_mode_popup");
+    mapInfo.targetMode = targetMode;
+
+    if(targetMode) {
+        mapImg.classList.add("targetMode");
+        targetModePopup.classList.add("shown");
+    }
+    else {
+        mapImg.classList.remove("targetMode");
+        targetModePopup.classList.remove("shown");
+    }
+}
+
+function createJobOnMap(e) {
+    if(!mapInfo.targetMode || e.target.nodeName != "IMG")
+        return;
+
+    let x = (e.offsetX / e.target.clientWidth * 100 - 45.97);
+    let y = -(e.offsetY / e.target.clientHeight * 100 - 62.2);
+
+    x = x * (667 / 7.4);
+    y = y * (1000 / 7.4);
+
+    window.electronAPI.sendMsg(["createjob", [auth.faction, null, JSON.stringify({x:x,y:y})]]);
+
+    closeMap();
+}
+
+function drawJobOnMap(jobId, x, y) {
+    let mapImg = document.getElementById("map_img");
+
+    let el = document.createElement("span");
+    el.classList.add("mapJobMarker");
+    el.classList.add("material-symbols-outlined");
+    el.dataset.jobId = jobId;
+    el.style.setProperty("--markerOffsetX", `${x / 667 * 7.4}%`);
+    el.style.setProperty("--markerOffsetY", `${-y / 1000 * 7.4}%`);
+    el.setAttribute("onclick", `openJobEdit(this.dataset.jobId)`);
+    el.innerText = "my_location";
+    if(localJobs[jobId].creator == "pol")
+        el.classList.add("polMapMarker");
+    else
+        el.classList.add("rdMapMarker");
+
+    let labelEl = document.createElement("span");
+    labelEl.classList.add("mapJobMarkerLabel");
+    labelEl.innerHTML = `
+    <h1>${localJobs[jobId].title}</h1>
+    ${localJobs[jobId].caller ? "<p>"+localJobs[jobId].caller+"</p>" : ""}
+    ${localJobs[jobId].msg ? "<p>"+localJobs[jobId].msg+"</p>" : ""}
+    `;
+
+    el.appendChild(labelEl);
+    mapImg.appendChild(el);
+}
+
 function statusMsg(unit, status) {
     let audioEl = document.querySelector("#audio");
     //console.log(unit,status)
 
     //debug TODO: implement LST settings
     audioEl.volume = 0.2
-
-    //TODO: show popup
-
     playSound(`status${status}`);
     openPopup(`status${status}`, unit);
 }
 
 function playSound(soundName) {
     let audioEl = document.querySelector("#audio");
+    audioEl.volume = 0.6;
 
     audioEl.src = `../src/soundset_0/${soundName}.mp3`;
     audioEl.play();

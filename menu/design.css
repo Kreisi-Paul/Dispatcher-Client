@@ -245,6 +245,11 @@ input[type=text] {
     filter: saturate(160%);
 }
 
+.pagerBtns.locked {
+    filter: grayscale(1);
+    pointer-events: none;
+}
+
 .rd {
     background-color: var(--rd);
 }
@@ -303,21 +308,43 @@ input[type=text] {
 #login > span {
     display: flex;
     flex-direction: column;
-    width: 40%;
+    width: 45%;
+}
+#login > div {
+    position: relative;
+    width: 45%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#login > div::before {
+    content: "";
+    position: absolute;
+    height: 1px;
+    width: 100%;
+    background-color: var(--color-2);
+}
+#login > div > p {
+    z-index: 2;
+    margin: 0;
+    padding: 0 1ch;
+    background-color: var(--color-1);
 }
 #login input {
     all: unset;
+    box-sizing: border-box;
     width: 100%;
     padding: 10px;
     border: 2px solid var(--color-2);
     border-radius: 5px;
     align-self: center;
-    margin: 4px;
+    margin: 4px 0;
 }
 #login input:focus {
     box-shadow: #000 0 0 5px;
 }
 #login_btn {
+    box-sizing: border-box;
     background-color: var(--color-2) !important;
     border-radius: 50ch !important;
     text-align: center !important;
@@ -330,6 +357,33 @@ input[type=text] {
 }
 #login_btn:disabled {
     filter: brightness(90%);
+}
+#login_code_container {
+    position: relative;
+    margin: 4px 0;
+    border-radius: 5px;
+    border: 2px solid var(--color-2);
+    display: flex;
+    justify-content: space-between;
+}
+#login_code_container:has(#code_login_btn:hover), #login_code_container:has(#code_login_btn:disabled) {
+    filter: brightness(90%);
+}
+#login_code {
+    border: none !important;
+    margin: 0 !important;
+    width: calc(100% - 3em) !important;
+}
+#login_code:focus {
+    box-shadow: none !important;
+}
+#code_login_btn {
+    background-color: var(--color-2);
+    width: 3em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
 }
 
 

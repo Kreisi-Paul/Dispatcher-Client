@@ -30,6 +30,9 @@ window.electronAPI.mainProc((event, arg) => {
             setSelector(arg.settings.soundset, document.querySelector("span[data-setting=soundset]"));
         if (arg.settings.devmode)
             document.querySelector("#devmode_toggle").classList.add("toggled");
+        if(arg.settings.pagersRestricted) {
+            document.querySelectorAll(".pagerBtns").forEach((el)=>{el.classList.add("locked")});
+        }
     }
 })
 
@@ -141,12 +144,15 @@ async function confirmAuth() {
 
 async function login() {
     document.querySelector("#login_btn").disabled = true;
+    document.querySelector("#code_login_btn").disabled = true;
     let username = document.querySelector("#login_username").value;
     let password = await hashDigest(document.querySelector("#login_password").value);
     let response = await fetch(`https://dispatch.kreisi.net/login?ident=${username}&password=${password}`);
 
     if (response.status == 200) {
-        window.electronAPI.setAuth({ "user_ident": username, "user_key": await response.text() });
+        window.electronAPI.sendMsg({"set_setting": ["pagersRestricted", false]});
+        window.electronAPI.getSettings();
+        window.electronAPI.setAuth({"user_ident": username, "user_key": await response.text()});
         window.electronAPI.getAuth();
 
         setTimeout(() => {
@@ -157,13 +163,6 @@ async function login() {
     else {
         closeLogin();
         confirmAuth();
-    }
-
-    function closeLogin() {
-        document.querySelector("#login_username").value = "";
-        document.querySelector("#login_password").value = "";
-        document.querySelector("#login_btn").disabled = false;
-        document.querySelector("#login").style.display = "none";
     }
 }
 async function hashDigest(data) {
@@ -179,6 +178,40 @@ async function hashDigest(data) {
     })
 
     return result;
+}
+
+async function loginWithCode() {
+    document.querySelector("#login_btn").disabled = true;
+    document.querySelector("#code_login_btn").disabled = true;
+    let logincode = document.querySelector("#login_code").value;
+    let response = await fetch(`https://dispatch.kreisi.net/loginwithkey?login_key=${logincode}`);
+
+    if (response.status == 200) {
+        let result = await response.json();
+        window.electronAPI.sendMsg({"set_setting": ["pagersRestricted", true]});
+        window.electronAPI.getSettings();
+        window.electronAPI.setAuth({"user_ident": result.user_ident, "user_key": result.user_key});
+        window.electronAPI.getAuth();
+
+        setTimeout(() => {
+            closeLogin();
+            confirmAuth();
+        }, 2000);
+    }
+    else {
+        closeLogin();
+        confirmAuth();
+    }
+
+}
+
+function closeLogin() {
+    document.querySelector("#login_username").value = "";
+    document.querySelector("#login_password").value = "";
+    document.querySelector("#login_code").value = "";
+    document.querySelector("#login_btn").disabled = false;
+    document.querySelector("#code_login_btn").disabled = false;
+    document.querySelector("#login").style.display = "none";
 }
 
 function openSettings() {
