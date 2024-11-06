@@ -9,7 +9,8 @@ let mapInfo = {
     panning: false,
     panOrigin: null,
     dimensions: null,
-    targetMode: false
+    targetMode: false,
+    colored: true
 };
 
 window.electronAPI.mainProc((event, arg) => {
@@ -333,6 +334,12 @@ function unitsUpdate(message) {
             openUnitCard(Object.keys(message)[i]);
         }
     }
+
+    Object.keys(localUnits).forEach((unit)=>{
+        document.querySelectorAll(`.mapVehicleMarker[data-unit="${unit}"]`).forEach((el)=>{
+            el.dataset.status = localUnits[unit].status;
+        });
+    });
 }
 
 function jobsUpdate(jobs) {
@@ -486,6 +493,17 @@ function resetMap() {
     updateMapTransforms();
 }
 
+function toggleMapColors() {
+    if(mapInfo.colored) {
+        mapInfo.colored = false;
+        document.querySelector("#map img").style.filter = "saturate(0)";
+    }
+    else {
+        mapInfo.colored = true;
+        document.querySelector("#map img").style.filter = "saturate(1)";
+    }
+}
+
 function setMapTargetMode(targetMode) {
     let mapImg = document.querySelector("#map_img img");
     let targetModePopup = document.getElementById("target_mode_popup");
@@ -533,7 +551,7 @@ function drawJobOnMap(jobId, x, y) {
         el.classList.add("rdMapMarker");
 
     let labelEl = document.createElement("span");
-    labelEl.classList.add("mapJobMarkerLabel");
+    labelEl.classList.add("mapMarkerLabel");
     labelEl.innerHTML = `
     <h1>${localJobs[jobId].title}</h1>
     ${localJobs[jobId].caller ? "<p>"+localJobs[jobId].caller+"</p>" : ""}
@@ -542,6 +560,43 @@ function drawJobOnMap(jobId, x, y) {
 
     el.appendChild(labelEl);
     mapImg.appendChild(el);
+}
+
+function updateMapVehicles(vehicleData) {
+    let mapImg = document.getElementById("map_img");
+
+    document.querySelectorAll(".mapVehicleMarker").forEach((el)=>{
+        el.remove();
+    });
+
+    vehicleData.vehicles.forEach((vehicle)=>{
+        let vehicleInfo = {
+            name: "Fahrzeug",
+            status: 0
+        }
+
+        vehicleInfo.name = vehicle.unit;
+        if(localUnits[vehicle.unit])
+            vehicleInfo.status = localUnits[vehicle.unit].status;
+
+        let el = document.createElement("span");
+        el.classList.add("mapVehicleMarker");
+        el.classList.add("material-symbols-outlined");
+        el.style.setProperty("--markerOffsetX", `${vehicle.coords[0] / 667 * 7.4}%`);
+        el.style.setProperty("--markerOffsetY", `${-vehicle.coords[1] / 1000 * 7.4}%`);
+        el.setAttribute("onclick", `openUnitCard("${vehicle.unit}")`);
+        el.dataset.status = vehicleInfo.status;
+        el.dataset.unit = vehicleInfo.name;
+        el.innerText = "radio_button_checked";
+        let labelEl = document.createElement("span");
+        labelEl.classList.add("mapMarkerLabel");
+        labelEl.innerHTML = `
+        <span>
+            <h1>${vehicleInfo.name}</h1>
+        </span>`;
+        el.appendChild(labelEl);
+        mapImg.appendChild(el);
+    });
 }
 
 function statusMsg(unit, status) {

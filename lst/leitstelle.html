@@ -84,6 +84,7 @@
             <span id="map_toolbar">
                 <span class="material-symbols-outlined" onclick="setMapTargetMode(true)" title="Einsatz erstellen">point_scan</span>
                 <span class="material-symbols-outlined" onclick="resetMap()" title="Karte zurücksetzen">center_focus_weak</span>
+                <span class="material-symbols-outlined" onclick="toggleMapColors()" title="Farbe umschalten">contrast</span>
             </span>
             <span id="map_img" onmousewheel="mapScroll(event)" onmousedown="setPanMap(true, event)" onmouseup="setPanMap(false)" onmouseleave="setPanMap(false)" onmousemove="panMap(event)" onclick="createJobOnMap(event)">
                 <img src="../src/map.png">

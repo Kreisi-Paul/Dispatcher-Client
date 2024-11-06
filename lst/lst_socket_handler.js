@@ -87,6 +87,9 @@ function handleSocketMsg(message) {
             case "lst_jobs":
                 jobsUpdate(content);
                 return;
+
+            case "map_vehicles":
+                updateMapVehicles(content);
         }
     }
 }

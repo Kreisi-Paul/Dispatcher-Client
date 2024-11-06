@@ -256,7 +256,7 @@ h2 {
     cursor: crosshair;
 }
 
-.mapJobMarker {
+.mapJobMarker, .mapVehicleMarker {
     --markerOffsetX: 0%;
     --markerOffsetY: 0%;
     z-index: 1;
@@ -266,8 +266,8 @@ h2 {
     color: #000;
     text-shadow: #000 0 0 15px;
     transform: translate(-50%, -50%);
-    height: 30px;
-    font-size: 25px;
+    height: 40px;
+    font-size: 35px;
     aspect-ratio: 1/1;
     display: flex;
     justify-content: center;
@@ -283,7 +283,46 @@ h2 {
     color: var(--pol);
 }
 
-.mapJobMarkerLabel {
+.mapVehicleMarker[data-status="0"] {
+    color: violet;
+}
+.mapVehicleMarker[data-status="1"] {
+    color: var(--status-green);
+}
+.mapVehicleMarker[data-status="2"] {
+    color: var(--status-green);
+}
+.mapVehicleMarker[data-status="3"] {
+    color: var(--status-yellow);
+}
+.mapVehicleMarker[data-status="4"] {
+    color: var(--status-red);
+}
+.mapVehicleMarker[data-status="5"] {
+    color: var(--status-blue);
+}
+.mapVehicleMarker[data-status="6"] {
+    color: var(--status-red);
+}
+.mapVehicleMarker[data-status="7"] {
+    color: var(--status-orange);
+}
+.mapVehicleMarker[data-status="8"] {
+    color: var(--status-orange);
+}
+.mapVehicleMarker[data-status="9"] {
+    color: var(--status-red);
+    text-shadow: var(--status-orange) 0 0 10px;
+    animation: vehicleMarkerDistress 1.6s step-start infinite;
+}
+@keyframes vehicleMarkerDistress {
+    50% {
+        color: var(--status-orange);
+        text-shadow: var(--status-red) 0 0 10px;
+    }
+}
+
+.mapMarkerLabel {
     all: initial;
     position: absolute;
     align-self: flex-start;
@@ -291,7 +330,7 @@ h2 {
     width: max-content;
     max-width: 300px;
     box-sizing: border-box;
-    transform: translate(-50%, 35px);
+    transform: translate(-50%, 50px);
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: #0006;
     box-shadow: #0006 0 0 5px;
@@ -308,16 +347,16 @@ h2 {
     transition: all 100ms ease-in-out;
 }
 
-.mapJobMarker:hover .mapJobMarkerLabel {
+.mapJobMarker:hover .mapMarkerLabel, .mapVehicleMarker:hover .mapMarkerLabel {
     opacity: 1;
 }
 
-.mapJobMarkerLabel h1 {
+.mapMarkerLabel h1 {
     text-align: center;
     font-size: 18px;
 }
 
-.mapJobMarkerLabel p {
+.mapMarkerLabel p {
     margin: 0;
     font-size: 14px;
 }
