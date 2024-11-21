@@ -603,8 +603,17 @@ h2 {
 }
 
 .jobTitle {
+    position: relative;
     font-size: 20px;
     margin-right: auto;
+}
+
+.jobTransferred {
+    position: absolute;
+    top: 50%;
+    left: calc(100% + 0.25ch);
+    transform: translateY(-90%);
+    font-size: 16px;
 }
 
 .jobTimestamp {

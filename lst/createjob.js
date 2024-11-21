@@ -4,6 +4,7 @@ let jobActive;
 let assignedUnits = { "old": [], "new": [] };
 let urgencyCollapsed = true;
 let popupShown = false;
+let transferring = false;
 
 window.electronAPI.mainProc((event, arg) => {
     console.log(event, arg)
@@ -33,6 +34,11 @@ window.electronAPI.mainProc((event, arg) => {
 
             document.querySelector("#job_id_0").innerText = arg.jobdata[1].id;
             document.querySelector("#job_id_1").innerText = new Date(parseInt(arg.jobdata[1].id)).toLocaleString("de");
+
+            if(arg.jobdata[1].transferred) {
+                document.getElementById("transfer_btn").classList.add("toggled");
+                transferring = null;
+            }
 
             if (jobActive) {
                 document.querySelector("#activate_job").innerText = "save";
@@ -89,6 +95,9 @@ async function createJob(activate) {
         let id = await response.text();
         console.log(id)
 
+        if(transferring)
+            await fetch(`https://dispatch.kreisi.net/transferjob?user_faction=${encodeURIComponent(auth.faction)}&user_ident=${encodeURIComponent(auth.user_ident)}&user_key=${encodeURIComponent(auth.user_key)}&job_id=${encodeURIComponent(id)}`);
+
         if (activate) {
             //assign units
             for (let i = 0, iLength = assignedUnits.new.length; i < iLength; i++) {
@@ -118,6 +127,9 @@ async function editJob(active) {
     if (response.status == 200) {
         let removedUnits = new Array();
         let addedUnits = new Array();
+
+        if(transferring)
+            await fetch(`https://dispatch.kreisi.net/transferjob?user_faction=${encodeURIComponent(auth.faction)}&user_ident=${encodeURIComponent(auth.user_ident)}&user_key=${encodeURIComponent(auth.user_key)}&job_id=${encodeURIComponent(jobId)}`);
 
         //get removed units
         for (let i = 0, iLength = assignedUnits.old.length; i < iLength; i++) {
@@ -153,6 +165,17 @@ async function editJob(active) {
     }
 }
 
+function transferJob() {
+    if(transferring === null)
+        return;
+
+    transferring = !transferring;
+
+    if(transferring)
+        document.getElementById("transfer_btn").classList.add("toggled");
+    else
+        document.getElementById("transfer_btn").classList.remove("toggled");
+}
 
 function limitInput(el, limit) {
     if (el.value.length > limit) {

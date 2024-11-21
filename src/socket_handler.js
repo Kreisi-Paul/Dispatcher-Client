@@ -74,6 +74,7 @@ function openSocket() {
 
 function reconnectSocket () {
     clearInterval(pingInterval)
+    pinging = false;
     if(!reconnection) {
         reconnection = true;
         let interval = setInterval(()=>{

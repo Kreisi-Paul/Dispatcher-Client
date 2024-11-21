@@ -400,7 +400,7 @@ function jobsUpdate(jobs) {
 
         correctTable.innerHTML += `
         <span class="jobListing ${factionClasses[tmpJob.creator]}" data-id="${Object.keys(jobs)[i]}">
-            <span class="jobTitle">${makeSafe(tmpJob.title)}</span>
+            <span class="jobTitle">${makeSafe(tmpJob.title)}${tmpJob.transferred ? `<span class="material-symbols-outlined jobTransferred" title="weitergeleitet">forward</span>` : ""}</span>
             <span class="jobTimestamp" name="timestamp"></span>
             ${jobInfo}
             <span class="editJobBtn material-symbols-outlined" onclick="openJobEdit(this.parentNode.dataset.id)">edit</span>
@@ -600,18 +600,14 @@ function updateMapVehicles(vehicleData) {
 }
 
 function statusMsg(unit, status) {
-    let audioEl = document.querySelector("#audio");
-    //console.log(unit,status)
-
     //debug TODO: implement LST settings
-    audioEl.volume = 0.2
     playSound(`status${status}`);
     openPopup(`status${status}`, unit);
 }
 
 function playSound(soundName) {
     let audioEl = document.querySelector("#audio");
-    audioEl.volume = 0.6;
+    audioEl.volume = 0.2;
 
     audioEl.src = `../src/soundset_0/${soundName}.mp3`;
     audioEl.play();

@@ -227,6 +227,22 @@ body {
     width: calc(50% - 4px - 16px);
 }
 
+#transfer_btn {
+    font-size: 28px;
+    height: 44px;
+    border-radius: 3px;
+    aspect-ratio: 1/1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+#transfer_btn.toggled {
+    background-color: var(--color-2);
+    box-shadow: #000 0 0 5px;
+}
+
 .fieldLabel {
     color: var(--color-2);
     margin-right: -18px;

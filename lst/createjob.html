@@ -41,7 +41,10 @@
     <span class="divider"></span>
 
     <div id="data_input">
-        <input type="text" id="job_title" placeholder="Alarmstichwort" oninput="limitInput(this, 27)">
+        <div>
+            <input type="text" id="job_title" placeholder="Alarmstichwort" oninput="limitInput(this, 27)">
+            <span class="material-symbols-outlined" id="transfer_btn" title="Einsatz weiterleiten" onclick="transferJob()">forward</span>
+        </div>
         <div>
             <span class="material-symbols-outlined fieldLabel">call</span>
             <input type="text" id="job_caller" placeholder="Anrufer / Patient" oninput="limitInput(this, 29)">
